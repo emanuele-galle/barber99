@@ -1,0 +1,1017 @@
+// ============================================
+// BARBER SERGI - PREMIUM ADMIN THEME
+// Dark Mode with Gold Accents
+// ============================================
+
+// Color Variables
+$gold-primary: #d4a855;
+$gold-light: #e4b865;
+$gold-dark: #b48835;
+$gold-darker: #8a6828;
+
+$bg-darkest: #080808;
+$bg-darker: #0c0c0c;
+$bg-dark: #111111;
+$bg-base: #141414;
+$bg-elevated: #1a1a1a;
+$bg-hover: #222222;
+
+$border-subtle: rgba(255, 255, 255, 0.06);
+$border-default: rgba(255, 255, 255, 0.1);
+$border-strong: rgba(255, 255, 255, 0.15);
+
+$text-primary: #ffffff;
+$text-secondary: rgba(255, 255, 255, 0.7);
+$text-tertiary: rgba(255, 255, 255, 0.5);
+$text-muted: rgba(255, 255, 255, 0.35);
+
+$success: #22c55e;
+$warning: #f59e0b;
+$error: #ef4444;
+$info: #3b82f6;
+
+// ============================================
+// ROOT & BASE STYLES
+// ============================================
+
+:root {
+  --theme-elevation-0: #{$bg-darkest} !important;
+  --theme-elevation-50: #{$bg-darker} !important;
+  --theme-elevation-100: #{$bg-dark} !important;
+  --theme-elevation-150: #{$bg-base} !important;
+  --theme-elevation-200: #{$bg-elevated} !important;
+  --theme-elevation-250: #{$bg-hover} !important;
+  --theme-elevation-300: #2a2a2a !important;
+  --theme-elevation-350: #333333 !important;
+  --theme-elevation-400: #3d3d3d !important;
+  --theme-elevation-450: #474747 !important;
+  --theme-elevation-500: #{$text-primary} !important;
+  --theme-elevation-600: #{$gold-primary} !important;
+  --theme-bg: #{$bg-darker} !important;
+  --theme-text: #{$text-primary} !important;
+
+  // Custom properties
+  --gold-glow: 0 0 20px rgba(212, 168, 85, 0.3);
+  --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --card-shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="light"],
+[data-theme="dark"],
+html,
+body {
+  --theme-elevation-0: #{$bg-darkest} !important;
+  --theme-elevation-50: #{$bg-darker} !important;
+  --theme-elevation-100: #{$bg-dark} !important;
+  --theme-elevation-150: #{$bg-base} !important;
+  --theme-elevation-200: #{$bg-elevated} !important;
+  --theme-bg: #{$bg-darker} !important;
+  background-color: $bg-darker !important;
+}
+
+// ============================================
+// SIDEBAR / NAVIGATION
+// ============================================
+
+.nav {
+  background: linear-gradient(180deg, $bg-base 0%, $bg-darker 100%) !important;
+  border-right: 1px solid $border-subtle !important;
+  padding: 0 !important;
+  position: relative;
+
+  // Subtle gradient overlay
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: radial-gradient(ellipse at top left, rgba($gold-primary, 0.05) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  // Bottom fade
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: linear-gradient(to top, $bg-darker, transparent);
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+// Logo area styling
+.nav-header {
+  padding: 24px 20px !important;
+  border-bottom: 1px solid $border-subtle !important;
+  background: linear-gradient(135deg, rgba($gold-primary, 0.08) 0%, transparent 100%) !important;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    right: 20px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, $gold-primary, transparent);
+    opacity: 0.3;
+  }
+}
+
+// Navigation groups
+.nav-group {
+  margin: 8px 0 !important;
+  padding: 0 12px !important;
+}
+
+.nav-group__toggle {
+  color: $gold-primary !important;
+  font-weight: 700 !important;
+  font-size: 11px !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  padding: 12px 12px 8px !important;
+  margin-bottom: 4px !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+  position: relative;
+
+  // Gold accent bar
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 16px;
+    background: linear-gradient(180deg, $gold-primary, $gold-dark);
+    border-radius: 0 2px 2px 0;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  &:hover {
+    background: rgba($gold-primary, 0.05) !important;
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  svg {
+    color: $gold-primary !important;
+    transition: transform 0.2s ease;
+  }
+}
+
+// Navigation links
+.nav__link {
+  color: $text-secondary !important;
+  border-radius: 10px !important;
+  margin: 2px 0 !important;
+  padding: 10px 14px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative;
+  overflow: hidden;
+
+  // Hover gradient overlay
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, rgba($gold-primary, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+  }
+
+  &:hover {
+    color: $text-primary !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    transform: translateX(4px);
+
+    &::before {
+      opacity: 1;
+    }
+
+    svg {
+      color: $gold-primary !important;
+    }
+  }
+
+  svg {
+    transition: all 0.2s ease;
+    opacity: 0.7;
+  }
+}
+
+// Active navigation link
+.nav__link--active {
+  background: linear-gradient(90deg, rgba($gold-primary, 0.15), rgba($gold-primary, 0.05)) !important;
+  color: $gold-primary !important;
+  font-weight: 600 !important;
+  box-shadow: inset 3px 0 0 $gold-primary;
+
+  &::before {
+    opacity: 0 !important;
+  }
+
+  &:hover {
+    background: linear-gradient(90deg, rgba($gold-primary, 0.2), rgba($gold-primary, 0.08)) !important;
+    transform: translateX(0);
+  }
+
+  svg {
+    color: $gold-primary !important;
+    opacity: 1;
+  }
+}
+
+// ============================================
+// HEADER
+// ============================================
+
+.app-header {
+  background: linear-gradient(180deg, $bg-base, rgba($bg-base, 0.95)) !important;
+  backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid $border-subtle !important;
+  padding: 0 24px !important;
+  height: 64px !important;
+
+  // Subtle bottom glow
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba($gold-primary, 0.3), transparent);
+  }
+}
+
+// Step navigation / Breadcrumbs
+.step-nav {
+  background: transparent !important;
+
+  a {
+    color: $text-tertiary !important;
+    font-size: 13px !important;
+    transition: color 0.2s ease !important;
+
+    &:hover {
+      color: $gold-primary !important;
+    }
+  }
+
+  // Current page
+  span:last-child {
+    color: $text-primary !important;
+    font-weight: 600 !important;
+  }
+
+  // Separator
+  svg {
+    color: $text-muted !important;
+  }
+}
+
+// ============================================
+// MAIN CONTENT AREA
+// ============================================
+
+.template-default,
+.template-default__wrap {
+  background: $bg-darker !important;
+}
+
+.template-default__content {
+  padding: 32px !important;
+  max-width: 1600px;
+}
+
+// Dashboard specific
+.dashboard {
+  background: $bg-darker !important;
+
+  &__wrap {
+    padding: 32px !important;
+  }
+}
+
+.dashboard-header {
+  background: transparent !important;
+  padding: 0 0 24px !important;
+  margin-bottom: 0 !important;
+  border: none !important;
+}
+
+// ============================================
+// CARDS
+// ============================================
+
+.card {
+  background: $bg-elevated !important;
+  border: 1px solid $border-subtle !important;
+  border-radius: 16px !important;
+  box-shadow: var(--card-shadow) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  }
+
+  &:hover {
+    border-color: rgba($gold-primary, 0.3) !important;
+    box-shadow: var(--card-shadow-hover), 0 0 0 1px rgba($gold-primary, 0.1) !important;
+    transform: translateY(-2px);
+  }
+}
+
+// ============================================
+// TABLES
+// ============================================
+
+.table {
+  background: $bg-elevated !important;
+  border-radius: 16px !important;
+  overflow: hidden;
+  border: 1px solid $border-subtle !important;
+}
+
+.table__header {
+  background: linear-gradient(180deg, $bg-base, $bg-elevated) !important;
+  border-bottom: 1px solid $border-default !important;
+
+  th {
+    color: $text-tertiary !important;
+    font-weight: 600 !important;
+    font-size: 12px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    padding: 16px !important;
+  }
+}
+
+.table__row {
+  border-bottom: 1px solid $border-subtle !important;
+  transition: all 0.2s ease !important;
+
+  &:last-child {
+    border-bottom: none !important;
+  }
+
+  &:hover {
+    background: linear-gradient(90deg, rgba($gold-primary, 0.05), transparent) !important;
+
+    td:first-child {
+      box-shadow: inset 3px 0 0 $gold-primary;
+    }
+  }
+
+  td {
+    padding: 16px !important;
+    color: $text-primary !important;
+    font-size: 14px !important;
+    transition: box-shadow 0.2s ease;
+  }
+}
+
+// ============================================
+// BUTTONS
+// ============================================
+
+.btn {
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  padding: 10px 20px !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn--style-primary,
+.btn.btn--style-primary {
+  background: linear-gradient(135deg, $gold-primary 0%, $gold-dark 100%) !important;
+  border: none !important;
+  color: $bg-darkest !important;
+  box-shadow: 0 4px 16px rgba($gold-primary, 0.3) !important;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.4s ease;
+  }
+
+  &:hover {
+    background: linear-gradient(135deg, $gold-light 0%, $gold-primary 100%) !important;
+    box-shadow: 0 6px 24px rgba($gold-primary, 0.4) !important;
+    transform: translateY(-1px);
+
+    &::before {
+      left: 100%;
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 3px rgba($gold-primary, 0.3), 0 4px 16px rgba($gold-primary, 0.3) !important;
+  }
+}
+
+.btn--style-secondary {
+  background: transparent !important;
+  border: 1px solid rgba($gold-primary, 0.5) !important;
+  color: $gold-primary !important;
+
+  &:hover {
+    background: rgba($gold-primary, 0.1) !important;
+    border-color: $gold-primary !important;
+  }
+}
+
+.btn--style-pill {
+  border-radius: 50px !important;
+}
+
+// ============================================
+// FORM ELEMENTS
+// ============================================
+
+.field-type {
+  background: transparent !important;
+  margin-bottom: 24px !important;
+}
+
+label {
+  color: $text-secondary !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  margin-bottom: 8px !important;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  .required-indicator {
+    color: $gold-primary;
+  }
+}
+
+.field-description {
+  color: $text-muted !important;
+  font-size: 12px !important;
+  margin-top: 6px !important;
+}
+
+input,
+textarea,
+select {
+  background: $bg-dark !important;
+  border: 1px solid $border-default !important;
+  border-radius: 10px !important;
+  color: $text-primary !important;
+  font-size: 14px !important;
+  padding: 12px 16px !important;
+  transition: all 0.2s ease !important;
+
+  &::placeholder {
+    color: $text-muted !important;
+  }
+
+  &:hover {
+    border-color: $border-strong !important;
+  }
+
+  &:focus {
+    border-color: $gold-primary !important;
+    box-shadow: 0 0 0 3px rgba($gold-primary, 0.15), inset 0 0 0 1px rgba($gold-primary, 0.2) !important;
+    outline: none !important;
+  }
+}
+
+// Checkbox
+input[type="checkbox"] {
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 6px !important;
+  cursor: pointer;
+
+  &:checked {
+    background: linear-gradient(135deg, $gold-primary, $gold-dark) !important;
+    border-color: $gold-primary !important;
+  }
+}
+
+// React Select
+.react-select__control {
+  background: $bg-dark !important;
+  border: 1px solid $border-default !important;
+  border-radius: 10px !important;
+  min-height: 44px !important;
+
+  &:hover {
+    border-color: $border-strong !important;
+  }
+
+  &--is-focused {
+    border-color: $gold-primary !important;
+    box-shadow: 0 0 0 3px rgba($gold-primary, 0.15) !important;
+  }
+}
+
+.react-select__menu {
+  background: $bg-elevated !important;
+  border: 1px solid $border-default !important;
+  border-radius: 12px !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5) !important;
+  overflow: hidden;
+  padding: 4px !important;
+}
+
+.react-select__option {
+  border-radius: 8px !important;
+  margin: 2px 0 !important;
+  padding: 10px 12px !important;
+  transition: all 0.15s ease !important;
+
+  &:hover,
+  &--is-focused {
+    background: rgba($gold-primary, 0.15) !important;
+    color: $text-primary !important;
+  }
+
+  &--is-selected {
+    background: linear-gradient(135deg, $gold-primary, $gold-dark) !important;
+    color: $bg-darkest !important;
+    font-weight: 600 !important;
+  }
+}
+
+// ============================================
+// DOCUMENT VIEW
+// ============================================
+
+.doc-controls {
+  background: linear-gradient(180deg, $bg-base, rgba($bg-base, 0.95)) !important;
+  backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid $border-subtle !important;
+  padding: 16px 24px !important;
+
+  &__wrapper {
+    gap: 12px !important;
+  }
+}
+
+.doc-fields__sidebar {
+  background: $bg-base !important;
+  border-left: 1px solid $border-subtle !important;
+  padding: 24px !important;
+}
+
+// ============================================
+// PILLS & TAGS
+// ============================================
+
+.pill {
+  background: rgba($gold-primary, 0.12) !important;
+  color: $gold-primary !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  padding: 4px 10px !important;
+  border: 1px solid rgba($gold-primary, 0.2) !important;
+}
+
+// Status pills
+.status-pill {
+  &--published,
+  &--active {
+    background: rgba($success, 0.12) !important;
+    color: $success !important;
+    border: 1px solid rgba($success, 0.2) !important;
+  }
+
+  &--draft {
+    background: rgba($warning, 0.12) !important;
+    color: $warning !important;
+    border: 1px solid rgba($warning, 0.2) !important;
+  }
+
+  &--error {
+    background: rgba($error, 0.12) !important;
+    color: $error !important;
+    border: 1px solid rgba($error, 0.2) !important;
+  }
+}
+
+// ============================================
+// MODALS & DRAWERS
+// ============================================
+
+.popup__content,
+.drawer__content {
+  background: $bg-elevated !important;
+  border: 1px solid $border-subtle !important;
+  border-radius: 20px !important;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6) !important;
+  overflow: hidden;
+}
+
+.popup__wrapper {
+  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.7) !important;
+}
+
+.drawer {
+  &__header {
+    background: linear-gradient(180deg, $bg-base, $bg-elevated) !important;
+    border-bottom: 1px solid $border-subtle !important;
+    padding: 20px 24px !important;
+  }
+
+  &__content {
+    border-radius: 0 !important;
+  }
+}
+
+// ============================================
+// UPLOAD / MEDIA
+// ============================================
+
+.upload__dropzone {
+  background: $bg-dark !important;
+  border: 2px dashed $border-default !important;
+  border-radius: 16px !important;
+  padding: 48px !important;
+  transition: all 0.3s ease !important;
+
+  &:hover,
+  &--active {
+    border-color: $gold-primary !important;
+    background: rgba($gold-primary, 0.05) !important;
+    box-shadow: inset 0 0 30px rgba($gold-primary, 0.05) !important;
+  }
+}
+
+// ============================================
+// PAGINATION
+// ============================================
+
+.pagination {
+  gap: 4px !important;
+
+  button {
+    background: $bg-elevated !important;
+    border: 1px solid $border-subtle !important;
+    border-radius: 10px !important;
+    color: $text-secondary !important;
+    min-width: 40px;
+    height: 40px;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+
+    &:hover {
+      border-color: rgba($gold-primary, 0.5) !important;
+      color: $gold-primary !important;
+      background: rgba($gold-primary, 0.05) !important;
+    }
+
+    &.active,
+    &[aria-current="page"] {
+      background: linear-gradient(135deg, $gold-primary, $gold-dark) !important;
+      border-color: $gold-primary !important;
+      color: $bg-darkest !important;
+      font-weight: 600 !important;
+    }
+  }
+}
+
+// ============================================
+// SCROLLBARS
+// ============================================
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: $bg-dark;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #3a3a3a, #2a2a2a);
+  border-radius: 4px;
+  border: 1px solid $bg-dark;
+
+  &:hover {
+    background: linear-gradient(180deg, #4a4a4a, #3a3a3a);
+  }
+}
+
+// ============================================
+// TOOLTIPS
+// ============================================
+
+.tooltip {
+  background: $bg-elevated !important;
+  border: 1px solid $border-default !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+  color: $text-primary !important;
+  font-size: 13px !important;
+  padding: 8px 14px !important;
+}
+
+// ============================================
+// DATE PICKER
+// ============================================
+
+.react-datepicker {
+  background: $bg-elevated !important;
+  border: 1px solid $border-default !important;
+  border-radius: 16px !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5) !important;
+  font-family: inherit !important;
+  overflow: hidden;
+
+  &__header {
+    background: $bg-base !important;
+    border-bottom: 1px solid $border-subtle !important;
+    padding: 16px !important;
+  }
+
+  &__current-month {
+    color: $text-primary !important;
+    font-weight: 600 !important;
+  }
+
+  &__day-name {
+    color: $text-muted !important;
+    font-weight: 600 !important;
+  }
+
+  &__day {
+    color: $text-secondary !important;
+    border-radius: 8px !important;
+    transition: all 0.15s ease !important;
+
+    &:hover {
+      background: rgba($gold-primary, 0.15) !important;
+      color: $text-primary !important;
+    }
+
+    &--selected,
+    &--keyboard-selected {
+      background: linear-gradient(135deg, $gold-primary, $gold-dark) !important;
+      color: $bg-darkest !important;
+      font-weight: 600 !important;
+    }
+
+    &--today {
+      border: 1px solid $gold-primary !important;
+      font-weight: 600 !important;
+    }
+
+    &--disabled {
+      color: $text-muted !important;
+      opacity: 0.5;
+    }
+  }
+}
+
+// ============================================
+// LOADING STATES
+// ============================================
+
+.loading-overlay {
+  background: rgba($bg-darker, 0.9) !important;
+  backdrop-filter: blur(4px);
+}
+
+.loading-overlay__spinner {
+  border: 3px solid rgba($gold-primary, 0.2) !important;
+  border-top-color: $gold-primary !important;
+  width: 40px !important;
+  height: 40px !important;
+}
+
+// ============================================
+// SEARCH
+// ============================================
+
+.search-filter {
+  input {
+    background: $bg-dark !important;
+    border: 1px solid $border-subtle !important;
+    border-radius: 12px !important;
+    padding-left: 44px !important;
+
+    &:focus {
+      border-color: $gold-primary !important;
+    }
+  }
+
+  svg {
+    color: $text-muted !important;
+    left: 14px !important;
+  }
+}
+
+// ============================================
+// RICH TEXT EDITOR
+// ============================================
+
+.rich-text {
+  background: $bg-dark !important;
+  border: 1px solid $border-default !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+
+  &:focus-within {
+    border-color: $gold-primary !important;
+    box-shadow: 0 0 0 3px rgba($gold-primary, 0.15) !important;
+  }
+
+  &__toolbar {
+    background: $bg-base !important;
+    border-bottom: 1px solid $border-subtle !important;
+    padding: 8px !important;
+  }
+}
+
+// ============================================
+// ACCOUNT / USER DROPDOWN
+// ============================================
+
+.account {
+  background: $bg-elevated !important;
+  border: 1px solid $border-default !important;
+  border-radius: 16px !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5) !important;
+  overflow: hidden;
+  min-width: 240px;
+}
+
+.account-header {
+  background: linear-gradient(135deg, rgba($gold-primary, 0.1), transparent) !important;
+  padding: 20px !important;
+  border-bottom: 1px solid $border-subtle !important;
+}
+
+// ============================================
+// DIVIDERS & SEPARATORS
+// ============================================
+
+hr,
+.divider {
+  border-color: $border-subtle !important;
+  opacity: 1 !important;
+}
+
+// ============================================
+// EYEBROW / SECTION LABELS
+// ============================================
+
+.eyebrow {
+  color: $gold-primary !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+}
+
+// ============================================
+// COLLECTION LIST
+// ============================================
+
+.collection-list {
+  &__header {
+    background: transparent !important;
+    padding: 24px 0 16px !important;
+  }
+
+  &__title {
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    color: $text-primary !important;
+  }
+}
+
+// ============================================
+// ANIMATIONS
+// ============================================
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+// Apply fade-in to main content
+.template-default__content,
+.dashboard__wrap {
+  animation: fadeIn 0.3s ease-out;
+}
+
+// ============================================
+// MISC
+// ============================================
+
+// Links
+a {
+  color: $gold-primary;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: $gold-light;
+  }
+}
+
+// Code blocks
+code,
+pre {
+  background: $bg-dark !important;
+  border: 1px solid $border-subtle !important;
+  border-radius: 8px !important;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace !important;
+}
+
+// Gutter
+.gutter {
+  background: $bg-base !important;
+}
+
+// Version selector in nav
+.nav__version {
+  background: rgba($gold-primary, 0.1) !important;
+  border: 1px solid rgba($gold-primary, 0.2) !important;
+  border-radius: 8px !important;
+  color: $gold-primary !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  padding: 4px 8px !important;
+}
+
+// Empty state
+.no-results {
+  color: $text-muted !important;
+  text-align: center;
+  padding: 48px !important;
+
+  svg {
+    color: $text-muted !important;
+    opacity: 0.5;
+  }
+}
+
+// Relationship field
+.relationship__doc {
+  background: $bg-dark !important;
+  border: 1px solid $border-subtle !important;
+  border-radius: 10px !important;
+  transition: all 0.2s ease !important;
+
+  &:hover {
+    border-color: rgba($gold-primary, 0.3) !important;
+  }
+}

@@ -1,0 +1,37 @@
+services:
+  app:
+    container_name: barber99_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - DATABASE_URL=${DATABASE_URL}
+        - PAYLOAD_SECRET=${PAYLOAD_SECRET}
+        - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+    restart: unless-stopped
+    env_file:
+      - .env.docker
+    networks:
+      - traefik-public
+      - panel-internal
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.barber99.rule=Host(`barber99.fodivps2.cloud`)
+      - traefik.http.routers.barber99.entrypoints=websecure
+      - traefik.http.routers.barber99.tls=true
+      - traefik.http.routers.barber99.tls.certresolver=letsencrypt
+      - traefik.http.routers.barber99.middlewares=security-headers@file
+      - traefik.http.services.barber99.loadbalancer.server.port=3000
+      - traefik.docker.network=traefik-public
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+networks:
+  traefik-public:
+    external: true
+  panel-internal:
+    external: true

@@ -1,0 +1,140 @@
+{
+  "common": {
+    "bookNow": "Prenota Ora",
+    "learnMore": "Scopri di Più",
+    "viewAll": "Vedi Tutti",
+    "contact": "Contatti",
+    "address": "Via San Biagio 3, Serra San Bruno (VV)",
+    "phone": "+39 327 126 3091",
+    "email": "info@barber99.it"
+  },
+  "nav": {
+    "home": "Home",
+    "services": "Servizi",
+    "team": "Team",
+    "gallery": "Galleria",
+    "booking": "Prenota",
+    "contact": "Contatti"
+  },
+  "hero": {
+    "title": "Barber 99",
+    "subtitle": "Stile, Precisione, Passione",
+    "description": "Il tuo barbiere di fiducia nel cuore di Serra San Bruno. Prenota il tuo appuntamento oggi."
+  },
+  "about": {
+    "title": "Chi Siamo",
+    "subtitle": "La Nostra Storia",
+    "description": "Barber 99 di Cosimo Pisani è il punto di riferimento per chi cerca un servizio di barberia professionale a Serra San Bruno. Passione per il taglio e attenzione ai dettagli sono i nostri punti di forza.",
+    "experience": "Esperienza e Passione",
+    "clients": "Clienti Soddisfatti",
+    "certified": "Barbiere Professionista"
+  },
+  "services": {
+    "title": "I Nostri Servizi",
+    "subtitle": "Qualità e Precisione",
+    "classicCut": {
+      "name": "Taglio",
+      "description": "Taglio con shampoo incluso per un look sempre curato"
+    },
+    "razorFade": {
+      "name": "Meches",
+      "description": "Colorazione professionale per un tocco di stile"
+    },
+    "traditionalShave": {
+      "name": "Barba",
+      "description": "Rasatura e rifinitura barba professionale"
+    },
+    "beardStyling": {
+      "name": "Taglio + Barba",
+      "description": "Il pacchetto completo per essere sempre al top"
+    },
+    "greyBlending": {
+      "name": "Taglio + Meches",
+      "description": "Taglio e colorazione per un look rinnovato"
+    },
+    "fullExperience": {
+      "name": "Taglio + Barba + Meches",
+      "description": "L'esperienza completa per una trasformazione totale"
+    },
+    "duration": "min"
+  },
+  "team": {
+    "title": "Il Barbiere",
+    "subtitle": "Cosimo Pisani",
+    "viewProfile": "Vedi Profilo"
+  },
+  "gallery": {
+    "title": "Galleria",
+    "subtitle": "I Nostri Lavori"
+  },
+  "reviews": {
+    "title": "Recensioni",
+    "subtitle": "Cosa Dicono i Nostri Clienti"
+  },
+  "contact": {
+    "title": "Contattaci",
+    "subtitle": "Vieni a Trovarci",
+    "hours": "Orari di Apertura",
+    "closed": "Chiuso",
+    "days": {
+      "monday": "Lunedì",
+      "tuesday": "Martedì",
+      "wednesday": "Mercoledì",
+      "thursday": "Giovedì",
+      "friday": "Venerdì",
+      "saturday": "Sabato",
+      "sunday": "Domenica"
+    }
+  },
+  "booking": {
+    "title": "Prenota Appuntamento",
+    "subtitle": "Scegli il tuo servizio e l'orario preferito",
+    "steps": {
+      "service": "Servizio",
+      "barber": "Barbiere",
+      "datetime": "Data/Ora",
+      "details": "Dati"
+    },
+    "selectService": "Seleziona un Servizio",
+    "selectBarber": "Scegli il tuo Barbiere",
+    "selectDate": "Seleziona la Data",
+    "selectTime": "Seleziona l'Orario",
+    "noSlots": "Nessun orario disponibile per questa data",
+    "yourDetails": "I tuoi Dati",
+    "summary": "Riepilogo Prenotazione",
+    "total": "Totale",
+    "form": {
+      "name": "Nome e Cognome",
+      "email": "Email",
+      "phone": "Telefono",
+      "notes": "Note (opzionale)",
+      "notesPlaceholder": "Preferenze particolari..."
+    },
+    "confirm": "Conferma Prenotazione",
+    "submitting": "Invio in corso...",
+    "paymentNote": "Riceverai una conferma via email. Il pagamento avviene in negozio.",
+    "confirmed": {
+      "title": "Prenotazione Confermata!",
+      "message": "Grazie! La tua prenotazione è stata registrata.",
+      "details": "Dettagli Appuntamento",
+      "emailSent": "Ti abbiamo inviato una email di conferma a",
+      "backHome": "Torna alla Home"
+    },
+    "validation": {
+      "selectService": "Seleziona un servizio",
+      "selectBarber": "Seleziona un barbiere",
+      "selectDate": "Seleziona una data",
+      "selectTime": "Seleziona un orario",
+      "enterName": "Inserisci il tuo nome",
+      "enterEmail": "Inserisci un'email valida",
+      "enterPhone": "Inserisci un numero di telefono valido"
+    },
+    "back": "Indietro"
+  },
+  "footer": {
+    "tagline": "Il tuo barbiere di fiducia a Serra San Bruno",
+    "quickLinks": "Link Rapidi",
+    "followUs": "Seguici",
+    "allRights": "Tutti i diritti riservati"
+  }
+}

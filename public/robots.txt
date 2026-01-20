@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /api
+Disallow: /api/*
+
+# Sitemap
+Sitemap: https://barber-sergi.fodivps2.cloud/sitemap.xml
+
+# Crawl-delay (opzionale - utile per evitare sovraccarichi)
+Crawl-delay: 1

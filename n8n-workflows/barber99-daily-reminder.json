@@ -1,0 +1,233 @@
+{
+  "name": "Barber99 - Reminder Giornaliero",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * *"
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Ogni Giorno alle 9:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://barber99:3000/api/appointments/tomorrow",
+        "options": {}
+      },
+      "id": "fetch-tomorrow-appointments",
+      "name": "Fetch Appuntamenti Domani",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [470, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-appointments",
+              "leftValue": "={{ $json.appointments?.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-has-appointments",
+      "name": "Has Appointments?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [690, 300]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "appointments",
+        "options": {}
+      },
+      "id": "split-appointments",
+      "name": "Split Appointments",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [910, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "not-reminded",
+              "leftValue": "={{ $json.reminderSent }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "is-confirmed",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "confirmed",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "filter-not-reminded",
+      "name": "Filter Not Reminded",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1130, 200]
+    },
+    {
+      "parameters": {
+        "fromEmail": "noreply@barber99.it",
+        "toEmail": "={{ $json.clientEmail }}",
+        "subject": "Promemoria: Il tuo appuntamento e' domani - Barber 99",
+        "emailType": "html",
+        "html": "<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; background: #0c0c0c; color: #fff; padding: 20px; }\n    .container { max-width: 600px; margin: 0 auto; background: #1a1a1a; border-radius: 12px; overflow: hidden; }\n    .header { background: linear-gradient(135deg, #3b82f6, #1d4ed8); padding: 30px; text-align: center; }\n    .header h1 { margin: 0; color: #fff; font-size: 24px; }\n    .content { padding: 30px; }\n    .highlight { background: #d4a855; color: #0c0c0c; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0; }\n    .highlight .time { font-size: 28px; font-weight: bold; }\n    .detail { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #333; }\n    .label { color: #888; }\n    .value { color: #fff; font-weight: bold; }\n    .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"header\">\n      <h1>Promemoria Appuntamento</h1>\n    </div>\n    <div class=\"content\">\n      <p>Ciao <strong>{{ $json.clientName }}</strong>!</p>\n      <p>Ti ricordiamo che hai un appuntamento <strong>domani</strong>:</p>\n      \n      <div class=\"highlight\">\n        <div class=\"time\">{{ $json.time }}</div>\n        <div>{{ $json.service?.name || 'Servizio' }} con {{ $json.barber?.name || 'Barbiere' }}</div>\n      </div>\n      \n      <p><strong>Dove trovarci:</strong></p>\n      <p>Via San Biagio 3, Serra San Bruno (VV)</p>\n      \n      <p style=\"color: #888; margin-top: 20px; font-size: 14px;\">\n        Se non puoi venire, ti preghiamo di avvisarci il prima possibile chiamando il 0963 XXXXXX.\n      </p>\n    </div>\n    <div class=\"footer\">\n      <p>Barber 99 - L'arte del taglio dal 1999</p>\n    </div>\n  </div>\n</body>\n</html>",
+        "options": {}
+      },
+      "id": "send-reminder-email",
+      "name": "Send Reminder Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1350, 100],
+      "credentials": {
+        "smtp": {
+          "id": "SMTP_CREDENTIAL_ID",
+          "name": "Gmail SMTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=http://barber99:3000/api/appointments/{{ $json.id }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "reminderSent",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "update-reminder-sent",
+      "name": "Update Reminder Sent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1570, 100]
+    }
+  ],
+  "connections": {
+    "Ogni Giorno alle 9:00": {
+      "main": [
+        [
+          {
+            "node": "Fetch Appuntamenti Domani",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Appuntamenti Domani": {
+      "main": [
+        [
+          {
+            "node": "Has Appointments?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Appointments?": {
+      "main": [
+        [
+          {
+            "node": "Split Appointments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Appointments": {
+      "main": [
+        [
+          {
+            "node": "Filter Not Reminded",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Not Reminded": {
+      "main": [
+        [
+          {
+            "node": "Send Reminder Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Reminder Email": {
+      "main": [
+        [
+          {
+            "node": "Update Reminder Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "barber99"
+    }
+  ],
+  "triggerCount": 1,
+  "active": false
+}

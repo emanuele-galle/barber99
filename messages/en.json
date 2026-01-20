@@ -1,0 +1,140 @@
+{
+  "common": {
+    "bookNow": "Book Now",
+    "learnMore": "Learn More",
+    "viewAll": "View All",
+    "contact": "Contact",
+    "address": "Via San Biagio 3, Serra San Bruno (VV), Italy",
+    "phone": "+39 327 126 3091",
+    "email": "info@barber99.it"
+  },
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "team": "Team",
+    "gallery": "Gallery",
+    "booking": "Book",
+    "contact": "Contact"
+  },
+  "hero": {
+    "title": "Barber 99",
+    "subtitle": "Style, Precision, Passion",
+    "description": "Your trusted barber in the heart of Serra San Bruno. Book your appointment today."
+  },
+  "about": {
+    "title": "About Us",
+    "subtitle": "Our Story",
+    "description": "Barber 99 by Cosimo Pisani is the reference point for those seeking professional barbering services in Serra San Bruno. Passion for cutting and attention to detail are our strengths.",
+    "experience": "Experience and Passion",
+    "clients": "Satisfied Clients",
+    "certified": "Professional Barber"
+  },
+  "services": {
+    "title": "Our Services",
+    "subtitle": "Quality and Precision",
+    "classicCut": {
+      "name": "Haircut",
+      "description": "Haircut with shampoo included for a polished look"
+    },
+    "razorFade": {
+      "name": "Highlights",
+      "description": "Professional coloring for a touch of style"
+    },
+    "traditionalShave": {
+      "name": "Beard",
+      "description": "Professional beard shaving and trimming"
+    },
+    "beardStyling": {
+      "name": "Haircut + Beard",
+      "description": "The complete package to always be at your best"
+    },
+    "greyBlending": {
+      "name": "Haircut + Highlights",
+      "description": "Cut and coloring for a renewed look"
+    },
+    "fullExperience": {
+      "name": "Haircut + Beard + Highlights",
+      "description": "The complete experience for a total transformation"
+    },
+    "duration": "min"
+  },
+  "team": {
+    "title": "The Barber",
+    "subtitle": "Cosimo Pisani",
+    "viewProfile": "View Profile"
+  },
+  "gallery": {
+    "title": "Gallery",
+    "subtitle": "Our Work"
+  },
+  "reviews": {
+    "title": "Reviews",
+    "subtitle": "What Our Clients Say"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Visit Us",
+    "hours": "Opening Hours",
+    "closed": "Closed",
+    "days": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    }
+  },
+  "booking": {
+    "title": "Book Appointment",
+    "subtitle": "Choose your service and preferred time",
+    "steps": {
+      "service": "Service",
+      "barber": "Barber",
+      "datetime": "Date/Time",
+      "details": "Details"
+    },
+    "selectService": "Select a Service",
+    "selectBarber": "Choose your Barber",
+    "selectDate": "Select Date",
+    "selectTime": "Select Time",
+    "noSlots": "No slots available for this date",
+    "yourDetails": "Your Details",
+    "summary": "Booking Summary",
+    "total": "Total",
+    "form": {
+      "name": "Full Name",
+      "email": "Email",
+      "phone": "Phone",
+      "notes": "Notes (optional)",
+      "notesPlaceholder": "Special preferences..."
+    },
+    "confirm": "Confirm Booking",
+    "submitting": "Submitting...",
+    "paymentNote": "You will receive a confirmation email. Payment is made at the shop.",
+    "confirmed": {
+      "title": "Booking Confirmed!",
+      "message": "Thank you! Your booking has been registered.",
+      "details": "Appointment Details",
+      "emailSent": "We sent a confirmation email to",
+      "backHome": "Back to Home"
+    },
+    "validation": {
+      "selectService": "Please select a service",
+      "selectBarber": "Please select a barber",
+      "selectDate": "Please select a date",
+      "selectTime": "Please select a time",
+      "enterName": "Please enter your name",
+      "enterEmail": "Please enter a valid email",
+      "enterPhone": "Please enter a valid phone number"
+    },
+    "back": "Back"
+  },
+  "footer": {
+    "tagline": "Your trusted barber in Serra San Bruno",
+    "quickLinks": "Quick Links",
+    "followUs": "Follow Us",
+    "allRights": "All rights reserved"
+  }
+}
