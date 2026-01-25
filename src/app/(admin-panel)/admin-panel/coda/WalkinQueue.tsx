@@ -77,7 +77,7 @@ export function WalkinQueue({ initialWalkins, services }: WalkinQueueProps) {
 
       if (!res.ok) throw new Error('Errore')
 
-      showToast('success', `${formData.clientName} aggiunto alla coda`, 'Walk-in aggiunto')
+      showToast('success', `${formData.clientName} aggiunto alla coda`, 'Cliente aggiunto')
       setFormData({
         clientName: '',
         clientPhone: '',
@@ -87,7 +87,7 @@ export function WalkinQueue({ initialWalkins, services }: WalkinQueueProps) {
       setShowForm(false)
       router.refresh()
     } catch {
-      showToast('error', 'Errore durante aggiunta walk-in', 'Errore')
+      showToast('error', 'Errore durante aggiunta cliente', 'Errore')
     } finally {
       setLoading(false)
     }
@@ -153,7 +153,7 @@ export function WalkinQueue({ initialWalkins, services }: WalkinQueueProps) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Coda Walk-in</h1>
+          <h1 className="text-2xl font-bold text-white">Senza Appuntamento</h1>
           <p className="text-[rgba(255,255,255,0.5)] mt-1">
             Gestisci i clienti senza prenotazione
           </p>
@@ -193,7 +193,7 @@ export function WalkinQueue({ initialWalkins, services }: WalkinQueueProps) {
       {/* Add Walk-in Form */}
       {showForm && (
         <div className="admin-card p-6 admin-fade-in">
-          <h3 className="text-lg font-semibold text-white mb-4">Nuovo Walk-in</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">Nuovo Cliente</h3>
           <form onSubmit={handleAddWalkin} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>

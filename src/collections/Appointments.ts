@@ -166,7 +166,7 @@ export const Appointments: CollectionConfig = {
       },
       options: [
         { label: { it: 'Prenotazione', en: 'Booking' }, value: 'booking' },
-        { label: { it: 'Walk-in', en: 'Walk-in' }, value: 'walkin' },
+        { label: { it: 'Senza appuntamento', en: 'Walk-in' }, value: 'walkin' },
       ],
       defaultValue: 'booking',
       admin: {
@@ -183,7 +183,7 @@ export const Appointments: CollectionConfig = {
       admin: {
         position: 'sidebar',
         condition: (data) => data.appointmentType === 'walkin',
-        description: { it: 'Posizione nella coda walk-in', en: 'Position in walk-in queue' },
+        description: { it: 'Posizione nella coda', en: 'Position in walk-in queue' },
       },
     },
     {

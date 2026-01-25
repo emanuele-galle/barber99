@@ -14,13 +14,13 @@ export function QuickActions({ pendingCount = 0, queueCount = 0 }: QuickActionsP
       <h3 className="text-lg font-semibold text-white mb-4">Azioni Rapide</h3>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {/* Walk-in - Azione principale */}
+        {/* Senza appuntamento - Azione principale */}
         <Link
           href="/admin-panel/coda"
           className="relative flex flex-col items-center gap-2 p-4 rounded-xl bg-[#d4a855] hover:bg-[#e8c882] text-black transition-all group col-span-2 lg:col-span-1"
         >
           <UserPlus className="w-6 h-6" />
-          <span className="text-sm font-semibold">+ Walk-in</span>
+          <span className="text-sm font-semibold">+ Cliente</span>
           {queueCount > 0 && (
             <span className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center">
               {queueCount}

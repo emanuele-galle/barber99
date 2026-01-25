@@ -42,7 +42,7 @@ const presets: Record<string, { icon: LucideIcon; title: string; description: st
   queue: {
     icon: Clock,
     title: 'Nessuno in coda',
-    description: 'I walk-in appariranno qui quando si registrano.',
+    description: 'I clienti senza appuntamento appariranno qui quando si registrano.',
   },
   contacts: {
     icon: Mail,

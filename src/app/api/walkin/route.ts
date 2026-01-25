@@ -126,6 +126,6 @@ export async function POST(request: Request) {
     return NextResponse.json(walkin, { status: 201 })
   } catch (error) {
     console.error('Error creating walkin:', error)
-    return NextResponse.json({ error: 'Errore durante creazione walk-in' }, { status: 500 })
+    return NextResponse.json({ error: 'Errore durante aggiunta cliente' }, { status: 500 })
   }
 }

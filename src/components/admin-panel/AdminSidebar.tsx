@@ -25,7 +25,7 @@ interface AdminSidebarProps {
 const menuItems = [
   { href: '/admin-panel', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin-panel/appuntamenti', label: 'Appuntamenti', icon: Calendar },
-  { href: '/admin-panel/coda', label: 'Coda Walk-in', icon: UserPlus },
+  { href: '/admin-panel/coda', label: 'Senza appuntamento', icon: UserPlus },
   { href: '/admin-panel/clienti', label: 'Clienti', icon: User },
   { href: '/admin-panel/servizi', label: 'Servizi', icon: Scissors },
   { href: '/admin-panel/analytics', label: 'Analytics', icon: BarChart2 },

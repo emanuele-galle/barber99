@@ -42,3 +42,5 @@ next-env.d.ts
 
 # Docker
 .env.docker
+
+/src/generated/prisma
