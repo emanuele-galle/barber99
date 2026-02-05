@@ -315,6 +315,12 @@ export default function Footer() {
               Cookie Policy
             </Link>
             <Link
+              href="/termini"
+              className="text-white/40 hover:text-white transition-colors"
+            >
+              Termini
+            </Link>
+            <Link
               href="/admin"
               className="text-white/20 hover:text-white/40 text-xs transition-colors"
             >
