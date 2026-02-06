@@ -27,7 +27,7 @@ async function uploadToMinIO(key: string, buffer: Buffer, contentType: string): 
     Body: buffer,
     ContentType: contentType,
   }))
-  return `${process.env.S3_ENDPOINT || 'http://vps-panel-minio:9000'}/${BUCKET_NAME}/${key}`
+  return `/minio/${BUCKET_NAME}/${key}`
 }
 
 async function processImage(imageBuffer: Buffer): Promise<{ webp: Buffer; width: number; height: number }> {

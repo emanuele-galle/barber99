@@ -6,6 +6,14 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  async rewrites() {
+    return [
+      {
+        source: '/minio/:path*',
+        destination: 'http://vps-panel-minio:9000/:path*',
+      },
+    ]
+  },
   async redirects() {
     return [
       {
