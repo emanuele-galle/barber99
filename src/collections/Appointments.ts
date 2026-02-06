@@ -420,21 +420,30 @@ export const Appointments: CollectionConfig = {
         }
 
         // N8N Webhook logic
+        // Skip for new appointments — route.ts handles the confirmation webhook
+        // Only send webhooks for status changes (completed, cancelled, noshow, etc.)
         const webhookUrl = process.env.N8N_WEBHOOK_URL
 
-        if (!webhookUrl) {
-          console.log('N8N_WEBHOOK_URL not configured, skipping webhook')
+        if (!webhookUrl || operation === 'create') {
+          return doc
+        }
+
+        // Only send on actual status changes
+        const statusChanged = previousDoc?.status !== doc.status
+        if (!statusChanged) {
           return doc
         }
 
         try {
-          // Fetch related data for webhook payload
           const payload = req.payload
           let serviceName = 'Servizio'
-          let barberName = 'Barbiere'
+          let serviceDuration = 45
+          let servicePrice = 0
 
           if (doc.service && typeof doc.service !== 'string') {
             serviceName = doc.service.name || serviceName
+            serviceDuration = doc.service.duration || serviceDuration
+            servicePrice = doc.service.price || servicePrice
           } else if (doc.service) {
             try {
               const service = await payload.findByID({
@@ -442,72 +451,49 @@ export const Appointments: CollectionConfig = {
                 id: doc.service as string,
               })
               serviceName = service.name || serviceName
+              serviceDuration = service.duration || serviceDuration
+              servicePrice = service.price || servicePrice
             } catch (e) {
               console.error('Error fetching service:', e)
             }
           }
 
-          // Barber is now a simple text field
-          if (doc.barber) {
-            barberName = doc.barber as string
-          }
+          const barberName = (doc.barber as string) || 'Barbiere'
 
-          // Format date for display
-          const appointmentDate = new Date(doc.date as string).toLocaleDateString('it-IT', {
-            weekday: 'long',
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-          })
-
-          // Determine event type
-          let eventType = 'appointment_created'
-          if (operation === 'update') {
-            const statusChanged = previousDoc?.status !== doc.status
-            if (statusChanged) {
-              eventType = `appointment_${doc.status}`
-            } else {
-              eventType = 'appointment_updated'
-            }
-          }
-
+          // Flat payload matching N8N template format (snake_case)
           const webhookPayload = {
-            event: eventType,
-            timestamp: new Date().toISOString(),
-            appointment: {
-              id: doc.id,
-              clientName: doc.clientName,
-              clientEmail: doc.clientEmail,
-              clientPhone: doc.clientPhone,
-              date: doc.date,
-              dateFormatted: appointmentDate,
-              time: doc.time,
-              status: doc.status,
-              previousStatus: previousDoc?.status,
-              serviceName,
-              barberName,
-              notes: doc.notes,
-              cancellationToken: doc.cancellationToken,
-              preferredLanguage: doc.preferredLanguage || 'it',
-            },
+            event: `appointment_${doc.status}`,
+            appointment_id: String(doc.id),
+            client_name: doc.clientName,
+            client_email: doc.clientEmail || '',
+            client_phone: doc.clientPhone,
+            service_name: serviceName,
+            barber_name: barberName,
+            date: new Date(doc.date as string).toLocaleDateString('it-IT', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            }),
+            time: doc.time,
+            duration: serviceDuration,
+            price: servicePrice ? `€${servicePrice}` : 'Da confermare',
+            status: doc.status,
+            previous_status: previousDoc?.status,
           }
 
-          // Send webhook to N8N
           const response = await fetch(webhookUrl, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(webhookPayload),
           })
 
           if (response.ok) {
-            console.log(`N8N webhook sent successfully for ${eventType}: ${doc.id}`)
+            console.log(`N8N webhook sent for appointment_${doc.status}: ${doc.id}`)
           } else {
             console.error(`N8N webhook failed: ${response.status} ${response.statusText}`)
           }
         } catch (error) {
-          // Don't fail the operation if webhook fails
           console.error('Error sending N8N webhook:', error)
         }
 
