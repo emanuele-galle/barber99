@@ -1,0 +1,58 @@
+{
+  "name": "Barber99 - Booking Reminder 24h",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hour": 10,
+              "triggerAtHour": 10
+            }
+          ]
+        }
+      },
+      "name": "Every Day at 10AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://barber99_app:3000/api/appointments/reminder",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-sync-secret",
+              "value": "dbe5512a582a959fdd5eced64b8241e4e191e695fa29cba104a775fb01f6be90"
+            }
+          ]
+        },
+        "method": "POST",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "name": "Send Reminders",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [500, 300]
+    }
+  ],
+  "connections": {
+    "Every Day at 10AM": {
+      "main": [
+        [
+          {
+            "node": "Send Reminders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

@@ -104,11 +104,28 @@ export async function POST(request: NextRequest) {
       })
     }
 
+    // Build cancellation and WhatsApp links
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://barber99.fodivps2.cloud'
+    const cancellationLink = `${baseUrl}/cancella?token=${appointment.cancellationToken}`
+    const formattedDate = new Date(date).toLocaleDateString('it-IT', {
+      weekday: 'long', day: 'numeric', month: 'long',
+    })
+    const whatsappText = encodeURIComponent(
+      `Ciao! Ho prenotato un appuntamento da Barber 99:\n` +
+      `Servizio: ${serviceDoc?.name || 'Servizio'}\n` +
+      `Data: ${formattedDate}\n` +
+      `Ora: ${time}\n` +
+      `Nome: ${clientName}`
+    )
+    const whatsappLink = `https://wa.me/393271263091?text=${whatsappText}`
+
     return NextResponse.json({
       success: true,
       appointmentId: appointment.id,
       message: 'Appointment created successfully',
       emailSent,
+      cancellationLink,
+      whatsappLink,
     })
   } catch (error) {
     console.error('Error creating appointment:', error)

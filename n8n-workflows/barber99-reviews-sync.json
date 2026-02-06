@@ -1,0 +1,57 @@
+{
+  "name": "Barber99 - Google Reviews Sync",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 12
+            }
+          ]
+        }
+      },
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://barber99_app:3000/api/reviews/sync",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-sync-secret",
+              "value": "dbe5512a582a959fdd5eced64b8241e4e191e695fa29cba104a775fb01f6be90"
+            }
+          ]
+        },
+        "method": "POST",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "name": "Sync Google Reviews",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [500, 300]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Sync Google Reviews",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

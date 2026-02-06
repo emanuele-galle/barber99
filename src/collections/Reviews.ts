@@ -16,6 +16,13 @@ export const Reviews: CollectionConfig = {
   },
   fields: [
     {
+      name: 'googleReviewId',
+      type: 'text',
+      label: { it: 'ID Google Review', en: 'Google Review ID' },
+      unique: true,
+      admin: { position: 'sidebar', readOnly: true },
+    },
+    {
       name: 'author',
       type: 'text',
       label: {

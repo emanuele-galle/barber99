@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useClientAuth } from '@/components/auth/ClientAuthProvider'
-import { ArrowLeft, Loader2, Calendar, Clock, User, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
+import { ArrowLeft, Loader2, Calendar, Clock, User, CheckCircle, XCircle, AlertCircle, RotateCcw } from 'lucide-react'
 
 interface Appointment {
   id: string
@@ -223,15 +223,26 @@ export default function PrenotazioniPage() {
                           {appointment.service?.price?.toFixed(2)}
                         </div>
                       </div>
-                      <div className="flex flex-wrap gap-4 text-sm text-[rgba(255,255,255,0.5)]">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4" />
-                          <span>{formatDate(appointment.date)}</span>
+                      <div className="flex items-center justify-between">
+                        <div className="flex flex-wrap gap-4 text-sm text-[rgba(255,255,255,0.5)]">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="w-4 h-4" />
+                            <span>{formatDate(appointment.date)}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-4 h-4" />
+                            <span>{appointment.time}</span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-4 h-4" />
-                          <span>{appointment.time}</span>
-                        </div>
+                        {appointment.status === 'completed' && appointment.service && (
+                          <Link
+                            href={`/prenota?service=${encodeURIComponent(appointment.service.name)}`}
+                            className="flex items-center gap-1.5 text-[#d4a855] text-sm hover:text-[#e8c882] transition-colors"
+                          >
+                            <RotateCcw className="w-3.5 h-3.5" />
+                            <span>Prenota di nuovo</span>
+                          </Link>
+                        )}
                       </div>
                     </div>
                   ))}

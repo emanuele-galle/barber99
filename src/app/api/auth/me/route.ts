@@ -8,10 +8,7 @@ export async function GET() {
     const tokenPayload = await getClientFromCookie()
 
     if (!tokenPayload) {
-      return NextResponse.json(
-        { error: 'Non autenticato' },
-        { status: 401 }
-      )
+      return NextResponse.json({ client: null })
     }
 
     // Fetch full client data

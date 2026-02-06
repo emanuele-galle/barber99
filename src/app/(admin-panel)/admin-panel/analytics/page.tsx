@@ -11,6 +11,9 @@ import {
   UserX,
   Scissors,
   Clock,
+  Users,
+  UserPlus,
+  Repeat,
 } from 'lucide-react'
 
 interface Service {
@@ -50,52 +53,62 @@ async function getAnalyticsData() {
   const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0)
 
   // Fetch all appointments for analytics
-  const [thisWeekAppts, lastWeekAppts, thisMonthAppts, lastMonthAppts, allServices] =
-    await Promise.all([
-      payload.find({
-        collection: 'appointments',
-        where: {
-          date: { greater_than_equal: startOfWeek.toISOString() },
+  const [
+    thisWeekAppts,
+    lastWeekAppts,
+    thisMonthAppts,
+    lastMonthAppts,
+    allServices,
+    allClients,
+  ] = await Promise.all([
+    payload.find({
+      collection: 'appointments',
+      where: {
+        date: { greater_than_equal: startOfWeek.toISOString() },
+      },
+      limit: 500,
+      depth: 2,
+    }),
+    payload.find({
+      collection: 'appointments',
+      where: {
+        date: {
+          greater_than_equal: startOfLastWeek.toISOString(),
+          less_than: endOfLastWeek.toISOString(),
         },
-        limit: 500,
-        depth: 1,
-      }),
-      payload.find({
-        collection: 'appointments',
-        where: {
-          date: {
-            greater_than_equal: startOfLastWeek.toISOString(),
-            less_than: endOfLastWeek.toISOString(),
-          },
+      },
+      limit: 500,
+      depth: 2,
+    }),
+    payload.find({
+      collection: 'appointments',
+      where: {
+        date: { greater_than_equal: startOfMonth.toISOString() },
+      },
+      limit: 1000,
+      depth: 2,
+    }),
+    payload.find({
+      collection: 'appointments',
+      where: {
+        date: {
+          greater_than_equal: startOfLastMonth.toISOString(),
+          less_than: endOfLastMonth.toISOString(),
         },
-        limit: 500,
-        depth: 1,
-      }),
-      payload.find({
-        collection: 'appointments',
-        where: {
-          date: { greater_than_equal: startOfMonth.toISOString() },
-        },
-        limit: 1000,
-        depth: 1,
-      }),
-      payload.find({
-        collection: 'appointments',
-        where: {
-          date: {
-            greater_than_equal: startOfLastMonth.toISOString(),
-            less_than: endOfLastMonth.toISOString(),
-          },
-        },
-        limit: 1000,
-        depth: 1,
-      }),
-      payload.find({
-        collection: 'services',
-        where: { active: { equals: true } },
-        limit: 50,
-      }),
-    ])
+      },
+      limit: 1000,
+      depth: 2,
+    }),
+    payload.find({
+      collection: 'services',
+      where: { active: { equals: true } },
+      limit: 50,
+    }),
+    payload.find({
+      collection: 'clients',
+      limit: 1000,
+    }),
+  ])
 
   // Calculate metrics
   const calculateRevenue = (appts: Appointment[]) => {
@@ -145,6 +158,30 @@ async function getAnalyticsData() {
     hourCounts[dayHour] = (hourCounts[dayHour] || 0) + 1
   })
 
+  // New vs Returning clients analysis (this month)
+  const clientStats = { new: 0, returning: 0 }
+  const processedClients = new Set<string>()
+
+  thisMonthAppts.docs.forEach((appt) => {
+    const apt = appt as Appointment & {
+      client?: { id: string; totalVisits?: number } | string
+    }
+    if (apt.status === 'completed' && apt.client) {
+      const clientId = typeof apt.client === 'string' ? apt.client : apt.client.id
+      if (!processedClients.has(clientId)) {
+        processedClients.add(clientId)
+        const totalVisits =
+          typeof apt.client === 'object' ? apt.client.totalVisits || 0 : 0
+        // If totalVisits is 1 or less, they're new (current visit is their first)
+        if (totalVisits <= 1) {
+          clientStats.new++
+        } else {
+          clientStats.returning++
+        }
+      }
+    }
+  })
+
   return {
     thisWeek: {
       revenue: calculateRevenue(thisWeekAppts.docs as Appointment[]),
@@ -168,6 +205,8 @@ async function getAnalyticsData() {
     },
     topServices,
     hourCounts,
+    clientStats,
+    totalClients: allClients.totalDocs,
   }
 }
 
@@ -311,6 +350,65 @@ export default async function AnalyticsPage() {
             icon={UserX}
             color="#ef4444"
           />
+        </div>
+      </div>
+
+      {/* Client Analysis */}
+      <div>
+        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <Users className="w-5 h-5 text-[#d4a855]" />
+          Analisi Clienti
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="admin-card p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                <Users className="w-6 h-6 text-blue-400" />
+              </div>
+            </div>
+            <p className="text-3xl font-bold text-white mb-1">{data.totalClients}</p>
+            <p className="text-sm text-[rgba(255,255,255,0.5)]">Clienti Totali</p>
+          </div>
+
+          <div className="admin-card p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
+                <UserPlus className="w-6 h-6 text-green-400" />
+              </div>
+              <div className="text-sm text-green-400">
+                {data.clientStats.new + data.clientStats.returning > 0
+                  ? Math.round(
+                      (data.clientStats.new /
+                        (data.clientStats.new + data.clientStats.returning)) *
+                        100,
+                    )
+                  : 0}
+                %
+              </div>
+            </div>
+            <p className="text-3xl font-bold text-white mb-1">{data.clientStats.new}</p>
+            <p className="text-sm text-[rgba(255,255,255,0.5)]">Nuovi Clienti (Mese)</p>
+          </div>
+
+          <div className="admin-card p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
+                <Repeat className="w-6 h-6 text-purple-400" />
+              </div>
+              <div className="text-sm text-purple-400">
+                {data.clientStats.new + data.clientStats.returning > 0
+                  ? Math.round(
+                      (data.clientStats.returning /
+                        (data.clientStats.new + data.clientStats.returning)) *
+                        100,
+                    )
+                  : 0}
+                %
+              </div>
+            </div>
+            <p className="text-3xl font-bold text-white mb-1">{data.clientStats.returning}</p>
+            <p className="text-sm text-[rgba(255,255,255,0.5)]">Clienti Ricorrenti (Mese)</p>
+          </div>
         </div>
       </div>
 

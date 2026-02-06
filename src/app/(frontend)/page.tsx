@@ -5,6 +5,7 @@ import config from '@payload-config'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import MobileNav from '@/components/MobileNav'
+import GoogleReviewsBadge from '@/components/GoogleReviewsBadge'
 import HomeWrapper from '@/components/HomeWrapper'
 import HeroSection from '@/components/sections/HeroSection'
 import AboutSection from '@/components/sections/AboutSection'
@@ -12,6 +13,7 @@ import ServicesSection from '@/components/sections/ServicesSection'
 // import GallerySection from '@/components/sections/GallerySection' // Temporaneamente disabilitato
 import InstagramGallerySection from '@/components/sections/InstagramGallerySection'
 import ReviewsSection from '@/components/sections/ReviewsSection'
+import WhyChooseUsSection from '@/components/sections/WhyChooseUsSection'
 import ContactSection from '@/components/sections/ContactSection'
 
 // Types for database entities
@@ -69,6 +71,12 @@ async function getData() {
 export default async function Home() {
   const { services, reviews } = await getData()
 
+  // Calculate average rating from reviews
+  const averageRating =
+    reviews.length > 0
+      ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
+      : 5.0
+
   return (
     <HomeWrapper>
       <Header />
@@ -76,12 +84,17 @@ export default async function Home() {
         <HeroSection />
         <AboutSection />
         <ServicesSection services={services} />
+        <WhyChooseUsSection />
         <InstagramGallerySection instagramHandle="barber___99" />
         <ReviewsSection reviews={reviews} />
         <ContactSection />
       </main>
       <Footer />
       <MobileNav />
+      <GoogleReviewsBadge
+        averageRating={averageRating}
+        reviewCount={reviews.length}
+      />
     </HomeWrapper>
   )
 }
