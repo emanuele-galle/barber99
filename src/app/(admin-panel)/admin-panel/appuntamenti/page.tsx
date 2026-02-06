@@ -11,7 +11,7 @@ async function getAppointments() {
 
   const appointments = await payload.find({
     collection: 'appointments',
-    sort: 'date',
+    sort: 'date,time',
     limit: 500,
     depth: 2,
     where: {
