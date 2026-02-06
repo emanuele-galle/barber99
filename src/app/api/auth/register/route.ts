@@ -70,6 +70,49 @@ export async function POST(req: NextRequest) {
       },
     })
 
+    // Link any orphan appointments (by email or phone) to this client
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const orConditions: any[] = []
+      if (client.email) {
+        orConditions.push({
+          and: [
+            { clientEmail: { equals: client.email } },
+            { client: { exists: false } },
+          ],
+        })
+      }
+      if (client.phone) {
+        orConditions.push({
+          and: [
+            { clientPhone: { equals: client.phone } },
+            { client: { exists: false } },
+          ],
+        })
+      }
+      if (orConditions.length > 0) {
+        const orphanAppointments = await payload.find({
+          collection: 'appointments',
+          where: { or: orConditions },
+          limit: 100,
+        })
+        if (orphanAppointments.docs.length > 0) {
+          await Promise.all(
+            orphanAppointments.docs.map((apt) =>
+              payload.update({
+                collection: 'appointments',
+                id: apt.id,
+                data: { client: client.id },
+              })
+            )
+          )
+          console.log(`Linked ${orphanAppointments.docs.length} orphan appointments to client ${client.id}`)
+        }
+      }
+    } catch (linkError) {
+      console.error('Error linking orphan appointments during registration:', linkError)
+    }
+
     // Create JWT token and log in automatically
     const token = await createClientToken({
       clientId: String(client.id),

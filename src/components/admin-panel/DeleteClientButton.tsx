@@ -27,7 +27,7 @@ export function DeleteClientButton({ clientId, clientName }: DeleteClientButtonP
       if (!res.ok) throw new Error('Errore durante eliminazione')
 
       showToast('success', `Cliente "${clientName}" eliminato`, 'Eliminato')
-      router.refresh()
+      router.push('/admin-panel/clienti')
     } catch (error) {
       console.error('Delete error:', error)
       showToast('error', 'Errore durante eliminazione del cliente', 'Errore')

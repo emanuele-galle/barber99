@@ -21,16 +21,61 @@ export async function GET(
 
     const payload = await getPayload({ config })
 
-    // Find all appointments for this client
+    // Fetch client record to get email and phone for fallback matching
+    const client = await payload.findByID({
+      collection: 'clients',
+      id,
+    })
+
+    // Build query: linked by relationship OR matching email/phone (orphan appointments)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const orConditions: any[] = [
+      { client: { equals: id } },
+    ]
+
+    if (client.email) {
+      orConditions.push({
+        and: [
+          { clientEmail: { equals: client.email } },
+          { client: { exists: false } },
+        ],
+      })
+    }
+
+    if (client.phone) {
+      orConditions.push({
+        and: [
+          { clientPhone: { equals: client.phone } },
+          { client: { exists: false } },
+        ],
+      })
+    }
+
     const appointments = await payload.find({
       collection: 'appointments',
       where: {
-        client: { equals: id },
+        or: orConditions,
       },
       sort: '-date',
-      depth: 1, // Include service and barber details
+      depth: 1,
       limit: 100,
     })
+
+    // Retroactively link any orphan appointments found by email/phone
+    const orphans = appointments.docs.filter(
+      (apt) => !apt.client || (typeof apt.client === 'object' ? apt.client.id !== id : String(apt.client) !== id)
+    )
+    if (orphans.length > 0) {
+      await Promise.all(
+        orphans.map((apt) =>
+          payload.update({
+            collection: 'appointments',
+            id: apt.id,
+            data: { client: id },
+          }).catch((err) => console.error(`Failed to link orphan appointment ${apt.id}:`, err))
+        )
+      )
+    }
 
     return NextResponse.json({
       appointments: appointments.docs.map((apt) => ({

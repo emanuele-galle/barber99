@@ -4,6 +4,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { notFound } from 'next/navigation'
 import { ClientForm } from '@/components/admin-panel/ClientForm'
+import { DeleteClientButton } from '@/components/admin-panel/DeleteClientButton'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -33,11 +34,14 @@ export default async function ModificaClientePage({ params }: PageProps) {
 
   return (
     <div className="max-w-4xl admin-fade-in">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">Modifica Cliente</h1>
-        <p className="text-[rgba(255,255,255,0.6)] text-sm mt-1">
-          Modifica i dettagli del cliente
-        </p>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Modifica Cliente</h1>
+          <p className="text-[rgba(255,255,255,0.6)] text-sm mt-1">
+            Modifica i dettagli del cliente
+          </p>
+        </div>
+        <DeleteClientButton clientId={String(client.id)} clientName={client.name as string} />
       </div>
 
       <ClientForm
