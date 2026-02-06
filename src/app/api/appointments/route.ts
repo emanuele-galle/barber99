@@ -76,32 +76,34 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Send confirmation email via N8N webhook
-    const emailSent = await sendBookingNotification({
-      appointment_id: String(appointment.id),
-      client_name: clientName,
-      client_email: clientEmail,
-      client_phone: clientPhone,
-      service_name: serviceDoc?.name || 'Servizio',
-      barber_name: DEFAULT_BARBER_NAME,
-      date: new Date(date).toLocaleDateString('it-IT', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      }),
-      time,
-      duration: serviceDoc?.duration || 45,
-      price: serviceDoc?.price ? `€${serviceDoc.price}` : 'Da confermare',
-    })
-
-    // Update emailSent status
-    if (emailSent) {
-      await payload.update({
-        collection: 'appointments',
-        id: appointment.id,
-        data: { emailSent: true },
+    // Send confirmation email via N8N webhook (only if email provided)
+    let emailSent = false
+    if (clientEmail) {
+      emailSent = await sendBookingNotification({
+        appointment_id: String(appointment.id),
+        client_name: clientName,
+        client_email: clientEmail,
+        client_phone: clientPhone,
+        service_name: serviceDoc?.name || 'Servizio',
+        barber_name: DEFAULT_BARBER_NAME,
+        date: new Date(date).toLocaleDateString('it-IT', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        }),
+        time,
+        duration: serviceDoc?.duration || 45,
+        price: serviceDoc?.price ? `€${serviceDoc.price}` : 'Da confermare',
       })
+
+      if (emailSent) {
+        await payload.update({
+          collection: 'appointments',
+          id: appointment.id,
+          data: { emailSent: true },
+        })
+      }
     }
 
     // Build cancellation and WhatsApp links
