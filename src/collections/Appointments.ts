@@ -413,6 +413,48 @@ export const Appointments: CollectionConfig = {
                 })
                 console.log(`Updated client ${clientId} stats:`, updates)
               }
+
+              // Review request logic (non-annoying)
+              if (doc.status === 'completed' && previousDoc.status !== 'completed' && client.email && process.env.GOOGLE_REVIEW_URL) {
+                const lastRequest = client.lastReviewRequestAt ? new Date(client.lastReviewRequestAt as string) : null
+                const daysSinceLastRequest = lastRequest
+                  ? (Date.now() - lastRequest.getTime()) / (1000 * 60 * 60 * 24)
+                  : Infinity
+                const updatedVisits = (client.totalVisits || 0) + 1
+
+                if (updatedVisits >= 2 && daysSinceLastRequest > 60) {
+                  const reviewWebhookUrl = process.env.N8N_WEBHOOK_URL
+                  if (reviewWebhookUrl) {
+                    let svcName = 'Servizio'
+                    if (doc.service && typeof doc.service !== 'string') {
+                      svcName = doc.service.name || svcName
+                    }
+
+                    await fetch(reviewWebhookUrl, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        event: 'review_request',
+                        client_name: client.name,
+                        client_email: client.email,
+                        client_phone: client.phone,
+                        google_review_url: process.env.GOOGLE_REVIEW_URL,
+                        service_name: svcName,
+                        barber_name: (doc.barber as string) || 'Barbiere',
+                        date: doc.date,
+                      }),
+                    }).catch(() => {})
+
+                    await payload.update({
+                      collection: 'clients',
+                      id: clientId,
+                      data: { lastReviewRequestAt: new Date().toISOString() },
+                    }).catch(() => {})
+
+                    console.log(`Review request sent for client ${clientId}`)
+                  }
+                }
+              }
             } catch (error) {
               console.error('Error updating client statistics:', error)
             }

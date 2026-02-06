@@ -162,6 +162,18 @@ export const Clients: CollectionConfig = {
         readOnly: true,
       },
     },
+    {
+      name: 'lastReviewRequestAt',
+      type: 'date',
+      label: {
+        it: 'Ultima Richiesta Recensione',
+        en: 'Last Review Request',
+      },
+      admin: {
+        position: 'sidebar',
+        readOnly: true,
+      },
+    },
     // Tags for segmentation
     {
       name: 'tags',
