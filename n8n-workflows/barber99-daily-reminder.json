@@ -124,7 +124,7 @@
       "position": [1350, 100],
       "credentials": {
         "smtp": {
-          "id": "SMTP_CREDENTIAL_ID",
+          "id": "barber99smtp01",
           "name": "Hostinger SMTP - Barber99"
         }
       }

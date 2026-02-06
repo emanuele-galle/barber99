@@ -58,7 +58,7 @@
       "position": [700, 200],
       "credentials": {
         "smtp": {
-          "id": "SMTP_CREDENTIAL_ID",
+          "id": "barber99smtp01",
           "name": "Hostinger SMTP - Barber99"
         }
       }
@@ -79,7 +79,7 @@
       "position": [700, 400],
       "credentials": {
         "smtp": {
-          "id": "SMTP_CREDENTIAL_ID",
+          "id": "barber99smtp01",
           "name": "Hostinger SMTP - Barber99"
         }
       }
