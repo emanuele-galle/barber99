@@ -135,7 +135,7 @@ export default async function ServiziPage() {
             <div className="w-16 h-0.5 bg-gradient-to-r from-[#d4a855] to-[#e8c882] mx-auto mb-6" />
             <p className="text-white/60 max-w-2xl mx-auto">
               Ogni servizio è eseguito con cura e attenzione ai dettagli da Cosimo Pisani,
-              barbiere professionista a Serra San Bruno dal 2015.
+              barbiere professionista a Serra San Bruno dal 2023.
             </p>
           </div>
 

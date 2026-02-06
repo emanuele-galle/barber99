@@ -13,7 +13,7 @@ import ServicesSection from '@/components/sections/ServicesSection'
 // import GallerySection from '@/components/sections/GallerySection' // Temporaneamente disabilitato
 import InstagramGallerySection from '@/components/sections/InstagramGallerySection'
 import ReviewsSection from '@/components/sections/ReviewsSection'
-import WhyChooseUsSection from '@/components/sections/WhyChooseUsSection'
+// WhyChooseUsSection rimossa
 import ContactSection from '@/components/sections/ContactSection'
 
 // Types for database entities
@@ -89,7 +89,6 @@ export default async function Home() {
         <HeroSection />
         <AboutSection />
         <ServicesSection services={services} />
-        <WhyChooseUsSection />
         <InstagramGallerySection instagramHandle="barber___99" />
         <ReviewsSection reviews={reviews} />
         <ContactSection />

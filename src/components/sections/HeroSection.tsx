@@ -78,7 +78,7 @@ export default function HeroSection() {
                 textShadow: '0 2px 4px rgba(0, 0, 0, 0.8)'
               }}
             >
-              Cosimo Pisani — Tradizione, precisione e passione dal 2015.
+              Cosimo Pisani — Tradizione, precisione e passione dal 2023.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -192,7 +192,7 @@ export default function HeroSection() {
               textShadow: '0 2px 4px rgba(0, 0, 0, 0.8)'
             }}
           >
-            Cosimo Pisani — Tradizione, precisione e passione dal 2015.
+            Cosimo Pisani — Tradizione, precisione e passione dal 2023.
           </motion.p>
 
           <motion.div

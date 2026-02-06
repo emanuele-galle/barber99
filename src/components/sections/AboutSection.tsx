@@ -10,7 +10,7 @@ const features = [
   {
     icon: Scissors,
     title: 'Precisione Artigianale',
-    description: 'Tecniche tradizionali perfezionate in oltre 9 anni di esperienza',
+    description: 'Tecniche tradizionali perfezionate con dedizione e passione',
   },
   {
     icon: Award,
@@ -176,7 +176,7 @@ export default function AboutSection() {
                       className="text-2xl font-bold text-[#F4662F]"
                       style={{ fontFamily: 'var(--font-cinzel), serif' }}
                     >
-                      9+
+                      3+
                     </span>
                   </motion.div>
                   <p className="text-white/80">Anni di Esperienza</p>
@@ -191,7 +191,7 @@ export default function AboutSection() {
 
                 <div className="space-y-4 text-white/70 mb-8">
                   <p>
-                    Sono Cosimo Pisani, titolare di Barber 99. Dal 2015 accolgo i miei
+                    Sono Cosimo Pisani, titolare di Barber 99. Dal 2023 accolgo i miei
                     clienti in Via San Biagio 3, nel cuore di Serra San Bruno. Qui ho creato
                     uno spazio dove tradizione e cura del dettaglio si incontrano.
                   </p>

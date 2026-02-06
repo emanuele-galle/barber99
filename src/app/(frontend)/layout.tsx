@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     template: '%s | Barber 99 - Barbiere Serra San Bruno',
   },
   description:
-    'Cosimo Pisani, barbiere professionista a Serra San Bruno dal 2015. Taglio capelli uomo, barba, meches e trattamenti personalizzati. Prenota online. Via San Biagio 3, 89822 Serra San Bruno (VV).',
+    'Cosimo Pisani, barbiere professionista a Serra San Bruno dal 2023. Taglio capelli uomo, barba, meches e trattamenti personalizzati. Prenota online. Via San Biagio 3, 89822 Serra San Bruno (VV).',
   keywords: [
     'barbiere serra san bruno',
     'cosimo pisani barbiere',
@@ -69,7 +69,7 @@ export const metadata: Metadata = {
     siteName: 'Barber 99 - Cosimo Pisani',
     title: 'Barber 99 di Cosimo Pisani | Barbiere a Serra San Bruno',
     description:
-      'Cosimo Pisani, il tuo barbiere di fiducia a Serra San Bruno dal 2015. Taglio capelli, barba e meches. Prenota online il tuo appuntamento.',
+      'Cosimo Pisani, il tuo barbiere di fiducia a Serra San Bruno dal 2023. Taglio capelli, barba e meches. Prenota online il tuo appuntamento.',
     images: [
       {
         url: '/images/og-image.jpg',
@@ -116,7 +116,7 @@ const jsonLd = {
   name: 'Barber 99 di Cosimo Pisani',
   alternateName: ['Barber 99', 'Barber99 Serra San Bruno'],
   description:
-    'Cosimo Pisani, barbiere professionista a Serra San Bruno dal 2015. Taglio capelli uomo, barba, meches e trattamenti personalizzati. Prenota online il tuo appuntamento.',
+    'Cosimo Pisani, barbiere professionista a Serra San Bruno dal 2023. Taglio capelli uomo, barba, meches e trattamenti personalizzati. Prenota online il tuo appuntamento.',
   url: 'https://barber99.it',
   logo: 'https://barber99.it/images/logo/barber99-logo.png',
   image: [
@@ -133,7 +133,7 @@ const jsonLd = {
       '@id': 'https://barber99.it/#organization',
     },
   },
-  foundingDate: '2015',
+  foundingDate: '2023',
   address: {
     '@type': 'PostalAddress',
     streetAddress: 'Via San Biagio 3',
