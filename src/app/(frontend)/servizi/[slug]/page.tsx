@@ -201,7 +201,7 @@ export default async function ServicePage({
       price: service.price,
       priceCurrency: 'EUR',
       availability: 'https://schema.org/InStock',
-      url: `https://barber99.fodivps2.cloud/servizi/${slug}`,
+      url: `https://barber99.it/servizi/${slug}`,
     },
     areaServed: {
       '@type': 'City',

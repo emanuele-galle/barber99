@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next'
 
-const BASE_URL = 'https://barber99.fodivps2.cloud'
+const BASE_URL = 'https://barber99.it'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

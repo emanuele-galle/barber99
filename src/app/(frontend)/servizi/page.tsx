@@ -85,7 +85,7 @@ export default async function ServiziPage() {
       item: {
         '@type': 'Service',
         name: s.name,
-        url: `https://barber99.fodivps2.cloud/servizi/${s.slug}`,
+        url: `https://barber99.it/servizi/${s.slug}`,
         provider: {
           '@type': 'BarberShop',
           name: 'Barber 99 di Cosimo Pisani',

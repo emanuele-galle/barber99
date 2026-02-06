@@ -112,16 +112,16 @@ export const metadata: Metadata = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'BarberShop',
-  '@id': 'https://barber99.fodivps2.cloud/#organization',
+  '@id': 'https://barber99.it/#organization',
   name: 'Barber 99 di Cosimo Pisani',
   alternateName: ['Barber 99', 'Barber99 Serra San Bruno'],
   description:
     'Cosimo Pisani, barbiere professionista a Serra San Bruno dal 2015. Taglio capelli uomo, barba, meches e trattamenti personalizzati. Prenota online il tuo appuntamento.',
-  url: 'https://barber99.fodivps2.cloud',
-  logo: 'https://barber99.fodivps2.cloud/images/logo/barber99-logo.png',
+  url: 'https://barber99.it',
+  logo: 'https://barber99.it/images/logo/barber99-logo.png',
   image: [
-    'https://barber99.fodivps2.cloud/images/hero-bg.jpg',
-    'https://barber99.fodivps2.cloud/images/og-image.jpg',
+    'https://barber99.it/images/hero-bg.jpg',
+    'https://barber99.it/images/og-image.jpg',
   ],
   telephone: '+39 327 126 3091',
   email: 'info@barber99.it',
@@ -130,7 +130,7 @@ const jsonLd = {
     name: 'Cosimo Pisani',
     jobTitle: 'Barbiere Professionista',
     worksFor: {
-      '@id': 'https://barber99.fodivps2.cloud/#organization',
+      '@id': 'https://barber99.it/#organization',
     },
   },
   foundingDate: '2015',

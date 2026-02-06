@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Build cancellation and WhatsApp links
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://barber99.fodivps2.cloud'
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://barber99.it'
     const cancellationLink = `${baseUrl}/cancella?token=${appointment.cancellationToken}`
     const formattedDate = new Date(date).toLocaleDateString('it-IT', {
       weekday: 'long', day: 'numeric', month: 'long',

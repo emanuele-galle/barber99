@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     for (const apt of appointments.docs) {
       const serviceName = typeof apt.service === 'object' ? apt.service.name : 'Servizio'
-      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://barber99.fodivps2.cloud'
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://barber99.it'
       const cancelLink = `${baseUrl}/cancella?token=${apt.cancellationToken}`
 
       // Build WhatsApp reminder message
