@@ -1,101 +1,81 @@
-const CACHE_NAME = 'barber-sergi-v2'
-const STATIC_ASSETS = [
-  '/',
-  '/prenota',
+const CACHE_NAME = 'barber99-v4'
+const PRECACHE_ASSETS = [
   '/manifest.json',
   '/favicon.ico',
 ]
 
-// Install event - cache static assets
+// Install event - cache only truly static assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS)
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_ASSETS))
   )
   self.skipWaiting()
 })
 
-// Activate event - clean up old caches
+// Activate event - clean up ALL old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
+    caches.keys().then((cacheNames) =>
+      Promise.all(
         cacheNames
           .filter((name) => name !== CACHE_NAME)
           .map((name) => caches.delete(name))
       )
-    })
+    )
   )
   self.clients.claim()
 })
 
-// Fetch event - network first, fallback to cache
+// Fetch event
 self.addEventListener('fetch', (event) => {
   const { request } = event
 
   // Skip non-GET requests
   if (request.method !== 'GET') return
 
-  // Skip API requests (always network)
-  if (request.url.includes('/api/')) {
-    event.respondWith(fetch(request))
-    return
-  }
+  // API requests - always network, never cache
+  if (request.url.includes('/api/')) return
 
-  // Skip admin panel and Next.js bundles (prevent hydration issues)
-  if (request.url.includes('/admin') || request.url.includes('/_next/')) {
-    event.respondWith(fetch(request))
-    return
-  }
+  // Navigation requests (HTML pages) - ALWAYS network
+  // Never cache SSR pages to avoid stale content
+  if (request.mode === 'navigate') return
 
-  // For images - cache first
+  // Admin panel & Next.js bundles - always network
+  if (request.url.includes('/admin') || request.url.includes('/_next/')) return
+
+  // Images - cache first, then network
   if (request.destination === 'image') {
     event.respondWith(
-      caches.match(request).then((cachedResponse) => {
-        if (cachedResponse) return cachedResponse
-
+      caches.match(request).then((cached) => {
+        if (cached) return cached
         return fetch(request).then((response) => {
           if (!response.ok) return response
-
-          const responseClone = response.clone()
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, responseClone)
-          })
-
+          const clone = response.clone()
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone))
           return response
-        })
+        }).catch(() => new Response('', { status: 503 }))
       })
     )
     return
   }
 
-  // For pages - network first, fallback to cache
-  event.respondWith(
-    fetch(request)
-      .then((response) => {
-        if (!response.ok) throw new Error('Network response not ok')
-
-        const responseClone = response.clone()
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(request, responseClone)
-        })
-
-        return response
-      })
-      .catch(() => {
-        return caches.match(request).then((cachedResponse) => {
-          if (cachedResponse) return cachedResponse
-
-          // Return offline page for navigation requests
-          if (request.mode === 'navigate') {
-            return caches.match('/')
+  // Fonts and other static assets - stale-while-revalidate
+  if (request.destination === 'font' || request.url.includes('/sounds/')) {
+    event.respondWith(
+      caches.match(request).then((cached) => {
+        const networkFetch = fetch(request).then((response) => {
+          if (response.ok) {
+            const clone = response.clone()
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone))
           }
+          return response
+        }).catch(() => cached)
 
-          return new Response('Offline', { status: 503 })
-        })
+        return cached || networkFetch
       })
-  )
+    )
+    return
+  }
 })
 
 // Push notification handler
@@ -136,13 +116,11 @@ self.addEventListener('notificationclick', (event) => {
 
   event.waitUntil(
     self.clients.matchAll({ type: 'window' }).then((clients) => {
-      // Check if there's already a window open
       for (const client of clients) {
         if (client.url === urlToOpen && 'focus' in client) {
           return client.focus()
         }
       }
-      // Open new window
       if (self.clients.openWindow) {
         return self.clients.openWindow(urlToOpen)
       }
