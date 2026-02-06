@@ -238,7 +238,7 @@ export default function ContactSection() {
                         onChange={handleChange}
                         required
                         placeholder="Il tuo nome"
-                        className="w-full px-4 py-3 rounded-xl bg-[#111] border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-[#d4a855]/50 transition-colors"
+                        className="w-full px-4 py-3 rounded-xl bg-[#111] border border-white/10 text-white text-[16px] placeholder:text-white/30 focus:outline-none focus:border-[#d4a855]/50 transition-colors"
                       />
                     </div>
                     <div>
@@ -253,7 +253,7 @@ export default function ContactSection() {
                         onChange={handleChange}
                         required
                         placeholder="la@tua.email"
-                        className="w-full px-4 py-3 rounded-xl bg-[#111] border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-[#d4a855]/50 transition-colors"
+                        className="w-full px-4 py-3 rounded-xl bg-[#111] border border-white/10 text-white text-[16px] placeholder:text-white/30 focus:outline-none focus:border-[#d4a855]/50 transition-colors"
                       />
                     </div>
                   </div>
@@ -270,7 +270,7 @@ export default function ContactSection() {
                       value={formData.phone}
                       onChange={handleChange}
                       placeholder="+39 ..."
-                      className="w-full px-4 py-3 rounded-xl bg-[#111] border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-[#d4a855]/50 transition-colors"
+                      className="w-full px-4 py-3 rounded-xl bg-[#111] border border-white/10 text-white text-[16px] placeholder:text-white/30 focus:outline-none focus:border-[#d4a855]/50 transition-colors"
                     />
                   </div>
 
@@ -287,7 +287,7 @@ export default function ContactSection() {
                       required
                       rows={4}
                       placeholder="Scrivi il tuo messaggio..."
-                      className="w-full px-4 py-3 rounded-xl bg-[#111] border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-[#d4a855]/50 transition-colors resize-none"
+                      className="w-full px-4 py-3 rounded-xl bg-[#111] border border-white/10 text-white text-[16px] placeholder:text-white/30 focus:outline-none focus:border-[#d4a855]/50 transition-colors resize-none"
                     />
                   </div>
 

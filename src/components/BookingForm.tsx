@@ -537,14 +537,14 @@ export default function BookingForm() {
               </div>
 
               {/* Day of week headers */}
-              <div className="grid grid-cols-7 gap-1 mb-1">
+              <div className="grid grid-cols-7 gap-1.5 mb-1">
                 {['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'].map((d) => (
                   <div key={d} className="text-center text-[11px] text-gray-500 py-1">{d}</div>
                 ))}
               </div>
 
               {/* Calendar grid */}
-              <div className="grid grid-cols-7 gap-1">
+              <div className="grid grid-cols-7 gap-1.5">
                 {calendarDays.map((day, i) => {
                   const isSelected = formData.date === day.dateStr
                   return (

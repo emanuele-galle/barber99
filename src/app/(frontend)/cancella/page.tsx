@@ -133,19 +133,19 @@ function CancelContent() {
                 </div>
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex flex-col-reverse sm:flex-row gap-3">
                 <Link
                   href="/"
-                  className="flex-1 py-3 rounded-lg border border-white/20 text-white text-center font-medium hover:bg-white/5 transition-colors"
+                  className="flex-1 py-3.5 rounded-lg border border-white/20 text-white text-center font-medium hover:bg-white/5 transition-colors"
                 >
                   Torna Indietro
                 </Link>
                 <button
                   onClick={handleCancel}
                   disabled={cancelling}
-                  className="flex-1 py-3 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
+                  className="flex-1 py-3.5 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
                 >
-                  {cancelling ? 'Cancellando...' : 'Cancella'}
+                  {cancelling ? 'Cancellando...' : 'Cancella Prenotazione'}
                 </button>
               </div>
             </>

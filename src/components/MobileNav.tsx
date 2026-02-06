@@ -60,7 +60,7 @@ export default function MobileNav() {
             <Component
               key={item.href}
               {...props}
-              className={`flex flex-col items-center gap-1 py-3 px-4 rounded-xl transition-all ${
+              className={`flex flex-col items-center gap-1 py-4 px-4 rounded-xl transition-all ${
                 isActive
                   ? 'text-[#d4a855]'
                   : 'text-white/50 active:text-white/80'

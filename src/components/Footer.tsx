@@ -96,17 +96,17 @@ export default function Footer() {
                 href="https://www.instagram.com/barber___99/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#d4a855]/20 transition-colors"
+                className="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#d4a855]/20 transition-colors"
                 aria-label="Seguici su Instagram"
               >
-                <Instagram className="w-4 h-4 text-[#d4a855]" />
+                <Instagram className="w-5 h-5 text-[#d4a855]" />
               </a>
               <a
                 href="tel:+393271263091"
-                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#d4a855]/20 transition-colors"
+                className="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#d4a855]/20 transition-colors"
                 aria-label="Chiamaci"
               >
-                <Phone className="w-4 h-4 text-[#d4a855]" />
+                <Phone className="w-5 h-5 text-[#d4a855]" />
               </a>
             </div>
           </div>
@@ -213,17 +213,17 @@ export default function Footer() {
                 href="https://www.instagram.com/barber___99/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#d4a855]/20 transition-colors"
+                className="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#d4a855]/20 transition-colors"
                 aria-label="Seguici su Instagram"
               >
-                <Instagram className="w-4 h-4 text-[#d4a855]" />
+                <Instagram className="w-5 h-5 text-[#d4a855]" />
               </a>
               <a
                 href="tel:+393271263091"
-                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#d4a855]/20 transition-colors"
+                className="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#d4a855]/20 transition-colors"
                 aria-label="Chiamaci"
               >
-                <Phone className="w-4 h-4 text-[#d4a855]" />
+                <Phone className="w-5 h-5 text-[#d4a855]" />
               </a>
             </div>
           </div>
@@ -330,8 +330,8 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Mobile Safe Area */}
-      <div className="h-20 md:hidden" />
+      {/* Mobile Safe Area - accounts for fixed MobileNav + device safe area */}
+      <div className="h-20 pb-safe-bottom md:hidden" />
     </footer>
   )
 }
