@@ -56,7 +56,7 @@ export default function Header() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isScrolled
-          ? 'bg-[#0c0c0c]/95 backdrop-blur-xl shadow-[0_4px_30px_rgba(0,0,0,0.5)] border-b border-[#F4662F]/10'
+          ? 'bg-[#0c0c0c]/95 backdrop-blur-xl shadow-[0_4px_30px_rgba(0,0,0,0.5)] border-b border-[#d4a855]/10'
           : 'bg-gradient-to-b from-[#0c0c0c]/80 to-transparent'
       }`}
     >
@@ -76,7 +76,7 @@ export default function Header() {
                   href="https://www.google.com/maps/search/?api=1&query=Via+San+Biagio+3,+89822+Serra+San+Bruno+VV"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 hover:text-[#F4662F] transition-colors"
+                  className="flex items-center gap-2 hover:text-[#d4a855] transition-colors"
                 >
                   <MapPin className="w-3.5 h-3.5" />
                   <span>Via San Biagio 3, 89822 Serra San Bruno (VV)</span>
@@ -84,10 +84,10 @@ export default function Header() {
               </div>
               <div className="flex items-center gap-4 text-white/60">
                 <span>Lun 10-19, Mar-Sab 9-19</span>
-                <span className="text-[#F4662F]/40">|</span>
+                <span className="text-[#d4a855]/40">|</span>
                 <a
                   href="tel:+393271263091"
-                  className="flex items-center gap-2 text-[#F4662F] hover:text-[#FF8555] transition-colors font-medium"
+                  className="flex items-center gap-2 text-[#d4a855] hover:text-[#e8c882] transition-colors font-medium"
                 >
                   <Phone className="w-3.5 h-3.5" />
                   <span>327 126 3091</span>
@@ -119,7 +119,7 @@ export default function Header() {
               />
             </motion.div>
             {/* Subtle glow on hover */}
-            <div className="absolute inset-0 bg-[#F4662F]/0 group-hover:bg-[#F4662F]/5 rounded-lg transition-colors duration-300" />
+            <div className="absolute inset-0 bg-[#d4a855]/0 group-hover:bg-[#d4a855]/5 rounded-lg transition-colors duration-300" />
           </Link>
 
           {/* Desktop Navigation */}
@@ -132,7 +132,7 @@ export default function Header() {
                   href={item.href}
                   className={`relative px-4 py-2 text-sm uppercase tracking-wider font-medium transition-all duration-300 rounded-lg ${
                     isActive
-                      ? 'text-[#F4662F]'
+                      ? 'text-[#d4a855]'
                       : 'text-white/70 hover:text-white hover:bg-white/5'
                   }`}
                 >
@@ -141,7 +141,7 @@ export default function Header() {
                   {isActive && (
                     <motion.div
                       layoutId="activeSection"
-                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-[#F4662F] rounded-full"
+                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-[#d4a855] rounded-full"
                       transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                     />
                   )}
@@ -161,9 +161,9 @@ export default function Header() {
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ duration: 0.2 }}
                   href="tel:+393271263091"
-                  className="flex items-center gap-2 text-[#F4662F] hover:text-[#FF8555] transition-colors"
+                  className="flex items-center gap-2 text-[#d4a855] hover:text-[#e8c882] transition-colors"
                 >
-                  <div className="w-9 h-9 rounded-full bg-[#F4662F]/10 flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-full bg-[#d4a855]/10 flex items-center justify-center">
                     <Phone className="w-4 h-4" />
                   </div>
                 </motion.a>
@@ -172,7 +172,7 @@ export default function Header() {
 
             <Link
               href="/prenota"
-              className="group relative overflow-hidden bg-gradient-to-r from-[#F4662F] to-[#D4521F] text-[#0c0c0c] font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 text-sm uppercase tracking-wide transition-all duration-300 hover:shadow-[0_0_20px_rgba(212,168,85,0.4)] hover:scale-105"
+              className="group relative overflow-hidden bg-gradient-to-r from-[#d4a855] to-[#b8923f] text-[#0c0c0c] font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 text-sm uppercase tracking-wide transition-all duration-300 hover:shadow-[0_0_20px_rgba(212,168,85,0.4)] hover:scale-105"
             >
               <Calendar className="w-4 h-4" />
               <span>Prenota</span>
@@ -236,7 +236,7 @@ export default function Header() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className="fixed left-0 right-0 lg:hidden bg-[#0c0c0c] border-b border-[#F4662F]/20"
+              className="fixed left-0 right-0 lg:hidden bg-[#0c0c0c] border-b border-[#d4a855]/20"
               style={{ top: isScrolled ? '64px' : '80px' }}
             >
               <nav className="max-w-7xl mx-auto px-4 py-6">
@@ -253,13 +253,13 @@ export default function Header() {
                         onClick={() => setIsOpen(false)}
                         className={`flex items-center justify-between px-4 py-4 rounded-xl transition-all duration-200 ${
                           activeSection === item.href.replace('#', '')
-                            ? 'bg-[#F4662F]/10 text-[#F4662F]'
+                            ? 'bg-[#d4a855]/10 text-[#d4a855]'
                             : 'text-white/80 hover:bg-white/5 hover:text-white'
                         }`}
                       >
                         <span className="text-lg font-medium">{item.label}</span>
                         {activeSection === item.href.replace('#', '') && (
-                          <div className="w-2 h-2 rounded-full bg-[#F4662F]" />
+                          <div className="w-2 h-2 rounded-full bg-[#d4a855]" />
                         )}
                       </Link>
                     </motion.div>
@@ -277,10 +277,10 @@ export default function Header() {
                   <div className="grid grid-cols-2 gap-3">
                     <a
                       href="tel:+393271263091"
-                      className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-[#F4662F]/30 transition-colors"
+                      className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-[#d4a855]/30 transition-colors"
                     >
-                      <div className="w-10 h-10 rounded-full bg-[#F4662F]/10 flex items-center justify-center">
-                        <Phone className="w-5 h-5 text-[#F4662F]" />
+                      <div className="w-10 h-10 rounded-full bg-[#d4a855]/10 flex items-center justify-center">
+                        <Phone className="w-5 h-5 text-[#d4a855]" />
                       </div>
                       <span className="text-white/80 text-sm font-medium">Chiama</span>
                     </a>
@@ -288,10 +288,10 @@ export default function Header() {
                       href="https://www.google.com/maps/search/?api=1&query=Via+San+Biagio+3,+89822+Serra+San+Bruno+VV"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-[#F4662F]/30 transition-colors"
+                      className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-[#d4a855]/30 transition-colors"
                     >
-                      <div className="w-10 h-10 rounded-full bg-[#F4662F]/10 flex items-center justify-center">
-                        <MapPin className="w-5 h-5 text-[#F4662F]" />
+                      <div className="w-10 h-10 rounded-full bg-[#d4a855]/10 flex items-center justify-center">
+                        <MapPin className="w-5 h-5 text-[#d4a855]" />
                       </div>
                       <span className="text-white/80 text-sm font-medium">Mappa</span>
                     </a>
@@ -301,7 +301,7 @@ export default function Header() {
                   <Link
                     href="/prenota"
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-center gap-3 w-full py-4 bg-gradient-to-r from-[#F4662F] to-[#D4521F] text-[#0c0c0c] font-bold rounded-xl text-lg uppercase tracking-wide"
+                    className="flex items-center justify-center gap-3 w-full py-4 bg-gradient-to-r from-[#d4a855] to-[#b8923f] text-[#0c0c0c] font-bold rounded-xl text-lg uppercase tracking-wide"
                   >
                     <Calendar className="w-5 h-5" />
                     Prenota Appuntamento

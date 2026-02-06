@@ -61,7 +61,7 @@ export default function AboutSection() {
               initial={{ opacity: 0, letterSpacing: '0.2em' }}
               whileInView={{ opacity: 1, letterSpacing: '0.3em' }}
               transition={{ duration: 0.8 }}
-              className="text-[#F4662F] text-sm uppercase mb-4"
+              className="text-[#d4a855] text-sm uppercase mb-4"
               style={{ fontFamily: 'var(--font-cormorant), serif' }}
             >
               La Mia Storia
@@ -170,10 +170,10 @@ export default function AboutSection() {
                     initial={{ scale: 0, rotate: -180 }}
                     whileInView={{ scale: 1, rotate: 0 }}
                     transition={{ duration: 0.6, type: 'spring' }}
-                    className="w-16 h-16 rounded-full bg-gradient-to-br from-[#F4662F]/20 to-[#F4662F]/5 flex items-center justify-center border border-[#F4662F]/20"
+                    className="w-16 h-16 rounded-full bg-gradient-to-br from-[#d4a855]/20 to-[#d4a855]/5 flex items-center justify-center border border-[#d4a855]/20"
                   >
                     <span
-                      className="text-2xl font-bold text-[#F4662F]"
+                      className="text-2xl font-bold text-[#d4a855]"
                       style={{ fontFamily: 'var(--font-cinzel), serif' }}
                     >
                       3+
@@ -216,12 +216,12 @@ export default function AboutSection() {
                     >
                       <motion.div
                         whileHover={{ scale: 1.1, rotate: 5 }}
-                        className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#F4662F]/20 to-[#F4662F]/5 flex items-center justify-center flex-shrink-0 border border-[#F4662F]/10 group-hover:border-[#F4662F]/30 transition-colors duration-300"
+                        className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#d4a855]/20 to-[#d4a855]/5 flex items-center justify-center flex-shrink-0 border border-[#d4a855]/10 group-hover:border-[#d4a855]/30 transition-colors duration-300"
                       >
-                        <feature.icon className="w-5 h-5 text-[#F4662F] transition-transform duration-300 group-hover:scale-110" />
+                        <feature.icon className="w-5 h-5 text-[#d4a855] transition-transform duration-300 group-hover:scale-110" />
                       </motion.div>
                       <div>
-                        <h4 className="text-white font-medium text-sm group-hover:text-[#F4662F] transition-colors duration-300">
+                        <h4 className="text-white font-medium text-sm group-hover:text-[#d4a855] transition-colors duration-300">
                           {feature.title}
                         </h4>
                         <p className="text-white/50 text-xs mt-1">

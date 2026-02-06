@@ -42,9 +42,9 @@ export default function HeroSection() {
 
         {/* Content */}
         <div className="relative z-10 text-center px-6 md:px-8 max-w-4xl mx-auto pt-20">
-          <div className="relative py-8 md:py-12 px-6 md:px-10 rounded-2xl bg-[#0c0c0c]/40 backdrop-blur-sm border border-white/5">
+          <div className="relative py-8 md:py-12 px-6 md:px-10">
             <p
-              className="text-[#F4662F] text-sm md:text-base tracking-[0.3em] uppercase mb-4 font-semibold"
+              className="text-[#d4a855] text-sm md:text-base tracking-[0.3em] uppercase mb-4 font-semibold"
               style={{
                 fontFamily: 'var(--font-cormorant), serif',
                 textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)'
@@ -62,7 +62,7 @@ export default function HeroSection() {
             >
               L&apos;Arte del{' '}
               <span
-                className="text-[#FF8555]"
+                className="text-[#e8c882]"
                 style={{
                   textShadow: '0 2px 4px rgba(0, 0, 0, 0.8), 0 4px 12px rgba(0, 0, 0, 0.5)'
                 }}
@@ -111,7 +111,7 @@ export default function HeroSection() {
             >
               Scorri
             </span>
-            <ChevronDown className="w-8 h-8 text-[#F4662F]" />
+            <ChevronDown className="w-8 h-8 text-[#d4a855]" />
           </div>
         </div>
       </section>
@@ -142,8 +142,8 @@ export default function HeroSection() {
         className="relative z-10 text-center px-6 md:px-8 max-w-4xl mx-auto pt-20"
         style={{ y: contentY, opacity }}
       >
-        {/* Content container with subtle backdrop for better readability */}
-        <div className="relative py-8 md:py-12 px-6 md:px-10 rounded-2xl bg-[#0c0c0c]/40 backdrop-blur-sm border border-white/5">
+        {/* Content */}
+        <div className="relative py-8 md:py-12 px-6 md:px-10">
 
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -151,7 +151,7 @@ export default function HeroSection() {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <p
-              className="text-[#F4662F] text-sm md:text-base tracking-[0.3em] uppercase mb-4 font-semibold"
+              className="text-[#d4a855] text-sm md:text-base tracking-[0.3em] uppercase mb-4 font-semibold"
               style={{
                 fontFamily: 'var(--font-cormorant), serif',
                 textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)'
@@ -173,7 +173,7 @@ export default function HeroSection() {
           >
             L&apos;Arte del{' '}
             <span
-              className="text-[#FF8555]"
+              className="text-[#e8c882]"
               style={{
                 textShadow: '0 2px 4px rgba(0, 0, 0, 0.8), 0 4px 12px rgba(0, 0, 0, 0.5)'
               }}
@@ -237,7 +237,7 @@ export default function HeroSection() {
           >
             Scorri
           </span>
-          <ChevronDown className="w-8 h-8 text-[#F4662F]" />
+          <ChevronDown className="w-8 h-8 text-[#d4a855]" />
         </motion.div>
       </motion.div>
     </section>

@@ -2,7 +2,7 @@
 
 import { motion } from 'motion/react'
 import Link from 'next/link'
-import { Scissors, Sparkles, Droplets, Crown, Palette, Star, Clock, ArrowRight, LucideIcon } from 'lucide-react'
+import { Scissors, Sparkles, Droplets, Crown, Palette, Star, Clock, ArrowRight, Package, Brush, Waves, LucideIcon } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { GradientOrb, NoiseTexture, SectionDivider } from '@/components/BackgroundEffects'
 import { useShouldReduceMotion } from '@/hooks/useIsMobile'
@@ -15,6 +15,23 @@ const iconMap: Record<string, LucideIcon> = {
   Crown,
   Palette,
   Star,
+  Package,
+  Brush,
+  Waves,
+}
+
+// Smart icon fallback based on service name
+function getServiceIcon(service: { icon?: string; name: string }): LucideIcon {
+  if (service.icon && iconMap[service.icon]) return iconMap[service.icon]
+  const name = service.name.toLowerCase()
+  if (name.includes('barba')) return Brush
+  if (name.includes('meches') || name.includes('colore')) return Palette
+  if (name.includes('taglio') && name.includes('barba')) return Crown
+  if (name.includes('taglio') && name.includes('meches')) return Sparkles
+  if (name.includes('taglio')) return Scissors
+  if (name.includes('pacchetto') || name.includes('+')) return Package
+  if (name.includes('trattamento') || name.includes('shampoo')) return Droplets
+  return Scissors
 }
 
 interface Service {
@@ -109,7 +126,7 @@ export default function ServicesSection({ services }: ServicesSectionProps) {
             className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
             {services.map((service, index) => {
-              const IconComponent = iconMap[service.icon || ''] || Scissors
+              const IconComponent = getServiceIcon(service)
               return (
                 <motion.div
                   key={service.id}
@@ -207,7 +224,7 @@ export default function ServicesSection({ services }: ServicesSectionProps) {
           <div className="md:hidden">
             <div className="flex overflow-x-auto gap-4 pb-4 no-scrollbar snap-x snap-mandatory -mx-4 px-4">
               {services.map((service, index) => {
-                const IconComponent = iconMap[service.icon || ''] || Scissors
+                const IconComponent = getServiceIcon(service)
                 return (
                   <motion.div
                     key={service.id}

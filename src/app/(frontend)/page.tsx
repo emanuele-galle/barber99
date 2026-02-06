@@ -15,6 +15,7 @@ import InstagramGallerySection from '@/components/sections/InstagramGallerySecti
 import ReviewsSection from '@/components/sections/ReviewsSection'
 // WhyChooseUsSection rimossa
 import ContactSection from '@/components/sections/ContactSection'
+import CTABanner from '@/components/sections/CTABanner'
 
 // Types for database entities
 interface ServiceDoc {
@@ -89,6 +90,7 @@ export default async function Home() {
         <HeroSection />
         <AboutSection />
         <ServicesSection services={services} />
+        <CTABanner />
         <InstagramGallerySection instagramHandle="barber___99" />
         <ReviewsSection reviews={reviews} />
         <ContactSection />

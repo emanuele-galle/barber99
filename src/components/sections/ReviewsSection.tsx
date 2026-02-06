@@ -80,7 +80,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-12">
             <p
-              className="text-[#F4662F] text-sm tracking-[0.3em] uppercase mb-4"
+              className="text-[#d4a855] text-sm tracking-[0.3em] uppercase mb-4"
               style={{ fontFamily: 'var(--font-cormorant), serif' }}
             >
               Cosa Dicono di Noi
@@ -99,7 +99,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
               href="https://www.google.com/maps/search/?api=1&query=Barber+99+Via+San+Biagio+3+Serra+San+Bruno+VV"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#F4662F] underline underline-offset-4"
+              className="text-[#d4a855] underline underline-offset-4"
             >
               Lascia la prima recensione su Google →
             </a>
@@ -123,7 +123,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
           {/* Section Header */}
           <div className="text-center mb-12">
             <p
-              className="text-[#F4662F] text-sm tracking-[0.3em] uppercase mb-4"
+              className="text-[#d4a855] text-sm tracking-[0.3em] uppercase mb-4"
               style={{ fontFamily: 'var(--font-cormorant), serif' }}
             >
               Cosa Dicono di Noi
@@ -142,7 +142,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
                 {[1, 2, 3, 4, 5].map((star) => (
                   <Star
                     key={star}
-                    className={`w-5 h-5 ${star <= Math.round(parseFloat(avgRating)) ? 'text-[#F4662F] fill-[#F4662F]' : 'text-white/20'}`}
+                    className={`w-5 h-5 ${star <= Math.round(parseFloat(avgRating)) ? 'text-[#d4a855] fill-[#d4a855]' : 'text-white/20'}`}
                   />
                 ))}
               </div>
@@ -159,11 +159,11 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
                 key={index}
                 className="card-dark p-5 flex-shrink-0 w-[280px] snap-center relative"
               >
-                <Quote className="absolute top-4 right-4 w-6 h-6 text-[#F4662F]/20" />
+                <Quote className="absolute top-4 right-4 w-6 h-6 text-[#d4a855]/20" />
 
                 <div className="flex mb-3">
                   {[...Array(review.rating)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 text-[#F4662F] fill-[#F4662F]" />
+                    <Star key={i} className="w-4 h-4 text-[#d4a855] fill-[#d4a855]" />
                   ))}
                 </div>
 
@@ -176,7 +176,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
                     <p className="text-white font-medium text-sm">{review.author}</p>
                     <p className="text-white/40 text-xs">{review.date}</p>
                   </div>
-                  <span className="text-xs px-2 py-1 rounded-full bg-[#F4662F]/10 text-[#F4662F]">
+                  <span className="text-xs px-2 py-1 rounded-full bg-[#d4a855]/10 text-[#d4a855]">
                     {review.source}
                   </span>
                 </div>
@@ -191,11 +191,11 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
                 key={index}
                 className="card-dark p-6 relative"
               >
-                <Quote className="absolute top-6 right-6 w-8 h-8 text-[#F4662F]/20" />
+                <Quote className="absolute top-6 right-6 w-8 h-8 text-[#d4a855]/20" />
 
                 <div className="flex mb-4">
                   {[...Array(review.rating)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 text-[#F4662F] fill-[#F4662F]" />
+                    <Star key={i} className="w-4 h-4 text-[#d4a855] fill-[#d4a855]" />
                   ))}
                 </div>
 
@@ -208,7 +208,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
                     <p className="text-white font-medium">{review.author}</p>
                     <p className="text-white/40 text-sm">{review.date}</p>
                   </div>
-                  <span className="text-xs px-3 py-1 rounded-full bg-[#F4662F]/10 text-[#F4662F]">
+                  <span className="text-xs px-3 py-1 rounded-full bg-[#d4a855]/10 text-[#d4a855]">
                     {review.source}
                   </span>
                 </div>
@@ -222,7 +222,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
               href="https://www.google.com/maps/search/?api=1&query=Barber+99+Via+San+Biagio+3+Serra+San+Bruno+VV"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#F4662F] underline underline-offset-4"
+              className="text-[#d4a855] underline underline-offset-4"
             >
               Lascia una recensione su Google →
             </a>
@@ -266,7 +266,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
           className="text-center mb-16"
         >
           <p
-            className="text-[#F4662F] text-sm tracking-[0.3em] uppercase mb-4"
+            className="text-[#d4a855] text-sm tracking-[0.3em] uppercase mb-4"
             style={{ fontFamily: 'var(--font-cormorant), serif' }}
           >
             Cosa Dicono di Noi
@@ -285,7 +285,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star
                   key={star}
-                  className={`w-6 h-6 ${star <= Math.round(parseFloat(avgRating)) ? 'text-[#F4662F] fill-[#F4662F]' : 'text-white/20'}`}
+                  className={`w-6 h-6 ${star <= Math.round(parseFloat(avgRating)) ? 'text-[#d4a855] fill-[#d4a855]' : 'text-white/20'}`}
                 />
               ))}
             </div>
@@ -313,13 +313,13 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
                 transition={{ duration: 0.4, ease: 'easeInOut' }}
                 className="card-dark p-6 relative"
               >
-                <Quote className="absolute top-6 right-6 w-8 h-8 text-[#F4662F]/20" />
+                <Quote className="absolute top-6 right-6 w-8 h-8 text-[#d4a855]/20" />
 
                 <div className="flex mb-4">
                   {[...Array(displayReviews[currentIndex].rating)].map((_, i) => (
                     <Star
                       key={i}
-                      className="w-4 h-4 text-[#F4662F] fill-[#F4662F]"
+                      className="w-4 h-4 text-[#d4a855] fill-[#d4a855]"
                     />
                   ))}
                 </div>
@@ -333,7 +333,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
                     <p className="text-white font-medium">{displayReviews[currentIndex].author}</p>
                     <p className="text-white/40 text-sm">{displayReviews[currentIndex].date}</p>
                   </div>
-                  <span className="text-xs px-3 py-1 rounded-full bg-[#F4662F]/10 text-[#F4662F]">
+                  <span className="text-xs px-3 py-1 rounded-full bg-[#d4a855]/10 text-[#d4a855]">
                     {displayReviews[currentIndex].source}
                   </span>
                 </div>
@@ -357,7 +357,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
                   key={index}
                   onClick={() => goToIndex(index)}
                   className={`w-2 h-2 rounded-full ${
-                    index === currentIndex ? 'bg-[#F4662F] w-4' : 'bg-white/20'
+                    index === currentIndex ? 'bg-[#d4a855] w-4' : 'bg-white/20'
                   }`}
                   aria-label={`Vai alla recensione ${index + 1}`}
                 />
@@ -389,16 +389,16 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.1 * index }}
                 className={`card-dark card-hover-lift p-6 relative ${
-                  index === currentIndex ? 'ring-2 ring-[#F4662F]/30' : ''
+                  index === currentIndex ? 'ring-2 ring-[#d4a855]/30' : ''
                 }`}
               >
-                <Quote className="absolute top-6 right-6 w-8 h-8 text-[#F4662F]/20" />
+                <Quote className="absolute top-6 right-6 w-8 h-8 text-[#d4a855]/20" />
 
                 <div className="flex mb-4">
                   {[...Array(review.rating)].map((_, i) => (
                     <Star
                       key={i}
-                      className="w-4 h-4 text-[#F4662F] fill-[#F4662F]"
+                      className="w-4 h-4 text-[#d4a855] fill-[#d4a855]"
                     />
                   ))}
                 </div>
@@ -412,7 +412,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
                     <p className="text-white font-medium">{review.author}</p>
                     <p className="text-white/40 text-sm">{review.date}</p>
                   </div>
-                  <span className="text-xs px-3 py-1 rounded-full bg-[#F4662F]/10 text-[#F4662F]">
+                  <span className="text-xs px-3 py-1 rounded-full bg-[#d4a855]/10 text-[#d4a855]">
                     {review.source}
                   </span>
                 </div>
@@ -428,7 +428,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
                 onClick={() => goToIndex(index)}
                 className={`w-2 h-2 rounded-full transition-all ${
                   index === currentIndex
-                    ? 'bg-[#F4662F] w-6'
+                    ? 'bg-[#d4a855] w-6'
                     : 'bg-white/20 hover:bg-white/40'
                 }`}
                 aria-label={`Vai alla recensione ${index + 1}`}
@@ -449,7 +449,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
             href="https://www.google.com/maps/search/?api=1&query=Barber+99+Via+San+Biagio+3+Serra+San+Bruno+VV"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#F4662F] hover:text-[#FF8555] transition-colors underline underline-offset-4"
+            className="text-[#d4a855] hover:text-[#e8c882] transition-colors underline underline-offset-4"
           >
             Lascia una recensione su Google →
           </a>

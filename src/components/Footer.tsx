@@ -48,7 +48,7 @@ function AccordionSection({ title, children, defaultOpen = false }: AccordionSec
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
         >
-          <ChevronDown className="w-5 h-5 text-[#F4662F]" />
+          <ChevronDown className="w-5 h-5 text-[#d4a855]" />
         </motion.div>
       </button>
       <AnimatePresence initial={false}>
@@ -96,17 +96,17 @@ export default function Footer() {
                 href="https://www.instagram.com/barber___99/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#F4662F]/20 transition-colors"
+                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#d4a855]/20 transition-colors"
                 aria-label="Seguici su Instagram"
               >
-                <Instagram className="w-4 h-4 text-[#F4662F]" />
+                <Instagram className="w-4 h-4 text-[#d4a855]" />
               </a>
               <a
                 href="tel:+393271263091"
-                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#F4662F]/20 transition-colors"
+                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#d4a855]/20 transition-colors"
                 aria-label="Chiamaci"
               >
-                <Phone className="w-4 h-4 text-[#F4662F]" />
+                <Phone className="w-4 h-4 text-[#d4a855]" />
               </a>
             </div>
           </div>
@@ -124,7 +124,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-white/60 hover:text-[#F4662F] transition-colors text-sm"
+                    className="text-white/60 hover:text-[#d4a855] transition-colors text-sm"
                   >
                     {link.label}
                   </Link>
@@ -146,7 +146,7 @@ export default function Footer() {
                 <li key={service.label}>
                   <Link
                     href={service.href}
-                    className="text-white/60 hover:text-[#F4662F] transition-colors text-sm"
+                    className="text-white/60 hover:text-[#d4a855] transition-colors text-sm"
                   >
                     {service.label}
                   </Link>
@@ -176,7 +176,7 @@ export default function Footer() {
                 <br />
                 <a
                   href="tel:+393271263091"
-                  className="hover:text-[#F4662F] transition-colors"
+                  className="hover:text-[#d4a855] transition-colors"
                 >
                   +39 327 126 3091
                 </a>
@@ -213,17 +213,17 @@ export default function Footer() {
                 href="https://www.instagram.com/barber___99/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#F4662F]/20 transition-colors"
+                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#d4a855]/20 transition-colors"
                 aria-label="Seguici su Instagram"
               >
-                <Instagram className="w-4 h-4 text-[#F4662F]" />
+                <Instagram className="w-4 h-4 text-[#d4a855]" />
               </a>
               <a
                 href="tel:+393271263091"
-                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#F4662F]/20 transition-colors"
+                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#d4a855]/20 transition-colors"
                 aria-label="Chiamaci"
               >
-                <Phone className="w-4 h-4 text-[#F4662F]" />
+                <Phone className="w-4 h-4 text-[#d4a855]" />
               </a>
             </div>
           </div>
@@ -235,7 +235,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-white/60 hover:text-[#F4662F] transition-colors text-sm block py-1"
+                    className="text-white/60 hover:text-[#d4a855] transition-colors text-sm block py-1"
                   >
                     {link.label}
                   </Link>
@@ -250,7 +250,7 @@ export default function Footer() {
                 <li key={service.label}>
                   <Link
                     href={service.href}
-                    className="text-white/60 hover:text-[#F4662F] transition-colors text-sm block py-1"
+                    className="text-white/60 hover:text-[#d4a855] transition-colors text-sm block py-1"
                   >
                     {service.label}
                   </Link>
@@ -270,7 +270,7 @@ export default function Footer() {
                 <span className="text-white">Telefono:</span>{' '}
                 <a
                   href="tel:+393271263091"
-                  className="hover:text-[#F4662F] transition-colors"
+                  className="hover:text-[#d4a855] transition-colors"
                 >
                   +39 327 126 3091
                 </a>
@@ -295,7 +295,7 @@ export default function Footer() {
                 href="https://www.fodisrl.it"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#F4662F]/60 hover:text-[#F4662F] transition-colors"
+                className="text-[#d4a855]/60 hover:text-[#d4a855] transition-colors"
               >
                 Fodi S.r.l.
               </a>

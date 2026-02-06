@@ -118,7 +118,7 @@ export default function PrivacyPage() {
               </h2>
               <p className="text-white/70">
                 Per informazioni sui cookie utilizzati, consulta la nostra{' '}
-                <Link href="/cookie" className="text-[#F4662F] hover:underline">
+                <Link href="/cookie" className="text-[#d4a855] hover:underline">
                   Cookie Policy
                 </Link>.
               </p>
@@ -133,9 +133,9 @@ export default function PrivacyPage() {
                 <strong className="text-white">FODI S.r.l. – Startup Innovativa</strong><br />
                 Via Santicelli 18/A, 88068 Soverato (CZ)<br />
                 P.IVA: 03856160793<br />
-                Email: <a href="mailto:info@fodisrl.it" className="text-[#F4662F] hover:underline">info@fodisrl.it</a><br />
+                Email: <a href="mailto:info@fodisrl.it" className="text-[#d4a855] hover:underline">info@fodisrl.it</a><br />
                 Tel: +39 0963 576433<br />
-                Web: <a href="https://www.fodisrl.it" target="_blank" rel="noopener noreferrer" className="text-[#F4662F] hover:underline">www.fodisrl.it</a>
+                Web: <a href="https://www.fodisrl.it" target="_blank" rel="noopener noreferrer" className="text-[#d4a855] hover:underline">www.fodisrl.it</a>
               </p>
             </section>
 
@@ -153,7 +153,7 @@ export default function PrivacyPage() {
           <div className="mt-12">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-[#F4662F] hover:text-[#FF8555] transition-colors"
+              className="inline-flex items-center gap-2 text-[#d4a855] hover:text-[#e8c882] transition-colors"
             >
               &larr; Torna alla Home
             </Link>

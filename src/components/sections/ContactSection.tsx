@@ -28,14 +28,6 @@ const contactInfo = [
   },
 ]
 
-const subjectOptions = [
-  { value: 'info', label: 'Informazioni Generali' },
-  { value: 'booking', label: 'Prenotazione' },
-  { value: 'collaboration', label: 'Collaborazione' },
-  { value: 'complaint', label: 'Reclamo' },
-  { value: 'other', label: 'Altro' },
-]
-
 export default function ContactSection() {
   const [formData, setFormData] = useState({
     name: '',
@@ -98,7 +90,7 @@ export default function ContactSection() {
           className="text-center mb-16"
         >
           <p
-            className="text-[#F4662F] text-sm tracking-[0.3em] uppercase mb-4"
+            className="text-[#d4a855] text-sm tracking-[0.3em] uppercase mb-4"
             style={{ fontFamily: 'var(--font-cormorant), serif' }}
           >
             Vieni a Trovarci
@@ -137,8 +129,8 @@ export default function ContactSection() {
                   transition={{ duration: 0.4, delay: 0.1 * index }}
                   className="flex items-start gap-4"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-[#F4662F]/10 flex items-center justify-center flex-shrink-0">
-                    <item.icon className="w-5 h-5 text-[#F4662F]" />
+                  <div className="w-12 h-12 rounded-xl bg-[#d4a855]/10 flex items-center justify-center flex-shrink-0">
+                    <item.icon className="w-5 h-5 text-[#d4a855]" />
                   </div>
                   <div>
                     <p className="text-white/50 text-sm">{item.label}</p>
@@ -147,7 +139,7 @@ export default function ContactSection() {
                         href={item.href}
                         target={item.href.startsWith('http') ? '_blank' : undefined}
                         rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                        className="text-white hover:text-[#F4662F] transition-colors"
+                        className="text-white hover:text-[#d4a855] transition-colors"
                       >
                         {item.value}
                       </a>
@@ -170,9 +162,9 @@ export default function ContactSection() {
                   href="https://www.instagram.com/barber___99/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-12 h-12 rounded-xl bg-[#F4662F]/10 flex items-center justify-center hover:bg-[#F4662F]/20 transition-colors"
+                  className="w-12 h-12 rounded-xl bg-[#d4a855]/10 flex items-center justify-center hover:bg-[#d4a855]/20 transition-colors"
                 >
-                  <Instagram className="w-5 h-5 text-[#F4662F]" />
+                  <Instagram className="w-5 h-5 text-[#d4a855]" />
                 </a>
               </div>
             </div>
@@ -219,7 +211,7 @@ export default function ContactSection() {
                   </p>
                   <button
                     onClick={() => setSuccess(false)}
-                    className="text-[#F4662F] hover:underline"
+                    className="text-[#d4a855] hover:underline"
                   >
                     Invia un altro messaggio
                   </button>
@@ -240,7 +232,7 @@ export default function ContactSection() {
                         onChange={handleChange}
                         required
                         placeholder="Il tuo nome"
-                        className="w-full px-4 py-3 rounded-xl bg-[#111] border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-[#F4662F]/50 transition-colors"
+                        className="w-full px-4 py-3 rounded-xl bg-[#111] border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-[#d4a855]/50 transition-colors"
                       />
                     </div>
                     <div>
@@ -255,45 +247,25 @@ export default function ContactSection() {
                         onChange={handleChange}
                         required
                         placeholder="la@tua.email"
-                        className="w-full px-4 py-3 rounded-xl bg-[#111] border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-[#F4662F]/50 transition-colors"
+                        className="w-full px-4 py-3 rounded-xl bg-[#111] border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-[#d4a855]/50 transition-colors"
                       />
                     </div>
                   </div>
 
-                  {/* Phone & Subject */}
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="phone" className="block text-sm text-white/70 mb-2">
-                        Telefono
-                      </label>
-                      <input
-                        id="phone"
-                        name="phone"
-                        type="tel"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        placeholder="+39 ..."
-                        className="w-full px-4 py-3 rounded-xl bg-[#111] border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-[#F4662F]/50 transition-colors"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="subject" className="block text-sm text-white/70 mb-2">
-                        Oggetto
-                      </label>
-                      <select
-                        id="subject"
-                        name="subject"
-                        value={formData.subject}
-                        onChange={handleChange}
-                        className="w-full px-4 py-3 rounded-xl bg-[#111] border border-white/10 text-white focus:outline-none focus:border-[#F4662F]/50 transition-colors"
-                      >
-                        {subjectOptions.map((opt) => (
-                          <option key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                  {/* Phone */}
+                  <div>
+                    <label htmlFor="phone" className="block text-sm text-white/70 mb-2">
+                      Telefono
+                    </label>
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="+39 ..."
+                      className="w-full px-4 py-3 rounded-xl bg-[#111] border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-[#d4a855]/50 transition-colors"
+                    />
                   </div>
 
                   {/* Message */}
@@ -309,7 +281,7 @@ export default function ContactSection() {
                       required
                       rows={4}
                       placeholder="Scrivi il tuo messaggio..."
-                      className="w-full px-4 py-3 rounded-xl bg-[#111] border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-[#F4662F]/50 transition-colors resize-none"
+                      className="w-full px-4 py-3 rounded-xl bg-[#111] border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-[#d4a855]/50 transition-colors resize-none"
                     />
                   </div>
 
@@ -362,7 +334,7 @@ export default function ContactSection() {
             referrerPolicy="no-referrer-when-downgrade"
             className="grayscale"
           />
-          <div className="absolute inset-0 pointer-events-none border border-[#F4662F]/20 rounded-xl" />
+          <div className="absolute inset-0 pointer-events-none border border-[#d4a855]/20 rounded-xl" />
         </motion.div>
       </div>
     </section>

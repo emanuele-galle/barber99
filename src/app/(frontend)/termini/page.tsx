@@ -99,7 +99,7 @@ export default function TerminiPage() {
               </h2>
               <p className="text-white/70">
                 Per qualsiasi domanda relativa ai presenti termini, puoi contattarci al numero{" "}
-                <a href="tel:+393271263091" className="text-[#F4662F] hover:underline">
+                <a href="tel:+393271263091" className="text-[#d4a855] hover:underline">
                   +39 327 126 3091
                 </a>.
               </p>
@@ -114,9 +114,9 @@ export default function TerminiPage() {
                 <strong className="text-white">FODI S.r.l. – Startup Innovativa</strong><br />
                 Via Santicelli 18/A, 88068 Soverato (CZ)<br />
                 P.IVA: 03856160793<br />
-                Email: <a href="mailto:info@fodisrl.it" className="text-[#F4662F] hover:underline">info@fodisrl.it</a><br />
+                Email: <a href="mailto:info@fodisrl.it" className="text-[#d4a855] hover:underline">info@fodisrl.it</a><br />
                 Tel: +39 0963 576433<br />
-                Web: <a href="https://www.fodisrl.it" target="_blank" rel="noopener noreferrer" className="text-[#F4662F] hover:underline">www.fodisrl.it</a>
+                Web: <a href="https://www.fodisrl.it" target="_blank" rel="noopener noreferrer" className="text-[#d4a855] hover:underline">www.fodisrl.it</a>
               </p>
             </section>
           </div>
@@ -124,7 +124,7 @@ export default function TerminiPage() {
           <div className="mt-12">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-[#F4662F] hover:text-[#FF8555] transition-colors"
+              className="inline-flex items-center gap-2 text-[#d4a855] hover:text-[#e8c882] transition-colors"
             >
               &larr; Torna alla Home
             </Link>

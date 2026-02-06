@@ -32,7 +32,7 @@ export default async function Image() {
             left: 0,
             right: 0,
             height: '4px',
-            background: 'linear-gradient(90deg, transparent, #F4662F, transparent)',
+            background: 'linear-gradient(90deg, transparent, #d4a855, transparent)',
           }}
         />
 
@@ -63,7 +63,7 @@ export default async function Image() {
           <p
             style={{
               fontSize: 36,
-              color: '#F4662F',
+              color: '#d4a855',
               marginBottom: 40,
               letterSpacing: '0.2em',
               textTransform: 'uppercase',
@@ -77,7 +77,7 @@ export default async function Image() {
             style={{
               width: '200px',
               height: '2px',
-              background: 'linear-gradient(90deg, transparent, #F4662F, transparent)',
+              background: 'linear-gradient(90deg, transparent, #d4a855, transparent)',
               marginBottom: 40,
             }}
           />
@@ -101,7 +101,7 @@ export default async function Image() {
             left: 0,
             right: 0,
             height: '4px',
-            background: 'linear-gradient(90deg, transparent, #F4662F, transparent)',
+            background: 'linear-gradient(90deg, transparent, #d4a855, transparent)',
           }}
         />
       </div>

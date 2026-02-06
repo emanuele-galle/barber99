@@ -2,9 +2,9 @@
 
 /* Custom Properties */
 :root {
-  --color-gold: #F4662F;
-  --color-gold-light: #FF8555;
-  --color-gold-dark: #D4521F;
+  --color-gold: #d4a855;
+  --color-gold-light: #e8c882;
+  --color-gold-dark: #b8923f;
   --color-dark: #0c0c0c;
   --color-dark-lighter: #1a1a1a;
   --color-dark-card: #151515;
@@ -16,8 +16,8 @@
 @theme inline {
   --color-background: var(--color-dark);
   --color-foreground: #ffffff;
-  --color-gold: #F4662F;
-  --color-gold-light: #FF8555;
+  --color-gold: #d4a855;
+  --color-gold-light: #e8c882;
 }
 
 /* Base Styles */
@@ -60,7 +60,7 @@ body {
     90deg,
     var(--color-gold) 0%,
     var(--color-gold-light) 25%,
-    #FF9966 50%,
+    #f0d89a 50%,
     var(--color-gold-light) 75%,
     var(--color-gold) 100%
   );
@@ -185,12 +185,12 @@ body {
 
 /* Section Styles */
 .section-padding {
-  padding: 5rem 1.5rem;
+  padding: 3.5rem 1.5rem;
 }
 
 @media (min-width: 768px) {
   .section-padding {
-    padding: 7rem 2rem;
+    padding: 5rem 2rem;
   }
 }
 

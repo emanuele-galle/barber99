@@ -90,11 +90,11 @@ export default function MobileAppHome({ onShowFullSite }: MobileAppHomeProps) {
                 {/* Info */}
                 <div className="flex flex-col gap-2 text-sm text-white/60">
                   <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-[#F4662F]" />
+                    <Clock className="w-4 h-4 text-[#d4a855]" />
                     <span>Lun 10-19 | Mar-Sab 9-19</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-[#F4662F]" />
+                    <MapPin className="w-4 h-4 text-[#d4a855]" />
                     <span>Via San Biagio 3, Serra San Bruno</span>
                   </div>
                 </div>
@@ -119,7 +119,7 @@ export default function MobileAppHome({ onShowFullSite }: MobileAppHomeProps) {
             className="text-2xl font-bold text-white mb-1"
             style={{ fontFamily: 'var(--font-cinzel), serif' }}
           >
-            Prenota <span className="text-[#F4662F]">Appuntamento</span>
+            Prenota <span className="text-[#d4a855]">Appuntamento</span>
           </h1>
           <p className="text-white/50 text-sm">
             Scegli servizio, barbiere e orario

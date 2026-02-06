@@ -103,7 +103,7 @@ export default function CookiePage() {
                         <td className="py-2">Google Maps</td>
                         <td className="py-2">Visualizzazione mappa</td>
                         <td className="py-2">
-                          <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-[#F4662F] hover:underline">
+                          <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-[#d4a855] hover:underline">
                             Link
                           </a>
                         </td>
@@ -134,22 +134,22 @@ export default function CookiePage() {
                 <p className="text-white/70 text-sm mb-3">Link alle istruzioni per i browser piu comuni:</p>
                 <ul className="text-white/70 text-sm space-y-1">
                   <li>
-                    <a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener noreferrer" className="text-[#F4662F] hover:underline">
+                    <a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener noreferrer" className="text-[#d4a855] hover:underline">
                       Google Chrome
                     </a>
                   </li>
                   <li>
-                    <a href="https://support.mozilla.org/it/kb/Attivare%20e%20disattivare%20i%20cookie" target="_blank" rel="noopener noreferrer" className="text-[#F4662F] hover:underline">
+                    <a href="https://support.mozilla.org/it/kb/Attivare%20e%20disattivare%20i%20cookie" target="_blank" rel="noopener noreferrer" className="text-[#d4a855] hover:underline">
                       Mozilla Firefox
                     </a>
                   </li>
                   <li>
-                    <a href="https://support.apple.com/it-it/guide/safari/sfri11471/mac" target="_blank" rel="noopener noreferrer" className="text-[#F4662F] hover:underline">
+                    <a href="https://support.apple.com/it-it/guide/safari/sfri11471/mac" target="_blank" rel="noopener noreferrer" className="text-[#d4a855] hover:underline">
                       Safari
                     </a>
                   </li>
                   <li>
-                    <a href="https://support.microsoft.com/it-it/microsoft-edge/eliminare-i-cookie-in-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" target="_blank" rel="noopener noreferrer" className="text-[#F4662F] hover:underline">
+                    <a href="https://support.microsoft.com/it-it/microsoft-edge/eliminare-i-cookie-in-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" target="_blank" rel="noopener noreferrer" className="text-[#d4a855] hover:underline">
                       Microsoft Edge
                     </a>
                   </li>
@@ -176,9 +176,9 @@ export default function CookiePage() {
                 <strong className="text-white">FODI S.r.l. – Startup Innovativa</strong><br />
                 Via Santicelli 18/A, 88068 Soverato (CZ)<br />
                 P.IVA: 03856160793<br />
-                Email: <a href="mailto:info@fodisrl.it" className="text-[#F4662F] hover:underline">info@fodisrl.it</a><br />
+                Email: <a href="mailto:info@fodisrl.it" className="text-[#d4a855] hover:underline">info@fodisrl.it</a><br />
                 Tel: +39 0963 576433<br />
-                Web: <a href="https://www.fodisrl.it" target="_blank" rel="noopener noreferrer" className="text-[#F4662F] hover:underline">www.fodisrl.it</a>
+                Web: <a href="https://www.fodisrl.it" target="_blank" rel="noopener noreferrer" className="text-[#d4a855] hover:underline">www.fodisrl.it</a>
               </p>
             </section>
 
@@ -198,11 +198,11 @@ export default function CookiePage() {
               </h2>
               <p className="text-white/70">
                 Per qualsiasi domanda relativa all&apos;uso dei cookie, puoi contattarci al numero{' '}
-                <a href="tel:+393271263091" className="text-[#F4662F] hover:underline">
+                <a href="tel:+393271263091" className="text-[#d4a855] hover:underline">
                   +39 327 126 3091
                 </a>{' '}
                 o consultare la nostra{' '}
-                <Link href="/privacy" className="text-[#F4662F] hover:underline">
+                <Link href="/privacy" className="text-[#d4a855] hover:underline">
                   Privacy Policy
                 </Link>.
               </p>
@@ -212,7 +212,7 @@ export default function CookiePage() {
           <div className="mt-12">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-[#F4662F] hover:text-[#FF8555] transition-colors"
+              className="inline-flex items-center gap-2 text-[#d4a855] hover:text-[#e8c882] transition-colors"
             >
               &larr; Torna alla Home
             </Link>
