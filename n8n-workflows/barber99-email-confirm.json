@@ -44,7 +44,7 @@
     },
     {
       "parameters": {
-        "fromEmail": "noreply@barber99.it",
+        "fromEmail": "info@barber99.it",
         "toEmail": "={{ $json.client_email }}",
         "subject": "Conferma Appuntamento - Barber 99",
         "emailType": "html",
@@ -59,13 +59,13 @@
       "credentials": {
         "smtp": {
           "id": "SMTP_CREDENTIAL_ID",
-          "name": "Gmail SMTP"
+          "name": "Hostinger SMTP - Barber99"
         }
       }
     },
     {
       "parameters": {
-        "fromEmail": "noreply@barber99.it",
+        "fromEmail": "info@barber99.it",
         "toEmail": "={{ $json.client_email }}",
         "subject": "Promemoria Appuntamento Domani - Barber 99",
         "emailType": "html",
@@ -80,7 +80,7 @@
       "credentials": {
         "smtp": {
           "id": "SMTP_CREDENTIAL_ID",
-          "name": "Gmail SMTP"
+          "name": "Hostinger SMTP - Barber99"
         }
       }
     }

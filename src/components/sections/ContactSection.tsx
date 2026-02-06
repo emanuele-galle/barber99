@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'motion/react'
 import Link from 'next/link'
-import { MapPin, Phone, Clock, Calendar, Instagram, Send, Loader2, CheckCircle } from 'lucide-react'
+import { MapPin, Phone, Clock, Mail, Calendar, Instagram, Send, Loader2, CheckCircle } from 'lucide-react'
 import { GradientOrb, NoiseTexture } from '@/components/BackgroundEffects'
 
 const contactInfo = [
@@ -19,6 +19,12 @@ const contactInfo = [
     label: 'Telefono',
     value: '+39 327 126 3091',
     href: 'tel:+393271263091',
+  },
+  {
+    icon: Mail,
+    label: 'Email',
+    value: 'info@barber99.it',
+    href: 'mailto:info@barber99.it',
   },
   {
     icon: Clock,

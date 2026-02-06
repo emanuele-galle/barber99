@@ -101,6 +101,9 @@ export default function TerminiPage() {
                 Per qualsiasi domanda relativa ai presenti termini, puoi contattarci al numero{" "}
                 <a href="tel:+393271263091" className="text-[#d4a855] hover:underline">
                   +39 327 126 3091
+                </a>{" "}o via email a{" "}
+                <a href="mailto:info@barber99.it" className="text-[#d4a855] hover:underline">
+                  info@barber99.it
                 </a>.
               </p>
             </section>

@@ -110,7 +110,7 @@
     },
     {
       "parameters": {
-        "fromEmail": "noreply@barber99.it",
+        "fromEmail": "info@barber99.it",
         "toEmail": "={{ $json.clientEmail }}",
         "subject": "Promemoria: Il tuo appuntamento e' domani - Barber 99",
         "emailType": "html",
@@ -125,7 +125,7 @@
       "credentials": {
         "smtp": {
           "id": "SMTP_CREDENTIAL_ID",
-          "name": "Gmail SMTP"
+          "name": "Hostinger SMTP - Barber99"
         }
       }
     },

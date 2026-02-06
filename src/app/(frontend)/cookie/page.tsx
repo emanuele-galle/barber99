@@ -46,6 +46,7 @@ export default function CookiePage() {
                 <p>Via San Biagio 3, 89822 Serra San Bruno (VV)</p>
                 <p>P.IVA: 03936920796</p>
                 <p>Telefono: +39 327 126 3091</p>
+                <p>Email: <a href="mailto:info@barber99.it" className="text-[#d4a855] hover:underline">info@barber99.it</a></p>
               </div>
             </section>
 
@@ -200,6 +201,9 @@ export default function CookiePage() {
                 Per qualsiasi domanda relativa all&apos;uso dei cookie, puoi contattarci al numero{' '}
                 <a href="tel:+393271263091" className="text-[#d4a855] hover:underline">
                   +39 327 126 3091
+                </a>{' '}o via email a{' '}
+                <a href="mailto:info@barber99.it" className="text-[#d4a855] hover:underline">
+                  info@barber99.it
                 </a>{' '}
                 o consultare la nostra{' '}
                 <Link href="/privacy" className="text-[#d4a855] hover:underline">

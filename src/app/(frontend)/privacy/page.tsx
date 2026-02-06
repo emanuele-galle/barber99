@@ -35,6 +35,7 @@ export default function PrivacyPage() {
                 <p>Via San Biagio 3, 89822 Serra San Bruno (VV)</p>
                 <p>P.IVA: 03936920796</p>
                 <p>Telefono: +39 327 126 3091</p>
+                <p>Email: <a href="mailto:info@barber99.it" className="text-[#d4a855] hover:underline">info@barber99.it</a></p>
               </div>
             </section>
 
@@ -108,7 +109,8 @@ export default function PrivacyPage() {
                 <li>Revocare il consenso in qualsiasi momento</li>
               </ul>
               <p className="text-white/70 mt-4">
-                Per esercitare i tuoi diritti, contattaci al numero +39 327 126 3091.
+                Per esercitare i tuoi diritti, contattaci al numero +39 327 126 3091 o via email a{' '}
+                <a href="mailto:info@barber99.it" className="text-[#d4a855] hover:underline">info@barber99.it</a>.
               </p>
             </section>
 
