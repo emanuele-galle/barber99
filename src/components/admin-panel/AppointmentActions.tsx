@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { MoreVertical, CheckCircle, XCircle, Loader2, Bell, UserX, Mail } from 'lucide-react'
+import { MoreVertical, CheckCircle, XCircle, Loader2, Bell, UserX, Mail, Pencil } from 'lucide-react'
+import Link from 'next/link'
 import { useToast } from '@/components/Toast'
 
 interface AppointmentActionsProps {
@@ -70,11 +71,6 @@ export function AppointmentActions({ appointmentId, currentStatus, clientEmail, 
     }
   }
 
-  // No actions for terminal states
-  if (currentStatus === 'completed' || currentStatus === 'cancelled' || currentStatus === 'noshow') {
-    return null
-  }
-
   if (loading || sendingNotification) {
     return (
       <div className="p-2">
@@ -99,46 +95,61 @@ export function AppointmentActions({ appointmentId, currentStatus, clientEmail, 
             onClick={() => setShowMenu(false)}
           />
           <div className="absolute right-0 top-full mt-1 z-20 w-56 bg-[#1a1a1a] border border-[rgba(212,168,85,0.15)] rounded-lg shadow-xl overflow-hidden admin-fade-in">
-            {/* Complete */}
-            {currentStatus === 'confirmed' && (
-              <button
-                onClick={() => updateStatus('completed')}
-                className="w-full px-4 py-3 text-left text-sm text-white hover:bg-[rgba(255,255,255,0.05)] flex items-center gap-2"
-              >
-                <CheckCircle className="w-4 h-4 text-[#d4a855]" />
-                Completa
-              </button>
-            )}
-
-            {/* No-Show */}
-            <button
-              onClick={() => updateStatus('noshow')}
-              className="w-full px-4 py-3 text-left text-sm text-orange-400 hover:bg-[rgba(255,255,255,0.05)] flex items-center gap-2"
-            >
-              <UserX className="w-4 h-4" />
-              No Show
-            </button>
-
-            {/* Cancel */}
-            <button
-              onClick={() => updateStatus('cancelled')}
-              className="w-full px-4 py-3 text-left text-sm text-red-400 hover:bg-[rgba(255,255,255,0.05)] flex items-center gap-2"
-            >
-              <XCircle className="w-4 h-4" />
-              Annulla
-            </button>
-
-            {/* Divider */}
-            <div className="border-t border-[rgba(255,255,255,0.05)] my-1" />
-
-            {/* Notification */}
-            <button
-              onClick={sendNotification}
+            {/* Edit */}
+            <Link
+              href={`/admin-panel/appuntamenti/${appointmentId}/modifica`}
+              onClick={() => setShowMenu(false)}
               className="w-full px-4 py-3 text-left text-sm text-white hover:bg-[rgba(255,255,255,0.05)] flex items-center gap-2"
             >
-              <Bell className="w-4 h-4 text-blue-400" />
-              Invia Notifica
-            </button>
+              <Pencil className="w-4 h-4 text-[#d4a855]" />
+              Modifica
+            </Link>
+
+            {/* Status actions only for non-terminal states */}
+            {currentStatus !== 'completed' && currentStatus !== 'cancelled' && currentStatus !== 'noshow' && (
+              <>
+                {/* Complete */}
+                {currentStatus === 'confirmed' && (
+                  <button
+                    onClick={() => updateStatus('completed')}
+                    className="w-full px-4 py-3 text-left text-sm text-white hover:bg-[rgba(255,255,255,0.05)] flex items-center gap-2"
+                  >
+                    <CheckCircle className="w-4 h-4 text-[#d4a855]" />
+                    Completa
+                  </button>
+                )}
+
+                {/* No-Show */}
+                <button
+                  onClick={() => updateStatus('noshow')}
+                  className="w-full px-4 py-3 text-left text-sm text-orange-400 hover:bg-[rgba(255,255,255,0.05)] flex items-center gap-2"
+                >
+                  <UserX className="w-4 h-4" />
+                  No Show
+                </button>
+
+                {/* Cancel */}
+                <button
+                  onClick={() => updateStatus('cancelled')}
+                  className="w-full px-4 py-3 text-left text-sm text-red-400 hover:bg-[rgba(255,255,255,0.05)] flex items-center gap-2"
+                >
+                  <XCircle className="w-4 h-4" />
+                  Annulla
+                </button>
+
+                {/* Divider */}
+                <div className="border-t border-[rgba(255,255,255,0.05)] my-1" />
+
+                {/* Notification */}
+                <button
+                  onClick={sendNotification}
+                  className="w-full px-4 py-3 text-left text-sm text-white hover:bg-[rgba(255,255,255,0.05)] flex items-center gap-2"
+                >
+                  <Bell className="w-4 h-4 text-blue-400" />
+                  Invia Notifica
+                </button>
+              </>
+            )}
 
             {/* WhatsApp */}
             {clientPhone && (

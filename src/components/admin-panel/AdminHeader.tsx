@@ -1,16 +1,16 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   Menu, X, Bell, ExternalLink, Scissors, Clock, MessageSquare,
-  LayoutDashboard, Calendar, UserPlus, User, BarChart2, Star, Settings, LogOut,
+  LayoutDashboard, Calendar, UserPlus, User, BarChart2, Star, Settings, LogOut, Plus,
 } from 'lucide-react'
 
 interface Notification {
   id: string
-  type: 'imminent' | 'contact'
+  type: 'imminent' | 'contact' | 'new_booking'
   title: string
   message: string
   time: string
@@ -39,79 +39,163 @@ export function AdminHeader({ user }: AdminHeaderProps) {
   const [notificationsOpen, setNotificationsOpen] = useState(false)
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [loading, setLoading] = useState(true)
+  const [sseConnected, setSseConnected] = useState(false)
   const notificationRef = useRef<HTMLDivElement>(null)
+  const eventSourceRef = useRef<EventSource | null>(null)
   const pathname = usePathname()
 
-  // Fetch notifications
+  // Play notification sound
+  const playNotificationSound = useCallback(() => {
+    try {
+      const audio = new Audio('/sounds/notification.wav')
+      audio.volume = 0.5
+      audio.play().catch(() => {})
+    } catch {}
+  }, [])
+
+  // Show browser notification
+  const showBrowserNotification = useCallback((title: string, body: string) => {
+    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+      new Notification(title, { body, icon: '/favicon.ico' })
+    }
+  }, [])
+
+  // Request notification permission on mount
   useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const [appointmentsRes, contactsRes] = await Promise.all([
-          fetch('/api/appointments'),
-          fetch('/api/contact')
-        ])
+    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission()
+    }
+  }, [])
 
-        const notifs: Notification[] = []
-        const now = new Date()
-        const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000)
-        const today = new Date()
-        today.setHours(0, 0, 0, 0)
-        const todayStr = today.toISOString().split('T')[0]
+  // Fetch notifications (initial + fallback polling)
+  const fetchNotifications = useCallback(async () => {
+    try {
+      const [appointmentsRes, contactsRes] = await Promise.all([
+        fetch('/api/appointments'),
+        fetch('/api/contact')
+      ])
 
-        if (appointmentsRes.ok) {
-          const appointments = await appointmentsRes.json()
+      const notifs: Notification[] = []
+      const now = new Date()
+      const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      const todayStr = today.toISOString().split('T')[0]
 
-          // Imminent appointments (within 1 hour)
-          const imminent = appointments.filter((apt: { status: string; date: string; time: string }) => {
-            if (apt.status !== 'confirmed') return false
-            const aptDateStr = new Date(apt.date).toISOString().split('T')[0]
-            if (aptDateStr !== todayStr) return false
+      if (appointmentsRes.ok) {
+        const appointments = await appointmentsRes.json()
+        const imminent = appointments.filter((apt: { status: string; date: string; time: string }) => {
+          if (apt.status !== 'confirmed') return false
+          const aptDateStr = new Date(apt.date).toISOString().split('T')[0]
+          if (aptDateStr !== todayStr) return false
+          const [hours, minutes] = apt.time.split(':').map(Number)
+          const aptTime = new Date(today)
+          aptTime.setHours(hours, minutes, 0, 0)
+          return aptTime >= now && aptTime <= oneHourFromNow
+        })
 
-            const [hours, minutes] = apt.time.split(':').map(Number)
-            const aptTime = new Date(today)
-            aptTime.setHours(hours, minutes, 0, 0)
-            return aptTime >= now && aptTime <= oneHourFromNow
+        imminent.forEach((apt: { id: string; clientName: string; time: string; service?: { name: string } }) => {
+          notifs.push({
+            id: `imminent-${apt.id}`,
+            type: 'imminent',
+            title: `${apt.clientName} alle ${apt.time}`,
+            message: apt.service?.name || 'Appuntamento',
+            time: 'Prossima ora',
+            link: '/admin-panel/appuntamenti'
           })
+        })
+      }
 
-          imminent.forEach((apt: { id: string; clientName: string; time: string; service?: { name: string } }) => {
-            notifs.push({
-              id: `imminent-${apt.id}`,
-              type: 'imminent',
-              title: `${apt.clientName} alle ${apt.time}`,
-              message: apt.service?.name || 'Appuntamento',
-              time: 'Prossima ora',
-              link: '/admin-panel/appuntamenti'
-            })
+      if (contactsRes.ok) {
+        const contacts = await contactsRes.json()
+        const unread = contacts.filter((c: { status: string }) => c.status === 'new' || c.status === 'unread')
+        if (unread.length > 0) {
+          notifs.push({
+            id: 'contacts-count',
+            type: 'contact',
+            title: `${unread.length} messagg${unread.length > 1 ? 'i' : 'io'} non lett${unread.length > 1 ? 'i' : 'o'}`,
+            message: 'Da leggere',
+            time: 'Adesso',
+            link: '/admin-panel/contatti'
           })
         }
+      }
 
-        if (contactsRes.ok) {
-          const contacts = await contactsRes.json()
-          const unread = contacts.filter((c: { status: string }) => c.status === 'new' || c.status === 'unread')
-          if (unread.length > 0) {
-            notifs.push({
-              id: 'contacts-count',
-              type: 'contact',
-              title: `${unread.length} messagg${unread.length > 1 ? 'i' : 'io'} non lett${unread.length > 1 ? 'i' : 'o'}`,
-              message: 'Da leggere',
-              time: 'Adesso',
-              link: '/admin-panel/contatti'
-            })
+      setNotifications((prev) => {
+        // Keep real-time booking notifications, replace the rest
+        const realtimeNotifs = prev.filter((n) => n.type === 'new_booking')
+        return [...realtimeNotifs, ...notifs]
+      })
+    } catch (error) {
+      console.error('Error fetching notifications:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  // Initial fetch
+  useEffect(() => {
+    fetchNotifications()
+  }, [fetchNotifications])
+
+  // SSE connection for real-time notifications
+  useEffect(() => {
+    let reconnectTimeout: ReturnType<typeof setTimeout>
+
+    const connect = () => {
+      const eventSource = new EventSource('/api/notifications/stream')
+      eventSourceRef.current = eventSource
+
+      eventSource.onopen = () => {
+        setSseConnected(true)
+      }
+
+      eventSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data)
+
+          if (data.type === 'new_booking') {
+            const notif: Notification = {
+              id: `booking-${data.appointmentId}-${Date.now()}`,
+              type: 'new_booking',
+              title: `Nuova prenotazione: ${data.clientName}`,
+              message: `${data.serviceName} - ${data.time}`,
+              time: 'Ora',
+              link: '/admin-panel/appuntamenti',
+            }
+
+            setNotifications((prev) => [notif, ...prev])
+
+            // Sound + Browser notification
+            playNotificationSound()
+            showBrowserNotification(
+              'Nuova prenotazione!',
+              `${data.clientName} - ${data.serviceName} alle ${data.time}`
+            )
           }
-        }
+        } catch {}
+      }
 
-        setNotifications(notifs)
-      } catch (error) {
-        console.error('Error fetching notifications:', error)
-      } finally {
-        setLoading(false)
+      eventSource.onerror = () => {
+        setSseConnected(false)
+        eventSource.close()
+        eventSourceRef.current = null
+        // Reconnect after 5s
+        reconnectTimeout = setTimeout(connect, 5000)
       }
     }
 
-    fetchNotifications()
-    const interval = setInterval(fetchNotifications, 30000)
-    return () => clearInterval(interval)
-  }, [])
+    connect()
+
+    // Fallback polling every 60s (in case SSE disconnects)
+    const pollInterval = setInterval(fetchNotifications, 60000)
+
+    return () => {
+      eventSourceRef.current?.close()
+      clearTimeout(reconnectTimeout)
+      clearInterval(pollInterval)
+    }
+  }, [fetchNotifications, playNotificationSound, showBrowserNotification])
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -126,6 +210,7 @@ export function AdminHeader({ user }: AdminHeaderProps) {
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
+      case 'new_booking': return <Plus className="w-4 h-4 text-green-400" />
       case 'imminent': return <Clock className="w-4 h-4 text-[#d4a855]" />
       case 'contact': return <MessageSquare className="w-4 h-4 text-blue-400" />
       default: return <Bell className="w-4 h-4" />
@@ -177,11 +262,14 @@ export function AdminHeader({ user }: AdminHeaderProps) {
               <div className="absolute right-0 top-full mt-2 w-80 bg-[#1a1a1a] border border-[rgba(255,255,255,0.1)] rounded-xl shadow-2xl overflow-hidden z-[9999] admin-fade-in">
                 <div className="px-4 py-3 border-b border-[rgba(255,255,255,0.1)] flex items-center justify-between">
                   <h3 className="font-semibold text-white">Notifiche</h3>
-                  {notifications.length > 0 && (
-                    <span className="text-xs text-[rgba(255,255,255,0.5)]">
-                      {notifications.length} nuove
-                    </span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {notifications.length > 0 && (
+                      <span className="text-xs text-[rgba(255,255,255,0.5)]">
+                        {notifications.length} nuove
+                      </span>
+                    )}
+                    <span className={`w-2 h-2 rounded-full ${sseConnected ? 'bg-green-500' : 'bg-red-500'}`} title={sseConnected ? 'Live' : 'Disconnesso'} />
+                  </div>
                 </div>
 
                 <div className="max-h-80 overflow-y-auto">
@@ -203,9 +291,13 @@ export function AdminHeader({ user }: AdminHeaderProps) {
                           key={notif.id}
                           href={notif.link}
                           onClick={() => setNotificationsOpen(false)}
-                          className="flex items-start gap-3 px-4 py-3 hover:bg-[rgba(255,255,255,0.05)] transition-colors border-b border-[rgba(255,255,255,0.05)] last:border-0"
+                          className={`flex items-start gap-3 px-4 py-3 hover:bg-[rgba(255,255,255,0.05)] transition-colors border-b border-[rgba(255,255,255,0.05)] last:border-0 ${
+                            notif.type === 'new_booking' ? 'bg-green-500/5' : ''
+                          }`}
                         >
-                          <div className="w-8 h-8 rounded-full bg-[rgba(255,255,255,0.05)] flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                            notif.type === 'new_booking' ? 'bg-green-500/20' : 'bg-[rgba(255,255,255,0.05)]'
+                          }`}>
                             {getNotificationIcon(notif.type)}
                           </div>
                           <div className="flex-1 min-w-0">

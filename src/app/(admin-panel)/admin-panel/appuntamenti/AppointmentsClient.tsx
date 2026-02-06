@@ -2,7 +2,8 @@
 
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Calendar, Clock, User, Phone, Mail, CheckCircle, XCircle, AlertCircle, Search, Filter, X, Bell, FileText, ChevronLeft, ChevronRight, List, CalendarDays, UserX } from 'lucide-react'
+import Link from 'next/link'
+import { Calendar, Clock, User, Phone, Mail, CheckCircle, XCircle, AlertCircle, Search, Filter, X, Bell, FileText, ChevronLeft, ChevronRight, List, CalendarDays, UserX, Plus } from 'lucide-react'
 import { AppointmentActions } from '@/components/admin-panel/AppointmentActions'
 import { useToast } from '@/components/Toast'
 
@@ -39,12 +40,14 @@ export function AppointmentsClient({ initialAppointments }: AppointmentsClientPr
 
   // View mode
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list')
+  const [currentDay, setCurrentDay] = useState(() => new Date()) // For mobile day view
   const [currentWeekStart, setCurrentWeekStart] = useState(() => {
     const today = new Date()
     const day = today.getDay()
     const diff = today.getDate() - day + (day === 0 ? -6 : 1)
     return new Date(today.setDate(diff))
   })
+  const [jumpToDate, setJumpToDate] = useState('') // date picker value
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('')
@@ -154,6 +157,42 @@ export function AppointmentsClient({ initialAppointments }: AppointmentsClientPr
     })
   }
 
+  const navigateDay = (direction: 'prev' | 'next') => {
+    setCurrentDay(prev => {
+      const newDate = new Date(prev)
+      newDate.setDate(newDate.getDate() + (direction === 'next' ? 1 : -1))
+      return newDate
+    })
+  }
+
+  const handleJumpToDate = (dateStr: string) => {
+    setJumpToDate(dateStr)
+    if (dateStr) {
+      const date = new Date(dateStr + 'T00:00:00')
+      setCurrentDay(date)
+      // Also update week start for desktop calendar
+      const day = date.getDay()
+      const diff = date.getDate() - day + (day === 0 ? -6 : 1)
+      const weekStart = new Date(date)
+      weekStart.setDate(diff)
+      setCurrentWeekStart(weekStart)
+      // Set date filter to jump in list view
+      setDateFilter(dateStr)
+    }
+  }
+
+  const goToToday = () => {
+    const today = new Date()
+    setCurrentDay(today)
+    const day = today.getDay()
+    const diff = today.getDate() - day + (day === 0 ? -6 : 1)
+    const weekStart = new Date(today)
+    weekStart.setDate(diff)
+    setCurrentWeekStart(weekStart)
+    setDateFilter(today.toISOString().split('T')[0])
+    setJumpToDate('')
+  }
+
   const getAppointmentsForDay = (date: Date) => {
     const dateStr = date.toISOString().split('T')[0]
     return filteredAppointments.filter(apt =>
@@ -182,9 +221,9 @@ export function AppointmentsClient({ initialAppointments }: AppointmentsClientPr
     }
   }
 
-  // Filter appointments
+  // Filter and sort appointments chronologically
   const filteredAppointments = useMemo(() => {
-    return appointments.filter((apt) => {
+    const filtered = appointments.filter((apt) => {
       if (statusFilter !== 'all' && apt.status !== statusFilter) return false
       if (dateFilter) {
         const aptDate = new Date(apt.date).toISOString().split('T')[0]
@@ -199,24 +238,44 @@ export function AppointmentsClient({ initialAppointments }: AppointmentsClientPr
       }
       return true
     })
+    // Sort by date ascending, then by time ascending
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.date).getTime()
+      const dateB = new Date(b.date).getTime()
+      if (dateA !== dateB) return dateA - dateB
+      return (a.time || '').localeCompare(b.time || '')
+    })
+    return filtered
   }, [appointments, statusFilter, dateFilter, searchQuery])
 
   // Calendar derived state
   const weekDays = useMemo(() => getWeekDays(currentWeekStart), [currentWeekStart])
   const todayStr = new Date().toISOString().split('T')[0]
 
-  // Group by date
+  // Group by date (already sorted chronologically from filteredAppointments)
   const groupedAppointments = useMemo(() => {
-    return filteredAppointments.reduce((acc, apt) => {
-      const date = new Date(apt.date).toLocaleDateString('it-IT', {
+    const groups: { label: string; sortKey: string; appointments: Appointment[] }[] = []
+    const groupMap = new Map<string, number>()
+
+    filteredAppointments.forEach((apt) => {
+      const sortKey = new Date(apt.date).toISOString().split('T')[0]
+      const label = new Date(apt.date).toLocaleDateString('it-IT', {
         weekday: 'long',
         day: 'numeric',
         month: 'long',
       })
-      if (!acc[date]) acc[date] = []
-      acc[date].push(apt)
-      return acc
-    }, {} as Record<string, Appointment[]>)
+
+      if (groupMap.has(sortKey)) {
+        groups[groupMap.get(sortKey)!].appointments.push(apt)
+      } else {
+        groupMap.set(sortKey, groups.length)
+        groups.push({ label, sortKey, appointments: [apt] })
+      }
+    })
+
+    // Sort groups chronologically
+    groups.sort((a, b) => a.sortKey.localeCompare(b.sortKey))
+    return groups
   }, [filteredAppointments])
 
   const clearFilters = () => {
@@ -238,8 +297,16 @@ export function AppointmentsClient({ initialAppointments }: AppointmentsClientPr
           </p>
         </div>
         <div className="flex items-center gap-3">
-          {/* View Toggle - hidden on mobile */}
-          <div className="hidden lg:flex rounded-lg overflow-hidden border border-[rgba(255,255,255,0.1)]">
+          {/* New appointment */}
+          <Link
+            href="/admin-panel/appuntamenti/nuovo"
+            className="admin-btn admin-btn-primary text-sm flex items-center gap-1.5"
+          >
+            <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline">Nuovo</span>
+          </Link>
+          {/* View Toggle */}
+          <div className="flex rounded-lg overflow-hidden border border-[rgba(255,255,255,0.1)]">
             <button
               onClick={() => setViewMode('list')}
               className={`px-3 py-2 text-sm font-medium flex items-center gap-1.5 transition-colors ${
@@ -418,23 +485,121 @@ export function AppointmentsClient({ initialAppointments }: AppointmentsClientPr
         )}
       </div>
 
-      {/* Appointments - List or Calendar View (calendar only on desktop) */}
+      {/* Quick Navigation Bar */}
+      <div className="admin-card p-3 flex flex-wrap items-center gap-2">
+        <button onClick={goToToday} className="px-3 py-1.5 rounded-lg bg-[#d4a855]/10 text-[#d4a855] text-sm font-medium hover:bg-[#d4a855]/20 transition-colors">
+          Oggi
+        </button>
+        <button
+          onClick={() => {
+            const tomorrow = new Date()
+            tomorrow.setDate(tomorrow.getDate() + 1)
+            handleJumpToDate(tomorrow.toISOString().split('T')[0])
+          }}
+          className="px-3 py-1.5 rounded-lg bg-[rgba(255,255,255,0.05)] text-white text-sm hover:bg-[rgba(255,255,255,0.1)] transition-colors"
+        >
+          Domani
+        </button>
+        <div className="flex-1" />
+        <input
+          type="date"
+          value={jumpToDate}
+          onChange={(e) => handleJumpToDate(e.target.value)}
+          className="admin-input text-sm py-1.5"
+          title="Salta a data"
+        />
+      </div>
+
+      {/* Mobile Calendar View (< lg) */}
+      <div className="lg:hidden">
+        {viewMode === 'calendar' && (
+          <div className="admin-card overflow-hidden">
+            {/* Day navigation header */}
+            <div className="flex items-center justify-between p-4 border-b border-[rgba(255,255,255,0.1)]">
+              <button onClick={() => navigateDay('prev')} className="p-2 rounded-lg hover:bg-[rgba(255,255,255,0.1)] transition-colors">
+                <ChevronLeft className="w-5 h-5 text-white" />
+              </button>
+              <div className="text-center">
+                <h2 className="text-lg font-semibold text-white capitalize">
+                  {currentDay.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' })}
+                </h2>
+                {currentDay.toISOString().split('T')[0] === todayStr && (
+                  <span className="text-xs text-[#d4a855]">Oggi</span>
+                )}
+              </div>
+              <button onClick={() => navigateDay('next')} className="p-2 rounded-lg hover:bg-[rgba(255,255,255,0.1)] transition-colors">
+                <ChevronRight className="w-5 h-5 text-white" />
+              </button>
+            </div>
+
+            {/* Day timeline */}
+            <div className="p-4 space-y-2">
+              {(() => {
+                const dayApts = getAppointmentsForDay(currentDay)
+                if (dayApts.length === 0) {
+                  return (
+                    <div className="text-center py-8">
+                      <Calendar className="w-8 h-8 text-[rgba(255,255,255,0.2)] mx-auto mb-2" />
+                      <p className="text-[rgba(255,255,255,0.4)] text-sm">Nessun appuntamento</p>
+                    </div>
+                  )
+                }
+                return dayApts
+                  .sort((a, b) => (a.time || '').localeCompare(b.time || ''))
+                  .map((apt) => {
+                    const aptStatus = statusConfig[(apt.status as keyof typeof statusConfig) || 'confirmed']
+                    const StatusIcon = aptStatus.icon
+                    return (
+                      <Link
+                        key={apt.id}
+                        href={`/admin-panel/appuntamenti/${apt.id}/modifica`}
+                        className={`block p-3 rounded-lg border transition-colors hover:border-[#d4a855]/30 ${
+                          isImminent(apt) ? 'border-[#d4a855] bg-[#d4a855]/5' : 'border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.02)]'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-lg bg-[rgba(212,168,85,0.1)] flex flex-col items-center justify-center flex-shrink-0">
+                            <span className="text-sm font-bold text-[#d4a855]">{apt.time}</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium text-white truncate">{apt.clientName}</span>
+                              <span className={`admin-badge ${aptStatus.class} text-[10px] flex items-center gap-1`}>
+                                <StatusIcon className="w-3 h-3" />
+                                {aptStatus.label}
+                              </span>
+                            </div>
+                            <p className="text-xs text-[rgba(255,255,255,0.5)]">
+                              {apt.service?.name} {apt.service?.duration && `- ${apt.service.duration} min`}
+                            </p>
+                          </div>
+                        </div>
+                      </Link>
+                    )
+                  })
+              })()}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Appointments - List or Calendar View */}
       {viewMode === 'list' || typeof window !== 'undefined' ? (
-        /* LIST VIEW (always on mobile, toggle on desktop) */
+        /* LIST VIEW */
         viewMode === 'list' ? (
-          Object.keys(groupedAppointments).length > 0 ? (
+          groupedAppointments.length > 0 ? (
             <div className="space-y-6">
-              {Object.entries(groupedAppointments).map(([date, dayAppointments]) => (
-                <div key={date}>
+              {groupedAppointments.map((group) => (
+                <div key={group.sortKey}>
                   <h2 className="text-lg font-semibold text-white mb-3 capitalize flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-[#d4a855]" />
-                    {date}
+                    {group.label}
                     <span className="text-sm font-normal text-[rgba(255,255,255,0.5)]">
-                      ({dayAppointments.length})
+                      ({group.appointments.length})
                     </span>
                   </h2>
                   <div className="grid gap-3">
-                    {dayAppointments.map((appointment) => {
+                    {group.appointments.map((appointment) => {
                       const status = statusConfig[(appointment.status as keyof typeof statusConfig) || 'confirmed']
                       const StatusIcon = status.icon
                       const imminent = isImminent(appointment)
@@ -599,7 +764,7 @@ export function AppointmentsClient({ initialAppointments }: AppointmentsClientPr
           )
         ) : (
           /* CALENDAR VIEW (desktop only) */
-          <div className="admin-card overflow-hidden">
+          <div className="admin-card overflow-hidden hidden lg:block">
             {/* Calendar Header - Week Navigation */}
             <div className="flex items-center justify-between p-4 border-b border-[rgba(255,255,255,0.1)]">
               <button

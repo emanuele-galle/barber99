@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { isSlotAvailable, timeToMinutes, defaultOpeningHours } from '@/lib/booking'
+import { bookingEvents } from '@/lib/booking-events'
 
 const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || 'http://vps-panel-n8n:5678/webhook/barber99-booking'
 
@@ -29,6 +31,23 @@ async function sendBookingNotification(data: {
   }
 }
 
+// Check if request is from an authenticated admin
+async function isAdminRequest(request: NextRequest) {
+  try {
+    const payload = await getPayload({ config })
+    const cookies = request.headers.get('cookie') || ''
+    // Check for Payload auth token
+    const tokenMatch = cookies.match(/payload-token=([^;]+)/)
+    if (!tokenMatch) return false
+    const token = tokenMatch[1]
+    // Verify token
+    const { user } = await payload.auth({ headers: new Headers({ Authorization: `JWT ${token}` }) })
+    return !!user
+  } catch {
+    return false
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const payload = await getPayload({ config })
@@ -42,6 +61,7 @@ export async function POST(request: NextRequest) {
       clientEmail,
       clientPhone,
       notes,
+      isAdminBooking,
     } = body
 
     // Validate required fields (email is optional)
@@ -52,8 +72,93 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Fetch service details for the notification
+    // Fetch service details
     const serviceDoc = await payload.findByID({ collection: 'services', id: service })
+    const serviceDuration = serviceDoc?.duration || 45
+
+    // --- FASE 2: Limite 1 prenotazione attiva per persona ---
+    // Skip for admin bookings
+    const isAdmin = isAdminBooking && await isAdminRequest(request)
+
+    if (!isAdmin) {
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      const todayStr = today.toISOString().split('T')[0]
+
+      const existingBooking = await payload.find({
+        collection: 'appointments',
+        where: {
+          and: [
+            { clientPhone: { equals: clientPhone } },
+            { status: { in: ['pending', 'confirmed'] } },
+            { date: { greater_than_equal: todayStr } },
+          ],
+        },
+        limit: 1,
+        depth: 1,
+      })
+
+      if (existingBooking.docs.length > 0) {
+        const existing = existingBooking.docs[0]
+        const existingDate = new Date(existing.date as string).toLocaleDateString('it-IT', {
+          weekday: 'long', day: 'numeric', month: 'long',
+        })
+        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://barber99.it'
+        const cancelLink = `${baseUrl}/cancella?token=${existing.cancellationToken}`
+
+        return NextResponse.json(
+          {
+            error: 'already_booked',
+            message: `Hai già una prenotazione attiva per ${existingDate} alle ${existing.time}. Annulla quella esistente prima di prenotare.`,
+            existingAppointment: {
+              date: existingDate,
+              time: existing.time,
+              cancellationLink: cancelLink,
+            },
+          },
+          { status: 400 }
+        )
+      }
+    }
+
+    // --- FASE 1: Validazione anti-conflitto slot ---
+    // Fetch all appointments for this date (non-cancelled)
+    const existingAppointments = await payload.find({
+      collection: 'appointments',
+      where: {
+        and: [
+          { date: { equals: date } },
+          { status: { not_equals: 'cancelled' } },
+        ],
+      },
+      depth: 1,
+      limit: 100,
+    })
+
+    // Build appointment list for overlap check
+    const bookedSlots = existingAppointments.docs.map((apt) => ({
+      time: apt.time as string,
+      duration: typeof apt.service === 'object' && apt.service ? (apt.service as { duration?: number }).duration || 45 : 45,
+      date: date,
+      barberId: 'cosimo',
+    }))
+
+    // Get closing time for the day
+    const dateObj = new Date(date + 'T00:00:00')
+    const dayOfWeek = dateObj.getDay()
+    const dayHours = defaultOpeningHours.find((h) => h.dayOfWeek === dayOfWeek)
+    const closeTime = dayHours?.closeTime || '19:30'
+
+    // Check if slot is available (using existing isSlotAvailable logic)
+    if (!isSlotAvailable(time, serviceDuration, bookedSlots, closeTime)) {
+      return NextResponse.json(
+        {
+          error: 'slot_conflict',
+          message: 'Questo orario è già prenotato. Scegli un altro orario.',
+        },
+        { status: 409 }
+      )
+    }
 
     // Single barber - hardcoded
     const DEFAULT_BARBER_NAME = 'Cosimo Pisani'
@@ -74,6 +179,15 @@ export async function POST(request: NextRequest) {
         emailSent: false,
         whatsappSent: false,
       },
+    })
+
+    // --- FASE 3: Emit SSE event for real-time notifications ---
+    bookingEvents.emit('new_booking', {
+      appointmentId: appointment.id,
+      clientName,
+      serviceName: serviceDoc?.name || 'Servizio',
+      date,
+      time,
     })
 
     // Send confirmation email via N8N webhook (only if email provided)
@@ -112,12 +226,14 @@ export async function POST(request: NextRequest) {
     const formattedDate = new Date(date).toLocaleDateString('it-IT', {
       weekday: 'long', day: 'numeric', month: 'long',
     })
+    // --- FASE 7: Link cancellazione nel WhatsApp ---
     const whatsappText = encodeURIComponent(
       `Ciao! Ho prenotato un appuntamento da Barber 99:\n` +
       `Servizio: ${serviceDoc?.name || 'Servizio'}\n` +
       `Data: ${formattedDate}\n` +
       `Ora: ${time}\n` +
-      `Nome: ${clientName}`
+      `Nome: ${clientName}\n\n` +
+      `Per annullare: ${cancellationLink}`
     )
     const whatsappLink = `https://wa.me/393271263091?text=${whatsappText}`
 

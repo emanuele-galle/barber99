@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import Link from 'next/link'
 import {
@@ -14,14 +14,14 @@ import {
   MessageSquare,
   ChevronLeft,
   Check,
-  CircleDot,
 } from 'lucide-react'
 import {
-  getNextAvailableDates,
   getAvailableSlots,
   formatDateDisplay,
   formatDate,
   validateBookingData,
+  defaultOpeningHours,
+  isDateClosed,
   type BookingData,
   type TimeSlot,
   type Appointment,
@@ -157,15 +157,12 @@ export default function BookingForm() {
   const [services, setServices] = useState<Service[]>([])
   const [closedDays, setClosedDays] = useState<ClosedDay[]>([])
   const [isLoadingData, setIsLoadingData] = useState(true)
-  const [availableDates, setAvailableDates] = useState<Date[]>([])
   const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([])
   const [isLoadingSlots, setIsLoadingSlots] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [bookingConfirmed, setBookingConfirmed] = useState(false)
   const [bookingLinks, setBookingLinks] = useState<{ whatsapp?: string; cancel?: string }>({})
-
-  const dateScrollRef = useRef<HTMLDivElement>(null)
 
   // Fetch services and closed days
   useEffect(() => {
@@ -193,14 +190,82 @@ export default function BookingForm() {
     fetchData()
   }, [])
 
-  // Load available dates
-  useEffect(() => {
-    if (!isLoadingData) {
-      const tomorrow = new Date()
-      tomorrow.setDate(tomorrow.getDate() + 1)
-      setAvailableDates(getNextAvailableDates(tomorrow, 14, undefined, closedDays))
+  // Calendar month navigation
+  const [calendarMonth, setCalendarMonth] = useState(() => {
+    const d = new Date()
+    return { year: d.getFullYear(), month: d.getMonth() }
+  })
+
+  // Generate calendar grid for the current month
+  const calendarDays = useMemo(() => {
+    const { year, month } = calendarMonth
+    const firstDay = new Date(year, month, 1)
+    const lastDay = new Date(year, month + 1, 0)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+
+    // Max 2 months ahead
+    const maxDate = new Date(today)
+    maxDate.setMonth(maxDate.getMonth() + 2)
+
+    // Padding days from previous month (week starts Monday)
+    const startDow = (firstDay.getDay() + 6) % 7 // 0=Mon, 6=Sun
+
+    const days: { date: Date; dateStr: string; available: boolean; isCurrentMonth: boolean }[] = []
+
+    // Previous month padding
+    for (let i = startDow - 1; i >= 0; i--) {
+      const d = new Date(year, month, -i)
+      days.push({ date: d, dateStr: formatDate(d), available: false, isCurrentMonth: false })
     }
-  }, [closedDays, isLoadingData])
+
+    // Current month days
+    for (let day = 1; day <= lastDay.getDate(); day++) {
+      const d = new Date(year, month, day)
+      const dayOfWeek = d.getDay()
+      const dayHours = defaultOpeningHours.find((h) => h.dayOfWeek === dayOfWeek)
+      const isPast = d < tomorrow
+      const isTooFar = d > maxDate
+      const isClosed = !dayHours || dayHours.isClosed || isDateClosed(d, closedDays)
+      const available = !isPast && !isTooFar && !isClosed
+
+      days.push({ date: d, dateStr: formatDate(d), available, isCurrentMonth: true })
+    }
+
+    // Next month padding to fill 6 rows
+    const remaining = 42 - days.length
+    for (let i = 1; i <= remaining; i++) {
+      const d = new Date(year, month + 1, i)
+      days.push({ date: d, dateStr: formatDate(d), available: false, isCurrentMonth: false })
+    }
+
+    return days
+  }, [calendarMonth, closedDays])
+
+  const navigateMonth = (dir: number) => {
+    setCalendarMonth((prev) => {
+      let newMonth = prev.month + dir
+      let newYear = prev.year
+      if (newMonth > 11) { newMonth = 0; newYear++ }
+      if (newMonth < 0) { newMonth = 11; newYear-- }
+      return { year: newYear, month: newMonth }
+    })
+  }
+
+  const canGoPrev = useMemo(() => {
+    const now = new Date()
+    return calendarMonth.year > now.getFullYear() || calendarMonth.month > now.getMonth()
+  }, [calendarMonth])
+
+  const canGoNext = useMemo(() => {
+    const now = new Date()
+    const maxMonth = now.getMonth() + 2
+    const maxYear = now.getFullYear() + (maxMonth > 11 ? 1 : 0)
+    const adjustedMax = maxMonth > 11 ? maxMonth - 12 : maxMonth
+    return calendarMonth.year < maxYear || (calendarMonth.year === maxYear && calendarMonth.month < adjustedMax)
+  }, [calendarMonth])
 
   // Fetch booked slots from API
   const fetchBookedSlots = useCallback(async (date: string, barberId: string): Promise<Appointment[]> => {
@@ -247,11 +312,6 @@ export default function BookingForm() {
 
   const handleDateSelect = (dateStr: string) => {
     setFormData((prev) => ({ ...prev, date: dateStr, time: '' }))
-    // Auto-scroll per centrare la data selezionata
-    setTimeout(() => {
-      const el = document.getElementById(`date-chip-${dateStr}`)
-      el?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
-    }, 50)
   }
 
   const handleTimeSelect = (time: string) => {
@@ -298,7 +358,37 @@ export default function BookingForm() {
         setBookingConfirmed(true)
         setStep('confirm')
       } else {
-        throw new Error('Booking failed')
+        const errorData = await response.json()
+
+        // Slot conflict (409) - someone else booked this slot
+        if (response.status === 409 && errorData.error === 'slot_conflict') {
+          setErrors({ submit: 'Orario appena prenotato da qualcun altro. Scegli un altro orario.' })
+          // Re-fetch available slots and go back to datetime
+          setFormData((prev) => ({ ...prev, time: '' }))
+          setDirection(-1)
+          setStep('datetime')
+          // Refresh slots
+          if (formData.date && formData.serviceId) {
+            const service = services.find((s) => s.id === formData.serviceId)
+            if (service) {
+              const bookedSlots = await fetchBookedSlots(formData.date, formData.barberId)
+              const slots = getAvailableSlots(new Date(formData.date), formData.barberId, service.duration, bookedSlots)
+              setAvailableSlots(slots)
+            }
+          }
+          return
+        }
+
+        // Already has an active booking (400)
+        if (response.status === 400 && errorData.error === 'already_booked') {
+          setErrors({
+            submit: errorData.message,
+            existingCancelLink: errorData.existingAppointment?.cancellationLink,
+          })
+          return
+        }
+
+        throw new Error(errorData.message || 'Booking failed')
       }
     } catch {
       setErrors({ submit: 'Si è verificato un errore. Riprova più tardi.' })
@@ -419,68 +509,63 @@ export default function BookingForm() {
               </div>
             )}
 
-            {/* Date Picker Orizzontale */}
+            {/* Monthly Calendar */}
             <div className="mb-6">
               <h2 className="text-xl md:text-2xl font-cinzel text-gold mb-4">
                 Scegli la Data
               </h2>
 
-              <div className="relative">
-                {/* Fade edges */}
-                <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-[#0c0c0c] to-transparent z-10 pointer-events-none" />
-                <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-[#0c0c0c] to-transparent z-10 pointer-events-none" />
-
-                {/* Scrollable date chips */}
-                <div
-                  ref={dateScrollRef}
-                  className="flex gap-2 overflow-x-auto no-scrollbar snap-x snap-mandatory px-2 py-1"
-                  style={{
-                    scrollPaddingInline: '16px',
-                    WebkitOverflowScrolling: 'touch',
-                  }}
+              {/* Month navigation */}
+              <div className="flex items-center justify-between mb-3 px-1">
+                <button
+                  onClick={() => canGoPrev && navigateMonth(-1)}
+                  disabled={!canGoPrev}
+                  className="p-1.5 rounded-lg text-white hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 >
-                  {availableDates.map((date) => {
-                    const dateStr = formatDate(date)
-                    const isSelected = formData.date === dateStr
-                    const dayName = date
-                      .toLocaleDateString('it-IT', { weekday: 'short' })
-                      .replace('.', '')
-                    const dayNum = date.getDate()
-                    const monthName = date
-                      .toLocaleDateString('it-IT', { month: 'short' })
-                      .replace('.', '')
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <span className="text-white font-medium capitalize">
+                  {new Date(calendarMonth.year, calendarMonth.month).toLocaleDateString('it-IT', { month: 'long', year: 'numeric' })}
+                </span>
+                <button
+                  onClick={() => canGoNext && navigateMonth(1)}
+                  disabled={!canGoNext}
+                  className="p-1.5 rounded-lg text-white hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft className="w-5 h-5 rotate-180" />
+                </button>
+              </div>
 
-                    return (
-                      <motion.button
-                        key={dateStr}
-                        id={`date-chip-${dateStr}`}
-                        onClick={() => handleDateSelect(dateStr)}
-                        whileTap={{ scale: 0.93 }}
-                        className={`snap-center flex-shrink-0 w-[72px] py-3 rounded-xl flex flex-col items-center transition-all duration-200 ${
-                          isSelected
-                            ? 'bg-gold text-[#0c0c0c] shadow-[0_0_20px_rgba(212,168,85,0.3)]'
-                            : 'bg-[#1a1a1a] border border-white/10 text-white hover:border-gold/30'
-                        }`}
-                      >
-                        <span
-                          className={`text-[11px] uppercase tracking-wider ${
-                            isSelected ? 'text-[#0c0c0c]/70' : 'text-gray-500'
-                          }`}
-                        >
-                          {dayName}
-                        </span>
-                        <span className="text-[22px] font-bold leading-tight">{dayNum}</span>
-                        <span
-                          className={`text-[11px] ${
-                            isSelected ? 'text-[#0c0c0c]/70' : 'text-gray-500'
-                          }`}
-                        >
-                          {monthName}
-                        </span>
-                      </motion.button>
-                    )
-                  })}
-                </div>
+              {/* Day of week headers */}
+              <div className="grid grid-cols-7 gap-1 mb-1">
+                {['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'].map((d) => (
+                  <div key={d} className="text-center text-[11px] text-gray-500 py-1">{d}</div>
+                ))}
+              </div>
+
+              {/* Calendar grid */}
+              <div className="grid grid-cols-7 gap-1">
+                {calendarDays.map((day, i) => {
+                  const isSelected = formData.date === day.dateStr
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => day.available && handleDateSelect(day.dateStr)}
+                      disabled={!day.available}
+                      className={`aspect-square rounded-lg flex items-center justify-center text-sm font-medium transition-all duration-150 ${
+                        !day.isCurrentMonth
+                          ? 'text-gray-800'
+                          : isSelected
+                            ? 'bg-gold text-[#0c0c0c] shadow-[0_0_12px_rgba(212,168,85,0.3)]'
+                            : day.available
+                              ? 'text-white hover:bg-gold/20 hover:text-gold'
+                              : 'text-gray-700 cursor-not-allowed'
+                      }`}
+                    >
+                      {day.isCurrentMonth ? day.date.getDate() : ''}
+                    </button>
+                  )
+                })}
               </div>
             </div>
 
@@ -678,7 +763,17 @@ export default function BookingForm() {
               </div>
 
               {errors.submit && (
-                <p className="text-red-400 text-center text-sm">{errors.submit}</p>
+                <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-center">
+                  <p className="text-red-400 text-sm">{errors.submit}</p>
+                  {errors.existingCancelLink && (
+                    <a
+                      href={errors.existingCancelLink}
+                      className="inline-block mt-2 text-gold hover:text-gold-light text-sm font-medium underline"
+                    >
+                      Annulla la prenotazione esistente
+                    </a>
+                  )}
+                </div>
               )}
 
               {/* Submit button */}
@@ -759,7 +854,7 @@ export default function BookingForm() {
               </p>
             )}
 
-            {/* WhatsApp (secondario) + Cancellazione */}
+            {/* WhatsApp + Cancellazione */}
             <div className="flex flex-col gap-3 max-w-sm mx-auto mb-6">
               {bookingLinks.whatsapp && (
                 <a
@@ -774,13 +869,20 @@ export default function BookingForm() {
                   Invia su WhatsApp
                 </a>
               )}
+
+              {/* Cancellation info - prominent */}
               {bookingLinks.cancel && (
-                <a
-                  href={bookingLinks.cancel}
-                  className="text-gray-600 hover:text-gray-400 text-xs text-center transition-colors"
-                >
-                  Devi cancellare? Clicca qui
-                </a>
+                <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-center">
+                  <p className="text-gray-400 text-sm mb-2">
+                    Per annullare, usa il link qui sotto o quello ricevuto via email/WhatsApp
+                  </p>
+                  <a
+                    href={bookingLinks.cancel}
+                    className="inline-block text-gold hover:text-gold-light text-sm font-medium underline transition-colors"
+                  >
+                    Annulla prenotazione
+                  </a>
+                </div>
               )}
             </div>
 
