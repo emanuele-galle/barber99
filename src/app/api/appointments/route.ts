@@ -166,6 +166,8 @@ export async function GET(request: NextRequest) {
     const bookedSlots = appointments.docs.map((apt) => ({
       time: apt.time,
       duration: typeof apt.service === 'object' ? apt.service.duration : 45,
+      date: date,
+      barberId: typeof apt.barber === 'string' ? apt.barber : 'cosimo',
     }))
 
     return NextResponse.json({ bookedSlots })

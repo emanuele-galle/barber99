@@ -129,11 +129,9 @@ export function getAvailableSlots(
     return []
   }
 
-  // Filter appointments for this barber on this date
-  const dateStr = formatDate(date)
-  const barberAppointments = existingAppointments.filter(
-    (apt) => apt.barberId === barberId && apt.date === dateStr
-  )
+  // Appointments are already filtered server-side by date and barber
+  // Use them directly for slot availability checking
+  const barberAppointments = existingAppointments
 
   // Generate all possible slots
   const allSlots = generateTimeSlots(dayHours.openTime, dayHours.closeTime, 30)
