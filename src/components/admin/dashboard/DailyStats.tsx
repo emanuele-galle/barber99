@@ -6,14 +6,14 @@ interface DailyStatsProps {
   estimatedRevenue: number
   totalAppointments: number
   completedAppointments: number
-  pendingConfirmations: number
+  upcomingCount: number
 }
 
 export function DailyStats({
   estimatedRevenue,
   totalAppointments,
   completedAppointments,
-  pendingConfirmations,
+  upcomingCount,
 }: DailyStatsProps) {
   const stats = [
     {
@@ -35,10 +35,10 @@ export function DailyStats({
       color: '#22c55e',
     },
     {
-      label: 'Da Confermare',
-      value: pendingConfirmations.toString(),
+      label: 'In Arrivo',
+      value: upcomingCount.toString(),
       icon: Clock,
-      color: pendingConfirmations > 0 ? '#f59e0b' : '#6b7280',
+      color: upcomingCount > 0 ? '#d4a855' : '#6b7280',
     },
   ]
 

@@ -196,7 +196,7 @@ export default function BookingForm() {
           clientEmail: formData.clientEmail,
           clientPhone: formData.clientPhone,
           notes: formData.notes,
-          status: 'pending',
+          status: 'confirmed',
         }),
       })
 
@@ -470,7 +470,7 @@ export default function BookingForm() {
                 </div>
 
                 <div>
-                  <label className="block text-sm text-gray-400 mb-1">Email *</label>
+                  <label className="block text-sm text-gray-400 mb-1">Email</label>
                   <input
                     type="email"
                     value={formData.clientEmail}
@@ -479,7 +479,7 @@ export default function BookingForm() {
                       errors.clientEmail ? 'border-red-500' : 'border-gray-700'
                     } text-white focus:border-gold focus:outline-none`}
                     style={{ fontSize: '16px' }}
-                    placeholder="mario@email.com"
+                    placeholder="Facoltativo - per ricevere conferma email"
                   />
                   {errors.clientEmail && (
                     <p className="text-red-500 text-sm mt-1">{errors.clientEmail}</p>
@@ -524,11 +524,11 @@ export default function BookingForm() {
                   disabled={isSubmitting}
                   className="w-full btn-gold py-4 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting ? 'Invio in corso...' : 'Conferma Prenotazione'}
+                  {isSubmitting ? 'Invio in corso...' : 'Prenota Ora'}
                 </button>
 
                 <p className="text-center text-xs text-gray-500">
-                  Riceverai una conferma via email. Il pagamento avviene in negozio.
+                  Riceverai un riepilogo via email o WhatsApp. Il pagamento avviene in negozio.
                 </p>
               </div>
             </div>
@@ -567,9 +567,11 @@ export default function BookingForm() {
               </div>
             </div>
 
-            <p className="text-sm text-gray-400 mb-6">
-              Ti abbiamo inviato una email di conferma a {formData.clientEmail}
-            </p>
+            {formData.clientEmail && (
+              <p className="text-sm text-gray-400 mb-6">
+                Ti abbiamo inviato una email di conferma a {formData.clientEmail}
+              </p>
+            )}
 
             {/* WhatsApp & Cancel buttons */}
             <div className="flex flex-col sm:flex-row gap-3 max-w-sm mx-auto mb-6">
@@ -602,7 +604,7 @@ export default function BookingForm() {
                   Crea un account per salvare i tuoi dati e gestire le tue prenotazioni.
                 </p>
                 <Link
-                  href={`/account/registrati?email=${encodeURIComponent(formData.clientEmail)}`}
+                  href={`/account/registrati${formData.clientEmail ? `?email=${encodeURIComponent(formData.clientEmail)}` : ''}`}
                   className="inline-block bg-gold hover:bg-gold-light text-black font-semibold py-2 px-6 rounded-lg transition-colors"
                 >
                   Crea Account

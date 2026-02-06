@@ -3,11 +3,14 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, X, Bell, ExternalLink, Scissors, Clock, AlertCircle, MessageSquare } from 'lucide-react'
+import {
+  Menu, X, Bell, ExternalLink, Scissors, Clock, MessageSquare,
+  LayoutDashboard, Calendar, UserPlus, User, BarChart2, Star, Settings, LogOut,
+} from 'lucide-react'
 
 interface Notification {
   id: string
-  type: 'pending' | 'imminent' | 'contact'
+  type: 'imminent' | 'contact'
   title: string
   message: string
   time: string
@@ -19,12 +22,16 @@ interface AdminHeaderProps {
 }
 
 const menuItems = [
-  { href: '/admin-panel', label: 'Dashboard' },
-  { href: '/admin-panel/servizi', label: 'Servizi' },
-  { href: '/admin-panel/appuntamenti', label: 'Appuntamenti' },
-  { href: '/admin-panel/orari', label: 'Orari' },
-  { href: '/admin-panel/recensioni', label: 'Recensioni' },
-  { href: '/admin-panel/contatti', label: 'Contatti' },
+  { href: '/admin-panel', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/admin-panel/appuntamenti', label: 'Appuntamenti', icon: Calendar },
+  { href: '/admin-panel/coda', label: 'Senza appuntamento', icon: UserPlus },
+  { href: '/admin-panel/clienti', label: 'Clienti', icon: User },
+  { href: '/admin-panel/servizi', label: 'Servizi', icon: Scissors },
+  { href: '/admin-panel/analytics', label: 'Analytics', icon: BarChart2 },
+  { href: '/admin-panel/orari', label: 'Orari', icon: Clock },
+  { href: '/admin-panel/recensioni', label: 'Recensioni', icon: Star },
+  { href: '/admin-panel/contatti', label: 'Contatti', icon: MessageSquare },
+  { href: '/admin-panel/impostazioni', label: 'Impostazioni', icon: Settings },
 ]
 
 export function AdminHeader({ user }: AdminHeaderProps) {
@@ -54,22 +61,9 @@ export function AdminHeader({ user }: AdminHeaderProps) {
         if (appointmentsRes.ok) {
           const appointments = await appointmentsRes.json()
 
-          // Pending appointments
-          const pending = appointments.filter((apt: { status: string }) => apt.status === 'pending')
-          if (pending.length > 0) {
-            notifs.push({
-              id: 'pending-count',
-              type: 'pending',
-              title: `${pending.length} appuntament${pending.length > 1 ? 'i' : 'o'} in attesa`,
-              message: 'Da confermare',
-              time: 'Adesso',
-              link: '/admin-panel/appuntamenti?status=pending'
-            })
-          }
-
           // Imminent appointments (within 1 hour)
           const imminent = appointments.filter((apt: { status: string; date: string; time: string }) => {
-            if (apt.status !== 'confirmed' && apt.status !== 'pending') return false
+            if (apt.status !== 'confirmed') return false
             const aptDateStr = new Date(apt.date).toISOString().split('T')[0]
             if (aptDateStr !== todayStr) return false
 
@@ -115,7 +109,6 @@ export function AdminHeader({ user }: AdminHeaderProps) {
     }
 
     fetchNotifications()
-    // Refresh every 30 seconds
     const interval = setInterval(fetchNotifications, 30000)
     return () => clearInterval(interval)
   }, [])
@@ -133,7 +126,6 @@ export function AdminHeader({ user }: AdminHeaderProps) {
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case 'pending': return <AlertCircle className="w-4 h-4 text-orange-400" />
       case 'imminent': return <Clock className="w-4 h-4 text-[#d4a855]" />
       case 'contact': return <MessageSquare className="w-4 h-4 text-blue-400" />
       default: return <Bell className="w-4 h-4" />
@@ -292,9 +284,10 @@ export function AdminHeader({ user }: AdminHeaderProps) {
               </button>
             </div>
 
-            {/* Navigation */}
-            <nav className="p-4 space-y-1">
+            {/* Navigation - all items from sidebar */}
+            <nav className="p-4 space-y-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 180px)' }}>
               {menuItems.map((item) => {
+                const Icon = item.icon
                 const active =
                   item.href === '/admin-panel'
                     ? pathname === '/admin-panel'
@@ -304,12 +297,13 @@ export function AdminHeader({ user }: AdminHeaderProps) {
                     key={item.href}
                     href={item.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`block px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                       active
                         ? 'bg-[rgba(244,102,47,0.1)] text-[#F4662F]'
                         : 'text-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,255,255,0.05)] hover:text-white'
                     }`}
                   >
+                    <Icon className="w-5 h-5" />
                     {item.label}
                   </Link>
                 )
@@ -332,8 +326,9 @@ export function AdminHeader({ user }: AdminHeaderProps) {
               <form action="/admin-panel/logout" method="POST">
                 <button
                   type="submit"
-                  className="w-full px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-lg transition-colors text-left"
+                  className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-lg transition-colors text-left"
                 >
+                  <LogOut className="w-5 h-5" />
                   Esci
                 </button>
               </form>

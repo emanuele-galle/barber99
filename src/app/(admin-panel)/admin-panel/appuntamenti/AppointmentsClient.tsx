@@ -2,8 +2,9 @@
 
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Calendar, Clock, User, Phone, Mail, CheckCircle, XCircle, AlertCircle, Search, Filter, X, Bell, FileText, ChevronLeft, ChevronRight, List, CalendarDays } from 'lucide-react'
+import { Calendar, Clock, User, Phone, Mail, CheckCircle, XCircle, AlertCircle, Search, Filter, X, Bell, FileText, ChevronLeft, ChevronRight, List, CalendarDays, UserX } from 'lucide-react'
 import { AppointmentActions } from '@/components/admin-panel/AppointmentActions'
+import { useToast } from '@/components/Toast'
 
 interface Appointment {
   id: string
@@ -32,7 +33,9 @@ const statusConfig = {
 
 export function AppointmentsClient({ initialAppointments }: AppointmentsClientProps) {
   const router = useRouter()
+  const { showToast } = useToast()
   const [appointments] = useState<Appointment[]>(initialAppointments)
+  const [actionLoading, setActionLoading] = useState<string | null>(null)
 
   // View mode
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list')
@@ -48,11 +51,35 @@ export function AppointmentsClient({ initialAppointments }: AppointmentsClientPr
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [dateFilter, setDateFilter] = useState<string>('')
 
+  // Quick action handlers
+  const handleQuickAction = async (id: string, status: string) => {
+    setActionLoading(id)
+    try {
+      const res = await fetch(`/api/appointments/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+        credentials: 'include',
+      })
+      if (!res.ok) throw new Error('Errore')
+      const messages: Record<string, string> = {
+        completed: 'Completato',
+        noshow: 'Segnato No-Show',
+      }
+      showToast('success', messages[status] || 'Aggiornato', 'OK')
+      router.refresh()
+    } catch {
+      showToast('error', 'Errore durante aggiornamento', 'Errore')
+    } finally {
+      setActionLoading(null)
+    }
+  }
+
   // Calculate status counts
   const statusCounts = useMemo(() => {
     const counts: Record<string, number> = { all: appointments.length }
     appointments.forEach((apt) => {
-      const status = apt.status || 'pending'
+      const status = apt.status || 'confirmed'
       counts[status] = (counts[status] || 0) + 1
     })
     return counts
@@ -71,12 +98,12 @@ export function AppointmentsClient({ initialAppointments }: AppointmentsClientPr
       return aptDate === todayStr
     })
 
-    const pendingCount = appointments.filter((apt) => apt.status === 'pending').length
     const confirmedCount = appointments.filter((apt) => apt.status === 'confirmed').length
+    const completedCount = appointments.filter((apt) => apt.status === 'completed').length
 
     // Find appointments starting within the next hour
     const upcomingNow = todayAppointments.filter((apt) => {
-      if (apt.status !== 'confirmed' && apt.status !== 'pending') return false
+      if (apt.status !== 'confirmed') return false
       const [hours, minutes] = apt.time.split(':').map(Number)
       const aptTime = new Date(today)
       aptTime.setHours(hours, minutes, 0, 0)
@@ -85,10 +112,9 @@ export function AppointmentsClient({ initialAppointments }: AppointmentsClientPr
 
     return {
       today: todayAppointments.length,
-      pending: pendingCount,
       confirmed: confirmedCount,
+      completed: completedCount,
       upcomingNow: upcomingNow.length,
-      upcomingList: upcomingNow,
     }
   }, [appointments])
 
@@ -100,7 +126,7 @@ export function AppointmentsClient({ initialAppointments }: AppointmentsClientPr
     const aptDateStr = new Date(apt.date).toISOString().split('T')[0]
 
     if (aptDateStr !== todayStr) return false
-    if (apt.status !== 'confirmed' && apt.status !== 'pending') return false
+    if (apt.status !== 'confirmed') return false
 
     const now = new Date()
     const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000)
@@ -159,30 +185,18 @@ export function AppointmentsClient({ initialAppointments }: AppointmentsClientPr
   // Filter appointments
   const filteredAppointments = useMemo(() => {
     return appointments.filter((apt) => {
-      // Status filter
-      if (statusFilter !== 'all' && apt.status !== statusFilter) {
-        return false
-      }
-
-      // Date filter
+      if (statusFilter !== 'all' && apt.status !== statusFilter) return false
       if (dateFilter) {
         const aptDate = new Date(apt.date).toISOString().split('T')[0]
-        if (aptDate !== dateFilter) {
-          return false
-        }
+        if (aptDate !== dateFilter) return false
       }
-
-      // Search filter
       if (searchQuery) {
         const query = searchQuery.toLowerCase()
         const matchesName = apt.clientName?.toLowerCase().includes(query)
         const matchesPhone = apt.clientPhone?.toLowerCase().includes(query)
         const matchesEmail = apt.clientEmail?.toLowerCase().includes(query)
-        if (!matchesName && !matchesPhone && !matchesEmail) {
-          return false
-        }
+        if (!matchesName && !matchesPhone && !matchesEmail) return false
       }
-
       return true
     })
   }, [appointments, statusFilter, dateFilter, searchQuery])
@@ -224,8 +238,8 @@ export function AppointmentsClient({ initialAppointments }: AppointmentsClientPr
           </p>
         </div>
         <div className="flex items-center gap-3">
-          {/* View Toggle */}
-          <div className="flex rounded-lg overflow-hidden border border-[rgba(255,255,255,0.1)]">
+          {/* View Toggle - hidden on mobile */}
+          <div className="hidden lg:flex rounded-lg overflow-hidden border border-[rgba(255,255,255,0.1)]">
             <button
               onClick={() => setViewMode('list')}
               className={`px-3 py-2 text-sm font-medium flex items-center gap-1.5 transition-colors ${
@@ -273,19 +287,6 @@ export function AppointmentsClient({ initialAppointments }: AppointmentsClientPr
           </div>
         </div>
 
-        {/* Pending */}
-        <div className="admin-card p-4">
-          <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${stats.pending > 0 ? 'bg-orange-500/20' : 'bg-[rgba(255,255,255,0.05)]'}`}>
-              <AlertCircle className={`w-5 h-5 ${stats.pending > 0 ? 'text-orange-400' : 'text-[rgba(255,255,255,0.4)]'}`} />
-            </div>
-            <div>
-              <p className={`text-2xl font-bold ${stats.pending > 0 ? 'text-orange-400' : 'text-white'}`}>{stats.pending}</p>
-              <p className="text-xs text-[rgba(255,255,255,0.5)]">In attesa</p>
-            </div>
-          </div>
-        </div>
-
         {/* Confirmed */}
         <div className="admin-card p-4">
           <div className="flex items-center gap-3">
@@ -295,6 +296,19 @@ export function AppointmentsClient({ initialAppointments }: AppointmentsClientPr
             <div>
               <p className="text-2xl font-bold text-white">{stats.confirmed}</p>
               <p className="text-xs text-[rgba(255,255,255,0.5)]">Confermati</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Completed */}
+        <div className="admin-card p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-[rgba(212,168,85,0.1)] flex items-center justify-center">
+              <CheckCircle className="w-5 h-5 text-[#d4a855]" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-white">{stats.completed}</p>
+              <p className="text-xs text-[rgba(255,255,255,0.5)]">Completati</p>
             </div>
           </div>
         </div>
@@ -314,10 +328,9 @@ export function AppointmentsClient({ initialAppointments }: AppointmentsClientPr
       </div>
 
       {/* Status Tabs */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex overflow-x-auto gap-2 pb-1 -mx-1 px-1">
         {[
           { key: 'all', label: 'Tutti' },
-          { key: 'pending', label: 'In attesa' },
           { key: 'confirmed', label: 'Confermati' },
           { key: 'completed', label: 'Completati' },
           { key: 'cancelled', label: 'Annullati' },
@@ -325,7 +338,7 @@ export function AppointmentsClient({ initialAppointments }: AppointmentsClientPr
           <button
             key={tab.key}
             onClick={() => setStatusFilter(tab.key)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 whitespace-nowrap flex-shrink-0 ${
               statusFilter === tab.key
                 ? 'bg-[#d4a855] text-black'
                 : 'bg-[#1a1a1a] text-white hover:bg-[rgba(255,255,255,0.1)]'
@@ -405,296 +418,323 @@ export function AppointmentsClient({ initialAppointments }: AppointmentsClientPr
         )}
       </div>
 
-      {/* Appointments - List or Calendar View */}
-      {viewMode === 'list' ? (
-        /* LIST VIEW */
-        Object.keys(groupedAppointments).length > 0 ? (
-          <div className="space-y-6">
-            {Object.entries(groupedAppointments).map(([date, dayAppointments]) => (
-              <div key={date}>
-                <h2 className="text-lg font-semibold text-white mb-3 capitalize flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-[#d4a855]" />
-                  {date}
-                  <span className="text-sm font-normal text-[rgba(255,255,255,0.5)]">
-                    ({dayAppointments.length})
-                  </span>
-                </h2>
-                <div className="grid gap-3">
-                  {dayAppointments.map((appointment) => {
-                    const status = statusConfig[(appointment.status as keyof typeof statusConfig) || 'pending']
-                    const StatusIcon = status.icon
-                    const imminent = isImminent(appointment)
+      {/* Appointments - List or Calendar View (calendar only on desktop) */}
+      {viewMode === 'list' || typeof window !== 'undefined' ? (
+        /* LIST VIEW (always on mobile, toggle on desktop) */
+        viewMode === 'list' ? (
+          Object.keys(groupedAppointments).length > 0 ? (
+            <div className="space-y-6">
+              {Object.entries(groupedAppointments).map(([date, dayAppointments]) => (
+                <div key={date}>
+                  <h2 className="text-lg font-semibold text-white mb-3 capitalize flex items-center gap-2">
+                    <Calendar className="w-5 h-5 text-[#d4a855]" />
+                    {date}
+                    <span className="text-sm font-normal text-[rgba(255,255,255,0.5)]">
+                      ({dayAppointments.length})
+                    </span>
+                  </h2>
+                  <div className="grid gap-3">
+                    {dayAppointments.map((appointment) => {
+                      const status = statusConfig[(appointment.status as keyof typeof statusConfig) || 'confirmed']
+                      const StatusIcon = status.icon
+                      const imminent = isImminent(appointment)
+                      const isActive = appointment.status === 'confirmed'
 
-                    return (
-                      <div
-                        key={appointment.id}
-                        className={`admin-card p-4 flex flex-col gap-4 transition-all ${
-                          imminent ? 'border-[#d4a855] ring-2 ring-[#d4a855]/30 shadow-[0_0_20px_rgba(212,168,85,0.2)]' : ''
-                        }`}
-                      >
-                        {/* Top row: Time, Customer, Status */}
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                          {/* Time */}
-                          <div className="flex items-center gap-3 sm:w-28 flex-shrink-0">
-                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                      return (
+                        <div
+                          key={appointment.id}
+                          className={`admin-card p-4 transition-all ${
+                            imminent ? 'border-[#d4a855] ring-2 ring-[#d4a855]/30 shadow-[0_0_20px_rgba(212,168,85,0.2)]' : ''
+                          }`}
+                        >
+                          {/* Mobile-optimized layout */}
+                          <div className="flex items-start gap-3">
+                            {/* Time badge */}
+                            <div className={`w-14 h-14 rounded-xl flex flex-col items-center justify-center flex-shrink-0 ${
                               imminent ? 'bg-[#d4a855]/20 animate-pulse' : 'bg-[rgba(212,168,85,0.1)]'
                             }`}>
-                              <Clock className={`w-5 h-5 ${imminent ? 'text-[#d4a855]' : 'text-[#d4a855]'}`} />
-                            </div>
-                            <div>
-                              <span className="text-xl font-bold text-white">
+                              <span className="text-base font-bold text-[#d4a855] leading-tight">
                                 {appointment.time}
                               </span>
                               {imminent && (
-                                <span className="block text-xs text-[#d4a855] font-medium">
-                                  Imminente
+                                <span className="text-[9px] text-[#d4a855] font-medium">
+                                  Ora!
                                 </span>
                               )}
                             </div>
-                          </div>
 
-                          {/* Customer info */}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <User className="w-4 h-4 text-[rgba(255,255,255,0.5)]" />
-                              <span className="font-medium text-white">
-                                {appointment.clientName}
-                              </span>
+                            {/* Main info */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-medium text-white truncate">
+                                  {appointment.clientName}
+                                </span>
+                                <span className={`admin-badge ${status.class} flex items-center gap-1 text-xs`}>
+                                  <StatusIcon className="w-3 h-3" />
+                                  <span className="hidden sm:inline">{status.label}</span>
+                                </span>
+                              </div>
+
+                              {/* Service */}
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="admin-badge admin-badge-gold text-xs">
+                                  {appointment.service?.name || 'Servizio'}
+                                </span>
+                                {appointment.service?.duration && (
+                                  <span className="text-xs text-[rgba(255,255,255,0.4)]">
+                                    {appointment.service.duration} min
+                                  </span>
+                                )}
+                              </div>
+
+                              {/* Contact + Quick actions row */}
+                              <div className="flex items-center justify-between gap-2">
+                                {/* Contact buttons */}
+                                <div className="flex items-center gap-2">
+                                  {appointment.clientPhone && (
+                                    <>
+                                      <a
+                                        href={`tel:${appointment.clientPhone}`}
+                                        className="flex items-center gap-1.5 text-sm text-[rgba(255,255,255,0.5)] hover:text-[#d4a855] transition-colors"
+                                      >
+                                        <Phone className="w-3.5 h-3.5" />
+                                        <span className="hidden sm:inline">{appointment.clientPhone}</span>
+                                      </a>
+                                      <a
+                                        href={`https://wa.me/${appointment.clientPhone.replace(/\s+/g, '').replace(/^\+/, '')}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="p-1.5 rounded-md bg-green-500/10 hover:bg-green-500/20 text-green-400 transition-colors"
+                                        title="WhatsApp"
+                                      >
+                                        <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                                      </a>
+                                    </>
+                                  )}
+                                  {appointment.clientEmail && (
+                                    <a
+                                      href={`mailto:${appointment.clientEmail}`}
+                                      className="flex items-center gap-1.5 text-sm text-[rgba(255,255,255,0.5)] hover:text-[#d4a855] transition-colors hidden sm:flex"
+                                    >
+                                      <Mail className="w-3.5 h-3.5" />
+                                      <span className="truncate max-w-[140px]">{appointment.clientEmail}</span>
+                                    </a>
+                                  )}
+                                </div>
+
+                                {/* Inline quick actions for confirmed appointments */}
+                                <div className="flex items-center gap-2">
+                                  {isActive && (
+                                    <>
+                                      <button
+                                        onClick={() => handleQuickAction(appointment.id, 'completed')}
+                                        disabled={actionLoading === appointment.id}
+                                        className="px-3 py-1.5 min-h-[36px] rounded-lg bg-green-500/20 hover:bg-green-500/30 text-green-400 text-xs font-medium transition-all disabled:opacity-50 flex items-center gap-1"
+                                        title="Completa"
+                                      >
+                                        <CheckCircle className="w-3.5 h-3.5" />
+                                        <span className="hidden sm:inline">Completa</span>
+                                      </button>
+                                      <button
+                                        onClick={() => handleQuickAction(appointment.id, 'noshow')}
+                                        disabled={actionLoading === appointment.id}
+                                        className="px-3 py-1.5 min-h-[36px] rounded-lg bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 text-xs font-medium transition-all disabled:opacity-50 flex items-center gap-1"
+                                        title="No-show"
+                                      >
+                                        <UserX className="w-3.5 h-3.5" />
+                                        <span className="hidden sm:inline">No-show</span>
+                                      </button>
+                                    </>
+                                  )}
+                                  <AppointmentActions
+                                    appointmentId={String(appointment.id)}
+                                    currentStatus={appointment.status as string}
+                                    clientEmail={appointment.clientEmail}
+                                    clientName={appointment.clientName}
+                                    clientPhone={appointment.clientPhone}
+                                  />
+                                </div>
+                              </div>
                             </div>
-                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-[rgba(255,255,255,0.5)]">
-                              <a
-                                href={`tel:${appointment.clientPhone}`}
-                                className="flex items-center gap-1.5 hover:text-[#d4a855] transition-colors"
-                              >
-                                <Phone className="w-3.5 h-3.5" />
-                                <span>{appointment.clientPhone}</span>
-                              </a>
-                              <a
-                                href={`mailto:${appointment.clientEmail}`}
-                                className="flex items-center gap-1.5 hover:text-[#d4a855] transition-colors"
-                              >
-                                <Mail className="w-3.5 h-3.5" />
-                                <span className="truncate max-w-[180px]">{appointment.clientEmail}</span>
-                              </a>
+                          </div>
+
+                          {/* Notes row (if present) */}
+                          {appointment.notes && (
+                            <div className="flex items-start gap-2 pt-3 mt-3 border-t border-[rgba(255,255,255,0.05)] ml-[68px]">
+                              <FileText className="w-4 h-4 text-[rgba(255,255,255,0.4)] mt-0.5 flex-shrink-0" />
+                              <p className="text-sm text-[rgba(255,255,255,0.6)] italic">
+                                {appointment.notes}
+                              </p>
                             </div>
-                          </div>
-
-                          {/* Service & Barber */}
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="admin-badge admin-badge-gold">
-                              {appointment.service?.name || 'Servizio'}
-                            </span>
-                            {appointment.service?.duration && (
-                              <span className="text-xs text-[rgba(255,255,255,0.4)]">
-                                {appointment.service.duration} min
-                              </span>
-                            )}
-                            {appointment.barber && (
-                              <span className="text-sm text-[rgba(255,255,255,0.5)]">
-                                con {appointment.barber}
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Status & Actions */}
-                          <div className="flex items-center gap-3">
-                            <span className={`admin-badge ${status.class} flex items-center gap-1`}>
-                              <StatusIcon className="w-3.5 h-3.5" />
-                              {status.label}
-                            </span>
-                            <AppointmentActions
-                              appointmentId={String(appointment.id)}
-                              currentStatus={appointment.status as string}
-                              clientEmail={appointment.clientEmail}
-                              clientName={appointment.clientName}
-                            />
-                          </div>
+                          )}
                         </div>
-
-                        {/* Notes row (if present) */}
-                        {appointment.notes && (
-                          <div className="flex items-start gap-2 pt-2 border-t border-[rgba(255,255,255,0.05)]">
-                            <FileText className="w-4 h-4 text-[rgba(255,255,255,0.4)] mt-0.5 flex-shrink-0" />
-                            <p className="text-sm text-[rgba(255,255,255,0.6)] italic">
-                              {appointment.notes}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="admin-card p-12 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[rgba(212,168,85,0.1)] flex items-center justify-center">
-              <Calendar className="w-8 h-8 text-[#d4a855]" />
-            </div>
-            <h3 className="text-lg font-semibold text-white mb-2">
-              {hasActiveFilters ? 'Nessun risultato' : 'Nessun appuntamento'}
-            </h3>
-            <p className="text-[rgba(255,255,255,0.5)]">
-              {hasActiveFilters
-                ? 'Prova a modificare i filtri di ricerca'
-                : 'Non ci sono appuntamenti programmati'}
-            </p>
-            {hasActiveFilters && (
-              <button
-                onClick={clearFilters}
-                className="mt-4 admin-btn admin-btn-secondary"
-              >
-                Cancella filtri
-              </button>
-            )}
-          </div>
-        )
-      ) : (
-        /* CALENDAR VIEW */
-        <div className="admin-card overflow-hidden">
-          {/* Calendar Header - Week Navigation */}
-          <div className="flex items-center justify-between p-4 border-b border-[rgba(255,255,255,0.1)]">
-            <button
-              onClick={() => navigateWeek('prev')}
-              className="p-2 rounded-lg hover:bg-[rgba(255,255,255,0.1)] transition-colors"
-            >
-              <ChevronLeft className="w-5 h-5 text-white" />
-            </button>
-            <div className="text-center">
-              <h2 className="text-lg font-semibold text-white">
-                {weekDays[0].toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })} - {weekDays[6].toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' })}
-              </h2>
-            </div>
-            <button
-              onClick={() => navigateWeek('next')}
-              className="p-2 rounded-lg hover:bg-[rgba(255,255,255,0.1)] transition-colors"
-            >
-              <ChevronRight className="w-5 h-5 text-white" />
-            </button>
-          </div>
-
-          {/* Calendar Grid */}
-          <div className="overflow-x-auto">
-            <div className="min-w-[900px]">
-              {/* Days Header */}
-              <div className="grid grid-cols-8 border-b border-[rgba(255,255,255,0.1)]">
-                <div className="p-2 text-center text-xs text-[rgba(255,255,255,0.4)] font-medium border-r border-[rgba(255,255,255,0.05)]">
-                  Ora
-                </div>
-                {weekDays.map((day, i) => {
-                  const dayStr = day.toISOString().split('T')[0]
-                  const isToday = dayStr === todayStr
-                  const dayNames = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab']
-                  return (
-                    <div
-                      key={i}
-                      className={`p-2 text-center border-r border-[rgba(255,255,255,0.05)] last:border-r-0 ${
-                        isToday ? 'bg-[#d4a855]/10' : ''
-                      }`}
-                    >
-                      <div className={`text-xs font-medium ${isToday ? 'text-[#d4a855]' : 'text-[rgba(255,255,255,0.4)]'}`}>
-                        {dayNames[day.getDay()]}
-                      </div>
-                      <div className={`text-sm font-bold ${isToday ? 'text-[#d4a855]' : 'text-white'}`}>
-                        {day.getDate()}
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-
-              {/* Time Slots */}
-              <div className="relative">
-                {/* Hour lines - 8:00 to 20:00 */}
-                {Array.from({ length: 13 }, (_, i) => i + 8).map((hour) => (
-                  <div key={hour} className="grid grid-cols-8 border-b border-[rgba(255,255,255,0.05)]" style={{ height: '60px' }}>
-                    <div className="p-1 text-right pr-2 text-xs text-[rgba(255,255,255,0.4)] border-r border-[rgba(255,255,255,0.05)]">
-                      {hour.toString().padStart(2, '0')}:00
-                    </div>
-                    {weekDays.map((day, dayIndex) => {
-                      const dayStr = day.toISOString().split('T')[0]
-                      const isToday = dayStr === todayStr
-                      return (
-                        <div
-                          key={dayIndex}
-                          className={`relative border-r border-[rgba(255,255,255,0.05)] last:border-r-0 ${
-                            isToday ? 'bg-[#d4a855]/5' : ''
-                          }`}
-                        />
                       )
                     })}
                   </div>
-                ))}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="admin-card p-12 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[rgba(212,168,85,0.1)] flex items-center justify-center">
+                <Calendar className="w-8 h-8 text-[#d4a855]" />
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">
+                {hasActiveFilters ? 'Nessun risultato' : 'Nessun appuntamento'}
+              </h3>
+              <p className="text-[rgba(255,255,255,0.5)]">
+                {hasActiveFilters
+                  ? 'Prova a modificare i filtri di ricerca'
+                  : 'Non ci sono appuntamenti programmati'}
+              </p>
+              {hasActiveFilters && (
+                <button
+                  onClick={clearFilters}
+                  className="mt-4 admin-btn admin-btn-secondary"
+                >
+                  Cancella filtri
+                </button>
+              )}
+            </div>
+          )
+        ) : (
+          /* CALENDAR VIEW (desktop only) */
+          <div className="admin-card overflow-hidden">
+            {/* Calendar Header - Week Navigation */}
+            <div className="flex items-center justify-between p-4 border-b border-[rgba(255,255,255,0.1)]">
+              <button
+                onClick={() => navigateWeek('prev')}
+                className="p-2 rounded-lg hover:bg-[rgba(255,255,255,0.1)] transition-colors"
+              >
+                <ChevronLeft className="w-5 h-5 text-white" />
+              </button>
+              <div className="text-center">
+                <h2 className="text-lg font-semibold text-white">
+                  {weekDays[0].toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })} - {weekDays[6].toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </h2>
+              </div>
+              <button
+                onClick={() => navigateWeek('next')}
+                className="p-2 rounded-lg hover:bg-[rgba(255,255,255,0.1)] transition-colors"
+              >
+                <ChevronRight className="w-5 h-5 text-white" />
+              </button>
+            </div>
 
-                {/* Appointments Overlay */}
-                <div className="absolute inset-0 grid grid-cols-8 pointer-events-none">
-                  <div /> {/* Time column placeholder */}
-                  {weekDays.map((day, dayIndex) => {
-                    const dayAppointments = getAppointmentsForDay(day)
+            {/* Calendar Grid */}
+            <div className="overflow-x-auto">
+              <div className="min-w-[900px]">
+                {/* Days Header */}
+                <div className="grid grid-cols-8 border-b border-[rgba(255,255,255,0.1)]">
+                  <div className="p-2 text-center text-xs text-[rgba(255,255,255,0.4)] font-medium border-r border-[rgba(255,255,255,0.05)]">
+                    Ora
+                  </div>
+                  {weekDays.map((day, i) => {
+                    const dayStr = day.toISOString().split('T')[0]
+                    const isToday = dayStr === todayStr
+                    const dayNames = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab']
                     return (
-                      <div key={dayIndex} className="relative">
-                        {dayAppointments.map((apt) => {
-                          const pos = getAppointmentPosition(apt)
-                          const status = statusConfig[(apt.status as keyof typeof statusConfig) || 'pending']
-                          return (
-                            <div
-                              key={apt.id}
-                              className={`absolute left-0.5 right-0.5 rounded px-1 py-0.5 text-xs cursor-pointer pointer-events-auto border-l-2 overflow-hidden transition-transform hover:scale-105 hover:z-10 ${getStatusColor(apt.status)}`}
-                              style={{
-                                top: `${pos.top}px`,
-                                height: `${Math.max(pos.height, 24)}px`,
-                              }}
-                              title={`${apt.time} - ${apt.clientName}\n${apt.service?.name || 'Servizio'}\n${status.label}`}
-                              onClick={() => {
-                                // Future: open detail modal
-                              }}
-                            >
-                              <div className="font-medium text-white truncate text-[10px]">
-                                {apt.time}
-                              </div>
-                              {pos.height >= 40 && (
-                                <div className="text-white/80 truncate text-[10px]">
-                                  {apt.clientName}
-                                </div>
-                              )}
-                              {pos.height >= 55 && (
-                                <div className="text-white/60 truncate text-[9px]">
-                                  {apt.service?.name}
-                                </div>
-                              )}
-                            </div>
-                          )
-                        })}
+                      <div
+                        key={i}
+                        className={`p-2 text-center border-r border-[rgba(255,255,255,0.05)] last:border-r-0 ${
+                          isToday ? 'bg-[#d4a855]/10' : ''
+                        }`}
+                      >
+                        <div className={`text-xs font-medium ${isToday ? 'text-[#d4a855]' : 'text-[rgba(255,255,255,0.4)]'}`}>
+                          {dayNames[day.getDay()]}
+                        </div>
+                        <div className={`text-sm font-bold ${isToday ? 'text-[#d4a855]' : 'text-white'}`}>
+                          {day.getDate()}
+                        </div>
                       </div>
                     )
                   })}
                 </div>
+
+                {/* Time Slots */}
+                <div className="relative">
+                  {Array.from({ length: 13 }, (_, i) => i + 8).map((hour) => (
+                    <div key={hour} className="grid grid-cols-8 border-b border-[rgba(255,255,255,0.05)]" style={{ height: '60px' }}>
+                      <div className="p-1 text-right pr-2 text-xs text-[rgba(255,255,255,0.4)] border-r border-[rgba(255,255,255,0.05)]">
+                        {hour.toString().padStart(2, '0')}:00
+                      </div>
+                      {weekDays.map((day, dayIndex) => {
+                        const dayStr = day.toISOString().split('T')[0]
+                        const isToday = dayStr === todayStr
+                        return (
+                          <div
+                            key={dayIndex}
+                            className={`relative border-r border-[rgba(255,255,255,0.05)] last:border-r-0 ${
+                              isToday ? 'bg-[#d4a855]/5' : ''
+                            }`}
+                          />
+                        )
+                      })}
+                    </div>
+                  ))}
+
+                  {/* Appointments Overlay */}
+                  <div className="absolute inset-0 grid grid-cols-8 pointer-events-none">
+                    <div /> {/* Time column placeholder */}
+                    {weekDays.map((day, dayIndex) => {
+                      const dayAppointments = getAppointmentsForDay(day)
+                      return (
+                        <div key={dayIndex} className="relative">
+                          {dayAppointments.map((apt) => {
+                            const pos = getAppointmentPosition(apt)
+                            const aptStatus = statusConfig[(apt.status as keyof typeof statusConfig) || 'confirmed']
+                            return (
+                              <div
+                                key={apt.id}
+                                className={`absolute left-0.5 right-0.5 rounded px-1 py-0.5 text-xs cursor-pointer pointer-events-auto border-l-2 overflow-hidden transition-transform hover:scale-105 hover:z-10 ${getStatusColor(apt.status)}`}
+                                style={{
+                                  top: `${pos.top}px`,
+                                  height: `${Math.max(pos.height, 24)}px`,
+                                }}
+                                title={`${apt.time} - ${apt.clientName}\n${apt.service?.name || 'Servizio'}\n${aptStatus.label}`}
+                              >
+                                <div className="font-medium text-white truncate text-[10px]">
+                                  {apt.time}
+                                </div>
+                                {pos.height >= 40 && (
+                                  <div className="text-white/80 truncate text-[10px]">
+                                    {apt.clientName}
+                                  </div>
+                                )}
+                                {pos.height >= 55 && (
+                                  <div className="text-white/60 truncate text-[9px]">
+                                    {apt.service?.name}
+                                  </div>
+                                )}
+                              </div>
+                            )
+                          })}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Legend */}
+            <div className="p-3 border-t border-[rgba(255,255,255,0.1)] flex flex-wrap gap-4 text-xs">
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded bg-green-500/80 border-l-2 border-green-400" />
+                <span className="text-[rgba(255,255,255,0.5)]">Confermato</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded bg-[#d4a855]/80 border-l-2 border-[#d4a855]" />
+                <span className="text-[rgba(255,255,255,0.5)]">Completato</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded bg-red-500/50 border-l-2 border-red-400 opacity-60" />
+                <span className="text-[rgba(255,255,255,0.5)]">Annullato/No Show</span>
               </div>
             </div>
           </div>
-
-          {/* Legend */}
-          <div className="p-3 border-t border-[rgba(255,255,255,0.1)] flex flex-wrap gap-4 text-xs">
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded bg-orange-500/80 border-l-2 border-orange-400" />
-              <span className="text-[rgba(255,255,255,0.5)]">In attesa</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded bg-green-500/80 border-l-2 border-green-400" />
-              <span className="text-[rgba(255,255,255,0.5)]">Confermato</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded bg-[#d4a855]/80 border-l-2 border-[#d4a855]" />
-              <span className="text-[rgba(255,255,255,0.5)]">Completato</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded bg-red-500/50 border-l-2 border-red-400 opacity-60" />
-              <span className="text-[rgba(255,255,255,0.5)]">Annullato/No Show</span>
-            </div>
-          </div>
-        </div>
-      )}
+        )
+      ) : null}
     </div>
   )
 }

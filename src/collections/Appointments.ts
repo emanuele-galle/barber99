@@ -42,7 +42,6 @@ export const Appointments: CollectionConfig = {
             it: 'Email',
             en: 'Email',
           },
-          required: true,
         },
       ],
     },
@@ -150,7 +149,7 @@ export const Appointments: CollectionConfig = {
         { label: { it: 'In Coda', en: 'In Queue' }, value: 'inqueue' },
         { label: { it: 'In Servizio', en: 'In Service' }, value: 'inservice' },
       ],
-      defaultValue: 'pending',
+      defaultValue: 'confirmed',
       required: true,
       admin: {
         position: 'sidebar',

@@ -5,7 +5,7 @@ import config from '@payload-config'
 import { TodayHeader } from '@/components/admin/dashboard/TodayHeader'
 import { TodayTimeline } from '@/components/admin/dashboard/TodayTimeline'
 import { QuickActions } from '@/components/admin/dashboard/QuickActionsNew'
-import { PendingConfirmations } from '@/components/admin/dashboard/PendingConfirmations'
+import { UpcomingAppointments } from '@/components/admin/dashboard/PendingConfirmations'
 import { DailyStats } from '@/components/admin/dashboard/DailyStats'
 import { ArrowRight, Star, MessageSquare } from 'lucide-react'
 import Link from 'next/link'
@@ -44,18 +44,6 @@ async function getDashboardData() {
     depth: 2,
   })
 
-  // Get pending appointments (all, not just today)
-  const pendingAppointments = await payload.find({
-    collection: 'appointments',
-    where: {
-      status: { equals: 'pending' },
-      date: { greater_than_equal: today.toISOString() },
-    },
-    sort: 'date',
-    limit: 20,
-    depth: 2,
-  })
-
   // Count walk-ins in queue today
   const queueAppointments = await payload.count({
     collection: 'appointments',
@@ -70,7 +58,6 @@ async function getDashboardData() {
   })
 
   // Get opening hours for today
-  // Convert JS day number (0=Sun) to string format used in collection
   const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
   const dayOfWeekString = dayNames[today.getDay()]
   const openingHours = await payload.find({
@@ -100,7 +87,6 @@ async function getDashboardData() {
 
   return {
     todayAppointments: todayAppointments.docs as Appointment[],
-    pendingAppointments: pendingAppointments.docs as Appointment[],
     openingTime: openingHours.docs[0]?.openTime || '09:00',
     closingTime: openingHours.docs[0]?.closeTime || '19:00',
     isOpenToday: openingHours.docs[0]?.isClosed ? false : true,
@@ -147,7 +133,6 @@ export default async function AdminDashboard() {
     (apt) => apt.status !== 'cancelled' && apt.status !== 'noshow'
   )
   const completedToday = activeToday.filter((apt) => apt.status === 'completed')
-  const pendingCount = data.pendingAppointments.length
 
   // Calculate estimated revenue
   const estimatedRevenue = activeToday.reduce((sum, apt) => {
@@ -170,12 +155,11 @@ export default async function AdminDashboard() {
       barberName: typeof apt.barber === 'object' ? apt.barber.name : undefined,
     }))
 
-  // Format pending appointments
-  const pendingList = data.pendingAppointments.map((apt) => ({
+  // Format upcoming appointments for sidebar
+  const upcomingList = upcomingAppointments.map((apt) => ({
     id: apt.id,
     clientName: apt.clientName,
     clientPhone: apt.clientPhone,
-    date: apt.date,
     time: apt.time,
     serviceName: typeof apt.service === 'object' ? apt.service.name : 'Servizio',
   }))
@@ -190,11 +174,11 @@ export default async function AdminDashboard() {
         estimatedRevenue={estimatedRevenue}
         totalAppointments={activeToday.length}
         completedAppointments={completedToday.length}
-        pendingConfirmations={pendingCount}
+        upcomingCount={upcomingAppointments.length}
       />
 
       {/* Quick Actions */}
-      <QuickActions pendingCount={pendingCount} queueCount={data.queueCount} />
+      <QuickActions queueCount={data.queueCount} />
 
       {/* Main content grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -209,8 +193,8 @@ export default async function AdminDashboard() {
 
         {/* Sidebar */}
         <div className="space-y-6">
-          {/* Pending Confirmations */}
-          <PendingConfirmations appointments={pendingList} />
+          {/* Upcoming Appointments */}
+          <UpcomingAppointments appointments={upcomingList} />
 
           {/* Recent Contacts */}
           {data.recentContacts.length > 0 && (

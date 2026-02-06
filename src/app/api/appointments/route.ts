@@ -44,8 +44,8 @@ export async function POST(request: NextRequest) {
       notes,
     } = body
 
-    // Validate required fields
-    if (!service || !date || !time || !clientName || !clientEmail || !clientPhone) {
+    // Validate required fields (email is optional)
+    if (!service || !date || !time || !clientName || !clientPhone) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
         clientEmail,
         clientPhone,
         notes: notes || '',
-        status: 'pending',
+        status: 'confirmed',
         emailSent: false,
         whatsappSent: false,
       },

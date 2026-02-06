@@ -262,7 +262,7 @@ export function validateBookingData(data: BookingData): ValidationResult {
     errors.clientName = 'Inserisci il tuo nome'
   }
 
-  if (!data.clientEmail || !isValidEmail(data.clientEmail)) {
+  if (data.clientEmail && !isValidEmail(data.clientEmail)) {
     errors.clientEmail = 'Inserisci un\'email valida'
   }
 
