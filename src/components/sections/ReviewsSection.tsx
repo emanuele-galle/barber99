@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-react'
-import { GradientOrb, FloatingParticles, NoiseTexture } from '@/components/BackgroundEffects'
+import { GradientOrb, NoiseTexture } from '@/components/BackgroundEffects'
 import { useShouldReduceMotion } from '@/hooks/useIsMobile'
 
 interface Review {
@@ -115,8 +115,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
       <section id="reviews" className="section-padding bg-[#0c0c0c] relative overflow-hidden">
         {/* Background Effects - già ottimizzati */}
         <div className="absolute inset-0 pointer-events-none">
-          <GradientOrb color="gold" size="lg" position="top-left" blur="xl" delay={0} />
-          <GradientOrb color="dark" size="xl" position="bottom-right" blur="xl" delay={1.5} />
+          <GradientOrb color="dark" size="lg" position="top-left" blur="xl" animate={false} />
           <NoiseTexture opacity={0.02} />
         </div>
 
@@ -253,9 +252,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
     <section id="reviews" className="section-padding bg-[#0c0c0c] relative overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 pointer-events-none">
-        <GradientOrb color="gold" size="lg" position="top-left" blur="xl" delay={0} />
-        <GradientOrb color="dark" size="xl" position="bottom-right" blur="xl" delay={1.5} />
-        <FloatingParticles count={10} color="gold" />
+        <GradientOrb color="dark" size="lg" position="top-left" blur="xl" animate={false} />
         <NoiseTexture opacity={0.02} />
       </div>
 

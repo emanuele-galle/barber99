@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { ServiceForm } from '@/components/admin-panel/ServiceForm'
 
 export default function NuovoServizioPage() {

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { GradientOrb, FloatingParticles, NoiseTexture, SectionDivider } from '@/components/BackgroundEffects'
+import { GradientOrb, NoiseTexture, SectionDivider } from '@/components/BackgroundEffects'
 import { useShouldReduceMotion } from '@/hooks/useIsMobile'
 import { Instagram, ExternalLink } from 'lucide-react'
 
@@ -123,8 +123,7 @@ export default function InstagramGallerySection({ instagramHandle = 'barber___99
     return (
       <section id="gallery" className="section-padding bg-[#151515] relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
-          <GradientOrb color="dark" size="xl" position="top-left" blur="xl" delay={0} />
-          <GradientOrb color="gold" size="lg" position="bottom-right" blur="lg" delay={1.5} />
+          <GradientOrb color="dark" size="lg" position="top-left" blur="xl" animate={false} />
           <NoiseTexture opacity={0.02} />
         </div>
 
@@ -221,9 +220,7 @@ export default function InstagramGallerySection({ instagramHandle = 'barber___99
   return (
     <section id="gallery" className="section-padding bg-[#151515] relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
-        <GradientOrb color="dark" size="xl" position="top-left" blur="xl" delay={0} />
-        <GradientOrb color="gold" size="lg" position="bottom-right" blur="lg" delay={1.5} />
-        <FloatingParticles count={8} color="gold" />
+        <GradientOrb color="dark" size="lg" position="top-left" blur="xl" animate={false} />
         <NoiseTexture opacity={0.02} />
       </div>
 

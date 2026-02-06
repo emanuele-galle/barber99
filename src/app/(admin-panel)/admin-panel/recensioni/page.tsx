@@ -4,6 +4,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { Star, Calendar, User, CheckCircle, XCircle } from 'lucide-react'
 import { ReviewActions } from '@/components/admin-panel/ReviewActions'
+import { SyncReviewsButton } from '@/components/admin-panel/SyncReviewsButton'
 
 async function getReviews() {
   const payload = await getPayload({ config })
@@ -50,13 +51,16 @@ export default async function RecensioniPage() {
             Gestisci le recensioni dei clienti
           </p>
         </div>
-        <div className="admin-card px-4 py-3 flex items-center gap-3">
-          <div className="text-2xl font-bold text-[#d4a855]">{avgRating.toFixed(1)}</div>
-          <div>
-            <StarRating rating={Math.round(avgRating)} />
-            <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">
-              {reviews.length} recensioni
-            </p>
+        <div className="flex items-center gap-3">
+          <SyncReviewsButton />
+          <div className="admin-card px-4 py-3 flex items-center gap-3">
+            <div className="text-2xl font-bold text-[#d4a855]">{avgRating.toFixed(1)}</div>
+            <div>
+              <StarRating rating={Math.round(avgRating)} />
+              <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">
+                {reviews.length} recensioni
+              </p>
+            </div>
           </div>
         </div>
       </div>

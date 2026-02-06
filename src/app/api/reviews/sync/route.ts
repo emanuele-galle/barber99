@@ -85,16 +85,34 @@ async function fetchGoogleReviews(): Promise<{ reviews: ApifyReview[]; placeInfo
 
 export async function POST(request: NextRequest) {
   try {
+    const payload = await getPayload({ config })
+
     const secret = request.headers.get('x-sync-secret')
-    if (!SYNC_SECRET || secret !== SYNC_SECRET) {
+    const isSecretValid = SYNC_SECRET && secret === SYNC_SECRET
+
+    // Also allow authenticated admin users (from admin panel)
+    let isAdmin = false
+    if (!isSecretValid) {
+      try {
+        const authHeader = request.headers.get('authorization')
+        const cookie = request.headers.get('cookie')
+        const headers = new Headers()
+        if (authHeader) headers.set('Authorization', authHeader)
+        if (cookie) headers.set('Cookie', cookie)
+        const { user } = await payload.auth({ headers })
+        isAdmin = Boolean(user)
+      } catch {
+        isAdmin = false
+      }
+    }
+
+    if (!isSecretValid && !isAdmin) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     if (!APIFY_API_TOKEN) {
       return NextResponse.json({ error: 'APIFY_API_TOKEN not configured' }, { status: 500 })
     }
-
-    const payload = await getPayload({ config })
     const { reviews, placeInfo } = await fetchGoogleReviews()
 
     if (reviews.length === 0) {

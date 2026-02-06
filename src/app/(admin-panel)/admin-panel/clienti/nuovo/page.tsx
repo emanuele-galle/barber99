@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { ClientForm } from '@/components/admin-panel/ClientForm'
 
 export default function NuovoClientePage() {

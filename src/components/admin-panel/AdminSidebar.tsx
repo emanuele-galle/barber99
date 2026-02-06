@@ -8,7 +8,6 @@ import {
   Scissors,
   Calendar,
   Clock,
-  ImageIcon,
   Star,
   MessageSquare,
   Settings,
@@ -30,7 +29,6 @@ const menuItems = [
   { href: '/admin-panel/servizi', label: 'Servizi', icon: Scissors },
   { href: '/admin-panel/analytics', label: 'Analytics', icon: BarChart2 },
   { href: '/admin-panel/orari', label: 'Orari', icon: Clock },
-  { href: '/admin-panel/galleria', label: 'Galleria', icon: ImageIcon },
   { href: '/admin-panel/recensioni', label: 'Recensioni', icon: Star },
   { href: '/admin-panel/contatti', label: 'Contatti', icon: MessageSquare },
 ]

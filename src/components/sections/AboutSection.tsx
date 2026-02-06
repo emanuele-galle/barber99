@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform } from 'motion/react'
 import Image from 'next/image'
 import { Award, Heart, Scissors, Users } from 'lucide-react'
 import { useRef } from 'react'
-import { GradientOrb, FloatingParticles, NoiseTexture, SectionDivider } from '@/components/BackgroundEffects'
+import { GradientOrb, NoiseTexture, SectionDivider } from '@/components/BackgroundEffects'
 
 const features = [
   {
@@ -44,9 +44,7 @@ export default function AboutSection() {
       <section ref={sectionRef} id="about" className="section-padding bg-[#0c0c0c] relative overflow-hidden">
         {/* Background Effects */}
         <div className="absolute inset-0 pointer-events-none">
-          <GradientOrb color="gold" size="xl" position="top-right" blur="xl" delay={0} />
-          <GradientOrb color="dark" size="lg" position="bottom-left" blur="lg" delay={2} />
-          <FloatingParticles count={12} color="gold" />
+          <GradientOrb color="dark" size="lg" position="top-right" blur="xl" animate={false} />
           <NoiseTexture opacity={0.02} />
         </div>
 

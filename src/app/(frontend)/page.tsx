@@ -47,7 +47,7 @@ interface ReviewDoc {
 async function getData() {
   const payload = await getPayload({ config })
 
-  const [servicesData, reviewsData] = await Promise.all([
+  const [servicesData, reviewsData, allReviewsData] = await Promise.all([
     payload.find({
       collection: 'services',
       where: { active: { equals: true } },
@@ -60,18 +60,23 @@ async function getData() {
       sort: '-createdAt',
       limit: 10,
     }),
+    payload.find({
+      collection: 'reviews',
+      limit: 0, // only get totalDocs count
+    }),
   ])
 
   return {
     services: servicesData.docs as unknown as ServiceDoc[],
     reviews: reviewsData.docs as unknown as ReviewDoc[],
+    totalReviewCount: allReviewsData.totalDocs,
   }
 }
 
 export default async function Home() {
-  const { services, reviews } = await getData()
+  const { services, reviews, totalReviewCount } = await getData()
 
-  // Calculate average rating from reviews
+  // Calculate average rating from featured reviews
   const averageRating =
     reviews.length > 0
       ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
@@ -91,10 +96,12 @@ export default async function Home() {
       </main>
       <Footer />
       <MobileNav />
-      <GoogleReviewsBadge
-        averageRating={averageRating}
-        reviewCount={reviews.length}
-      />
+      {totalReviewCount > 0 && (
+        <GoogleReviewsBadge
+          averageRating={averageRating}
+          reviewCount={totalReviewCount}
+        />
+      )}
     </HomeWrapper>
   )
 }

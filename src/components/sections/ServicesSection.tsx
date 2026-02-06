@@ -4,7 +4,7 @@ import { motion } from 'motion/react'
 import Link from 'next/link'
 import { Scissors, Sparkles, Droplets, Crown, Palette, Star, Clock, ArrowRight, LucideIcon } from 'lucide-react'
 import { useRef, useState } from 'react'
-import { GradientOrb, GridPattern, NoiseTexture, SectionDivider } from '@/components/BackgroundEffects'
+import { GradientOrb, NoiseTexture, SectionDivider } from '@/components/BackgroundEffects'
 import { useShouldReduceMotion } from '@/hooks/useIsMobile'
 
 // Map icon names to Lucide components
@@ -54,29 +54,10 @@ export default function ServicesSection({ services }: ServicesSectionProps) {
       <section id="services" className="section-padding bg-[#151515] relative overflow-hidden">
         {/* Background Effects */}
         <div className="absolute inset-0 pointer-events-none">
-          <GradientOrb color="gold" size="lg" position="bottom-right" blur="xl" delay={1} />
-          <GradientOrb color="dark" size="xl" position="top-left" blur="xl" delay={0} />
-          <GridPattern opacity={0.015} />
+          <GradientOrb color="dark" size="lg" position="top-left" blur="xl" animate={false} />
           <NoiseTexture opacity={0.02} />
         </div>
 
-        {/* Animated decorative lines - solo desktop */}
-        {!shouldReduceMotion && (
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <motion.div
-              initial={{ x: '-100%' }}
-              animate={{ x: '100%' }}
-              transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-              className="absolute top-1/4 left-0 w-1/2 h-px bg-gradient-to-r from-transparent via-[#d4a855]/20 to-transparent"
-            />
-            <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: '-100%' }}
-              transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
-              className="absolute top-3/4 left-0 w-1/2 h-px bg-gradient-to-r from-transparent via-[#d4a855]/20 to-transparent"
-            />
-          </div>
-        )}
 
         <div className="max-w-7xl mx-auto relative z-10">
           {/* Section Header */}

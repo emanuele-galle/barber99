@@ -44,27 +44,27 @@ export default function HeroSection() {
         <div className="relative z-10 text-center px-6 md:px-8 max-w-4xl mx-auto pt-20">
           <div className="relative py-8 md:py-12 px-6 md:px-10 rounded-2xl bg-[#0c0c0c]/40 backdrop-blur-sm border border-white/5">
             <p
-              className="text-[#F4662F] text-base md:text-lg tracking-[0.3em] uppercase mb-4 font-semibold"
+              className="text-[#F4662F] text-sm md:text-base tracking-[0.3em] uppercase mb-4 font-semibold"
               style={{
                 fontFamily: 'var(--font-cormorant), serif',
-                textShadow: '0 0 30px rgba(244, 102, 47, 0.5), 0 2px 8px rgba(0, 0, 0, 0.8)'
+                textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)'
               }}
             >
               Serra San Bruno
             </p>
 
             <h1
-              className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight"
+              className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight"
               style={{
                 fontFamily: 'var(--font-cinzel), serif',
-                textShadow: '0 4px 8px rgba(0, 0, 0, 0.9), 0 8px 16px rgba(0, 0, 0, 0.6), 0 16px 32px rgba(0, 0, 0, 0.4)'
+                textShadow: '0 2px 4px rgba(0, 0, 0, 0.8), 0 4px 12px rgba(0, 0, 0, 0.5)'
               }}
             >
               L&apos;Arte del{' '}
               <span
                 className="text-[#FF8555]"
                 style={{
-                  textShadow: '0 0 40px rgba(255, 133, 85, 0.6), 0 0 80px rgba(244, 102, 47, 0.4), 0 4px 8px rgba(0, 0, 0, 0.8)'
+                  textShadow: '0 2px 4px rgba(0, 0, 0, 0.8), 0 4px 12px rgba(0, 0, 0, 0.5)'
                 }}
               >
                 Barbiere
@@ -72,10 +72,10 @@ export default function HeroSection() {
             </h1>
 
             <p
-              className="text-white text-lg md:text-xl max-w-2xl mx-auto mb-8 leading-relaxed font-medium"
+              className="text-white/90 text-base md:text-lg max-w-2xl mx-auto mb-8 leading-relaxed"
               style={{
                 fontFamily: 'var(--font-cormorant), serif',
-                textShadow: '0 2px 8px rgba(0, 0, 0, 0.9), 0 4px 16px rgba(0, 0, 0, 0.6)'
+                textShadow: '0 2px 4px rgba(0, 0, 0, 0.8)'
               }}
             >
               Cosimo Pisani — Tradizione, precisione e passione dal 2015.
@@ -151,10 +151,10 @@ export default function HeroSection() {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <p
-              className="text-[#F4662F] text-base md:text-lg tracking-[0.3em] uppercase mb-4 font-semibold"
+              className="text-[#F4662F] text-sm md:text-base tracking-[0.3em] uppercase mb-4 font-semibold"
               style={{
                 fontFamily: 'var(--font-cormorant), serif',
-                textShadow: '0 0 30px rgba(244, 102, 47, 0.5), 0 2px 8px rgba(0, 0, 0, 0.8)'
+                textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)'
               }}
             >
               Serra San Bruno
@@ -165,17 +165,17 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight"
+            className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight"
             style={{
               fontFamily: 'var(--font-cinzel), serif',
-              textShadow: '0 4px 8px rgba(0, 0, 0, 0.9), 0 8px 16px rgba(0, 0, 0, 0.6), 0 16px 32px rgba(0, 0, 0, 0.4)'
+              textShadow: '0 2px 4px rgba(0, 0, 0, 0.8), 0 4px 12px rgba(0, 0, 0, 0.5)'
             }}
           >
             L&apos;Arte del{' '}
             <span
               className="text-[#FF8555]"
               style={{
-                textShadow: '0 0 40px rgba(255, 133, 85, 0.6), 0 0 80px rgba(244, 102, 47, 0.4), 0 4px 8px rgba(0, 0, 0, 0.8)'
+                textShadow: '0 2px 4px rgba(0, 0, 0, 0.8), 0 4px 12px rgba(0, 0, 0, 0.5)'
               }}
             >
               Barbiere
@@ -186,10 +186,10 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="text-white text-lg md:text-xl max-w-2xl mx-auto mb-8 leading-relaxed font-medium"
+            className="text-white/90 text-base md:text-lg max-w-2xl mx-auto mb-8 leading-relaxed"
             style={{
               fontFamily: 'var(--font-cormorant), serif',
-              textShadow: '0 2px 8px rgba(0, 0, 0, 0.9), 0 4px 16px rgba(0, 0, 0, 0.6)'
+              textShadow: '0 2px 4px rgba(0, 0, 0, 0.8)'
             }}
           >
             Cosimo Pisani — Tradizione, precisione e passione dal 2015.
@@ -203,7 +203,7 @@ export default function HeroSection() {
           >
             <Link
               href="/prenota"
-              className="btn-gold btn-ripple inline-flex items-center justify-center gap-3 text-base px-6 py-3 font-bold animate-pulse-gold"
+              className="btn-gold btn-ripple inline-flex items-center justify-center gap-3 text-base px-6 py-3 font-bold"
             >
               <Calendar className="w-5 h-5" />
               Prenota Appuntamento

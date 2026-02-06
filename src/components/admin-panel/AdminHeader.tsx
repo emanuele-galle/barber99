@@ -23,7 +23,6 @@ const menuItems = [
   { href: '/admin-panel/servizi', label: 'Servizi' },
   { href: '/admin-panel/appuntamenti', label: 'Appuntamenti' },
   { href: '/admin-panel/orari', label: 'Orari' },
-  { href: '/admin-panel/galleria', label: 'Galleria' },
   { href: '/admin-panel/recensioni', label: 'Recensioni' },
   { href: '/admin-panel/contatti', label: 'Contatti' },
 ]

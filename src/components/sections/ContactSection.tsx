@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { motion } from 'motion/react'
 import Link from 'next/link'
 import { MapPin, Phone, Clock, Calendar, Instagram, Send, Loader2, CheckCircle } from 'lucide-react'
-import { GradientOrb, GridPattern, NoiseTexture } from '@/components/BackgroundEffects'
+import { GradientOrb, NoiseTexture } from '@/components/BackgroundEffects'
 
 const contactInfo = [
   {
@@ -84,9 +84,7 @@ export default function ContactSection() {
     <section id="contact" className="section-padding bg-[#151515] relative overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 pointer-events-none">
-        <GradientOrb color="gold" size="xl" position="bottom-left" blur="xl" delay={0} />
-        <GradientOrb color="dark" size="lg" position="top-right" blur="lg" delay={1} />
-        <GridPattern opacity={0.02} />
+        <GradientOrb color="dark" size="lg" position="bottom-left" blur="xl" animate={false} />
         <NoiseTexture opacity={0.02} />
       </div>
 

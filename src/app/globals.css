@@ -466,10 +466,8 @@ body {
 }
 
 .card-hover-lift:hover {
-  transform: translateY(-8px);
-  box-shadow:
-    0 20px 40px rgba(0, 0, 0, 0.3),
-    0 0 20px rgba(212, 168, 85, 0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
 }
 
 /* Floating CTA Animation */
@@ -520,14 +518,12 @@ body {
 .text-shadow-hero {
   text-shadow:
     0 2px 4px rgba(0, 0, 0, 0.8),
-    0 4px 12px rgba(0, 0, 0, 0.6),
-    0 8px 24px rgba(0, 0, 0, 0.4);
+    0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 /* Gold text shadow for accent texts */
 .text-shadow-gold {
   text-shadow:
-    0 0 20px rgba(212, 168, 85, 0.3),
     0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
