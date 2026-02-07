@@ -8,7 +8,6 @@ import {
   Clock,
   Star,
   MessageSquare,
-  Settings,
 } from 'lucide-react'
 
 export const adminMenuItems = [
@@ -21,9 +20,4 @@ export const adminMenuItems = [
   { href: '/admin-panel/orari', label: 'Orari', icon: Clock },
   { href: '/admin-panel/recensioni', label: 'Recensioni', icon: Star },
   { href: '/admin-panel/contatti', label: 'Contatti', icon: MessageSquare },
-] as const
-
-export const adminMenuItemsWithSettings = [
-  ...adminMenuItems,
-  { href: '/admin-panel/impostazioni', label: 'Impostazioni', icon: Settings },
 ] as const

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Settings, LogOut } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import { adminMenuItems } from '@/lib/admin-menu'
 
 interface AdminSidebarProps {
@@ -71,10 +71,6 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
           </div>
         </div>
         <div className="space-y-1">
-          <Link href="/admin-panel/impostazioni" className="admin-sidebar-link">
-            <Settings className="w-5 h-5" />
-            <span>Impostazioni</span>
-          </Link>
           <form action="/admin-panel/logout" method="POST">
             <button type="submit" className="admin-sidebar-link w-full text-left text-red-400 hover:text-red-300">
               <LogOut className="w-5 h-5" />

@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import {
   Menu, X, Bell, ExternalLink, Scissors, Clock, MessageSquare, LogOut, Plus,
 } from 'lucide-react'
-import { adminMenuItemsWithSettings } from '@/lib/admin-menu'
+import { adminMenuItems } from '@/lib/admin-menu'
 
 interface Notification {
   id: string
@@ -21,7 +21,7 @@ interface AdminHeaderProps {
   user: { email?: string; name?: string } | null
 }
 
-const menuItems = adminMenuItemsWithSettings
+const menuItems = adminMenuItems
 
 export function AdminHeader({ user }: AdminHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
