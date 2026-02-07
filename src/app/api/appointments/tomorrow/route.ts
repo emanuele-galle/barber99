@@ -1,9 +1,13 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { requireAdmin, unauthorizedResponse } from '@/lib/admin-auth'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const user = await requireAdmin(request)
+    if (!user) return unauthorizedResponse()
+
     const payload = await getPayload({ config })
 
     // Calculate tomorrow's date

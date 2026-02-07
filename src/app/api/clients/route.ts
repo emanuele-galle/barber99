@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { requireAdmin, unauthorizedResponse } from '@/lib/admin-auth'
 
 export async function POST(request: NextRequest) {
   try {
+    const user = await requireAdmin(request)
+    if (!user) return unauthorizedResponse()
+
     const payload = await getPayload({ config })
     const body = await request.json()
 
@@ -43,11 +47,14 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    const user = await requireAdmin(request)
+    if (!user) return unauthorizedResponse()
+
     const payload = await getPayload({ config })
     const { searchParams } = new URL(request.url)
     const search = searchParams.get('search') || ''
     const tag = searchParams.get('tag') || ''
-    const limit = parseInt(searchParams.get('limit') || '50', 10)
+    const limit = Math.min(parseInt(searchParams.get('limit') || '50', 10), 200)
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const where: any = {}

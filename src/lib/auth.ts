@@ -1,9 +1,12 @@
 import { cookies } from 'next/headers'
 import { SignJWT, jwtVerify, JWTPayload } from 'jose'
+import bcrypt from 'bcryptjs'
 
-const CLIENT_AUTH_SECRET = new TextEncoder().encode(
-  process.env.CLIENT_AUTH_SECRET || process.env.PAYLOAD_SECRET || 'barber99-client-auth-secret-min-32-chars'
-)
+const secret = process.env.CLIENT_AUTH_SECRET || process.env.PAYLOAD_SECRET
+if (!secret) {
+  throw new Error('CLIENT_AUTH_SECRET or PAYLOAD_SECRET environment variable is required')
+}
+const CLIENT_AUTH_SECRET = new TextEncoder().encode(secret)
 
 const CLIENT_TOKEN_NAME = 'barber99-client-token'
 const TOKEN_EXPIRY = '7d' // 7 days
@@ -14,24 +17,28 @@ export interface ClientTokenPayload extends JWTPayload {
   name: string
 }
 
-// Simple password hashing using Web Crypto API (available in Node.js and Edge)
+// Password hashing using bcrypt (secure, with salt)
 export async function hashPassword(password: string): Promise<string> {
-  const encoder = new TextEncoder()
-  const data = encoder.encode(password)
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-  const hashArray = Array.from(new Uint8Array(hashBuffer))
-  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
-  // Add a prefix to identify the hash method
-  return `sha256:${hashHex}`
+  return bcrypt.hash(password, 12)
 }
 
 export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
+  // Legacy migration: verify old SHA-256 hashes (will be rehashed on login)
   if (hashedPassword.startsWith('sha256:')) {
-    const hash = await hashPassword(password)
-    return hash === hashedPassword
+    const encoder = new TextEncoder()
+    const data = encoder.encode(password)
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data)
+    const hashArray = Array.from(new Uint8Array(hashBuffer))
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+    return `sha256:${hashHex}` === hashedPassword
   }
-  // Fallback for plain text (should never happen in production)
-  return password === hashedPassword
+  // bcrypt verification
+  return bcrypt.compare(password, hashedPassword)
+}
+
+// Check if a password hash needs migration to bcrypt
+export function needsRehash(hashedPassword: string): boolean {
+  return hashedPassword.startsWith('sha256:')
 }
 
 export async function createClientToken(payload: ClientTokenPayload): Promise<string> {
@@ -80,11 +87,11 @@ export async function clearClientCookie(): Promise<void> {
 
 // Validation helpers
 export function isValidEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  return emailRegex.test(email)
+  if (!email || email.length > 254) return false
+  return /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/.test(email)
 }
 
 export function isValidPassword(password: string): boolean {
-  // At least 8 characters
-  return password.length >= 8
+  // At least 8 characters, max 128, at least one letter and one number
+  return password.length >= 8 && password.length <= 128 && /[a-zA-Z]/.test(password) && /[0-9]/.test(password)
 }

@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
       page,
     })
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       docs: posts.docs,
       totalDocs: posts.totalDocs,
@@ -29,6 +29,8 @@ export async function GET(request: NextRequest) {
       page: posts.page,
       hasNextPage: posts.hasNextPage,
     })
+    response.headers.set('Cache-Control', 'public, s-maxage=900, stale-while-revalidate=60')
+    return response
   } catch (error) {
     console.error('Error fetching Instagram posts:', error)
     return NextResponse.json(

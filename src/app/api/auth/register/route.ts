@@ -2,9 +2,20 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { hashPassword, createClientToken, setClientCookie, isValidEmail, isValidPassword } from '@/lib/auth'
+import { rateLimit, getClientIP, RATE_LIMITS } from '@/lib/rate-limit'
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limiting
+    const ip = getClientIP(req)
+    const { allowed } = rateLimit(`register:${ip}`, RATE_LIMITS.register)
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'Troppi tentativi. Riprova tra qualche minuto.' },
+        { status: 429 }
+      )
+    }
+
     const body = await req.json()
     const { email, password } = body
 
@@ -25,7 +36,7 @@ export async function POST(req: NextRequest) {
 
     if (!isValidPassword(password)) {
       return NextResponse.json(
-        { error: 'La password deve essere di almeno 8 caratteri' },
+        { error: 'La password deve essere di almeno 8 caratteri con almeno una lettera e un numero' },
         { status: 400 }
       )
     }

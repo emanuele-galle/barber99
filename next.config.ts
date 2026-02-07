@@ -47,13 +47,14 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: '/:path*',
+        // Frontend pages: strict CSP without unsafe-eval
+        source: '/((?!admin).*)',
         headers: [
           {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://maps.googleapis.com",
+              "script-src 'self' 'unsafe-inline' https://maps.googleapis.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: https: blob:",
               "font-src 'self' data: https://fonts.gstatic.com",
@@ -63,6 +64,24 @@ const nextConfig: NextConfig = {
               "base-uri 'self'",
               "form-action 'self'",
               "upgrade-insecure-requests",
+            ].join('; '),
+          },
+        ],
+      },
+      {
+        // Payload admin: needs unsafe-eval for Lexical editor
+        source: '/admin/:path*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "img-src 'self' data: https: blob:",
+              "font-src 'self' data: https://fonts.gstatic.com",
+              "connect-src 'self' https://storage.fodivps2.cloud",
+              "frame-ancestors 'none'",
             ].join('; '),
           },
         ],

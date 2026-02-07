@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { requireAdmin, unauthorizedResponse } from '@/lib/admin-auth'
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const user = await requireAdmin(request)
+    if (!user) return unauthorizedResponse()
+
     const payload = await getPayload({ config })
     const { id } = await params
     const body = await request.json()
@@ -35,6 +39,9 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const user = await requireAdmin(request)
+    if (!user) return unauthorizedResponse()
+
     const payload = await getPayload({ config })
     const { id } = await params
 

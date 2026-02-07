@@ -23,11 +23,15 @@ export async function GET() {
         breakEnd: (h.breakEnd as string) || undefined,
       }))
 
-      return NextResponse.json({ openingHours })
+      const response = NextResponse.json({ openingHours })
+      response.headers.set('Cache-Control', 'public, s-maxage=600, stale-while-revalidate=60')
+      return response
     }
 
     // Fallback to defaults if collection is empty
-    return NextResponse.json({ openingHours: defaultOpeningHours })
+    const response = NextResponse.json({ openingHours: defaultOpeningHours })
+    response.headers.set('Cache-Control', 'public, s-maxage=600, stale-while-revalidate=60')
+    return response
   } catch (error) {
     console.error('Error fetching opening hours:', error)
     return NextResponse.json({ openingHours: defaultOpeningHours })

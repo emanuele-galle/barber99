@@ -1,9 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { rateLimit, getClientIP, RATE_LIMITS } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting
+    const ip = getClientIP(request)
+    const { allowed } = rateLimit(`contact:${ip}`, RATE_LIMITS.contact)
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'Troppi tentativi. Riprova tra qualche minuto.' },
+        { status: 429 }
+      )
+    }
+
     const body = await request.json()
     const { name, email, phone, subject, message } = body
 
@@ -22,9 +33,30 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    if (name.length > 100) {
+      return NextResponse.json(
+        { error: 'Nome troppo lungo' },
+        { status: 400 }
+      )
+    }
+
     if (!message || typeof message !== 'string' || message.trim().length < 10) {
       return NextResponse.json(
         { error: 'Messaggio richiesto (minimo 10 caratteri)' },
+        { status: 400 }
+      )
+    }
+
+    if (message.length > 2000) {
+      return NextResponse.json(
+        { error: 'Messaggio troppo lungo (max 2000 caratteri)' },
+        { status: 400 }
+      )
+    }
+
+    if (phone && typeof phone === 'string' && phone.length > 20) {
+      return NextResponse.json(
+        { error: 'Telefono non valido' },
         { status: 400 }
       )
     }

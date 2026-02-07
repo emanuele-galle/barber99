@@ -2,21 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { isSlotAvailable, defaultOpeningHours } from '@/lib/booking'
-
-// Check if request is from an authenticated admin
-async function requireAdmin(request: NextRequest) {
-  const payload = await getPayload({ config })
-  const cookies = request.headers.get('cookie') || ''
-  const tokenMatch = cookies.match(/payload-token=([^;]+)/)
-  if (!tokenMatch) return null
-  const token = tokenMatch[1]
-  try {
-    const { user } = await payload.auth({ headers: new Headers({ Authorization: `JWT ${token}` }) })
-    return user
-  } catch {
-    return null
-  }
-}
+import { requireAdmin, unauthorizedResponse } from '@/lib/admin-auth'
 
 export async function PATCH(
   request: NextRequest,

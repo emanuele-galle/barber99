@@ -443,13 +443,13 @@ export const Appointments: CollectionConfig = {
                         barber_name: (doc.barber as string) || 'Barbiere',
                         date: doc.date,
                       }),
-                    }).catch(() => {})
+                    }).catch((err) => console.error('Review request webhook failed:', err))
 
                     await payload.update({
                       collection: 'clients',
                       id: clientId,
                       data: { lastReviewRequestAt: new Date().toISOString() },
-                    }).catch(() => {})
+                    }).catch((err) => console.error('Failed to update lastReviewRequestAt:', err))
 
                     console.log(`Review request sent for client ${clientId}`)
                   }

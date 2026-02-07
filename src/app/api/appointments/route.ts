@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { isSlotAvailable, defaultOpeningHours, isDateClosed } from '@/lib/booking'
 import { bookingEvents } from '@/lib/booking-events'
+import { rateLimit, getClientIP, RATE_LIMITS } from '@/lib/rate-limit'
 
 // Helper: build date range query for Payload (handles ISO timezone issues)
 function dateRangeQuery(date: string) {
@@ -63,26 +64,21 @@ async function sendBookingNotification(data: {
   }
 }
 
+import { requireAdmin } from '@/lib/admin-auth'
+
 // Check if request is from an authenticated admin
 async function isAdminRequest(request: NextRequest) {
-  try {
-    const payload = await getPayload({ config })
-    const cookies = request.headers.get('cookie') || ''
-    // Check for Payload auth token
-    const tokenMatch = cookies.match(/payload-token=([^;]+)/)
-    if (!tokenMatch) return false
-    const token = tokenMatch[1]
-    // Verify token
-    const { user } = await payload.auth({ headers: new Headers({ Authorization: `JWT ${token}` }) })
-    return !!user
-  } catch {
-    return false
-  }
+  const user = await requireAdmin(request)
+  return !!user
 }
 
 export async function POST(request: NextRequest) {
   try {
     const payload = await getPayload({ config })
+
+    // Rate limiting (skip for admin bookings, checked after body parse)
+    const ip = getClientIP(request)
+
     const body = await request.json()
 
     const {
@@ -96,12 +92,43 @@ export async function POST(request: NextRequest) {
       isAdminBooking,
     } = body
 
+    // Rate limiting for non-admin requests
+    if (!isAdminBooking) {
+      const { allowed } = rateLimit(`booking:${ip}`, RATE_LIMITS.booking)
+      if (!allowed) {
+        return NextResponse.json(
+          { error: 'Troppi tentativi. Riprova tra qualche minuto.' },
+          { status: 429 }
+        )
+      }
+    }
+
     // Validate required fields (email is optional)
     if (!service || !date || !time || !clientName || !clientPhone) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       )
+    }
+
+    // Input validation: format and length
+    if (typeof clientName !== 'string' || clientName.length > 100) {
+      return NextResponse.json({ error: 'Nome non valido' }, { status: 400 })
+    }
+    if (typeof clientPhone !== 'string' || clientPhone.length > 20) {
+      return NextResponse.json({ error: 'Telefono non valido' }, { status: 400 })
+    }
+    if (clientEmail && (typeof clientEmail !== 'string' || clientEmail.length > 254)) {
+      return NextResponse.json({ error: 'Email non valida' }, { status: 400 })
+    }
+    if (notes && (typeof notes !== 'string' || notes.length > 500)) {
+      return NextResponse.json({ error: 'Note troppo lunghe (max 500 caratteri)' }, { status: 400 })
+    }
+    if (!/^\d{2}:\d{2}$/.test(time)) {
+      return NextResponse.json({ error: 'Formato ora non valido' }, { status: 400 })
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return NextResponse.json({ error: 'Formato data non valido' }, { status: 400 })
     }
 
     // Fetch service details
@@ -304,7 +331,8 @@ export async function POST(request: NextRequest) {
       `Nome: ${clientName}\n\n` +
       `Per annullare: ${cancellationLink}`
     )
-    const whatsappLink = `https://wa.me/393271263091?text=${whatsappText}`
+    const whatsappNumber = process.env.WHATSAPP_PHONE || '393271263091'
+    const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappText}`
 
     return NextResponse.json({
       success: true,

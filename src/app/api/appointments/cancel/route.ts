@@ -1,9 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { rateLimit, getClientIP, RATE_LIMITS } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting
+    const ip = getClientIP(request)
+    const { allowed } = rateLimit(`cancel:${ip}`, RATE_LIMITS.cancel)
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'Troppi tentativi. Riprova tra qualche minuto.' },
+        { status: 429 }
+      )
+    }
+
     const { token, reason } = await request.json()
 
     if (!token) {

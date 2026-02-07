@@ -1,10 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import { verifyPassword, createClientToken, setClientCookie, isValidEmail } from '@/lib/auth'
+import { verifyPassword, createClientToken, setClientCookie, isValidEmail, needsRehash, hashPassword } from '@/lib/auth'
+import { rateLimit, getClientIP, RATE_LIMITS } from '@/lib/rate-limit'
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limiting
+    const ip = getClientIP(req)
+    const { allowed } = rateLimit(`login:${ip}`, RATE_LIMITS.login)
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'Troppi tentativi. Riprova tra qualche minuto.' },
+        { status: 429 }
+      )
+    }
+
     const body = await req.json()
     const { email, password } = body
 
@@ -57,6 +68,16 @@ export async function POST(req: NextRequest) {
         { error: 'Credenziali non valide' },
         { status: 401 }
       )
+    }
+
+    // Transparent rehash: migrate legacy SHA-256 to bcrypt
+    if (needsRehash(client.password as string)) {
+      const newHash = await hashPassword(password)
+      await payload.update({
+        collection: 'clients',
+        id: client.id,
+        data: { password: newHash },
+      })
     }
 
     // Create JWT token
