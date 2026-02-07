@@ -87,7 +87,7 @@ export default function TeamSection({ barbers }: TeamSectionProps) {
           className="text-center mb-16"
         >
           <p
-            className="text-[#d4a855] text-sm md:text-base tracking-[0.3em] uppercase mb-4"
+            className="text-[#d4a855] text-sm md:text-lg tracking-[0.3em] uppercase mb-4"
             style={{ fontFamily: 'var(--font-cormorant), serif' }}
           >
             Il Nostro Team
@@ -99,7 +99,7 @@ export default function TeamSection({ barbers }: TeamSectionProps) {
             I Maestri Barbieri
           </h2>
           <div className="gold-divider" />
-          <p className="text-white/60 max-w-2xl mx-auto mt-6">
+          <p className="text-white/60 text-base md:text-lg max-w-2xl mx-auto mt-6">
             Professionisti appassionati pronti a prendersi cura del tuo look
             con competenza e dedizione.
           </p>
@@ -160,7 +160,7 @@ export default function TeamSection({ barbers }: TeamSectionProps) {
 
                     {/* Hover Overlay with Quick Info */}
                     <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                      <div className="flex items-center justify-between text-sm mb-2">
+                      <div className="flex items-center justify-between text-sm md:text-base mb-2">
                         <div className="flex items-center gap-1.5 text-white/80 text-shadow-sm">
                           <Award className="w-4 h-4 text-[#d4a855]" />
                           <span>{experienceYears}</span>
@@ -183,11 +183,11 @@ export default function TeamSection({ barbers }: TeamSectionProps) {
                         >
                           {member.name}
                         </h3>
-                        <p className="text-[#d4a855] text-sm md:text-base">{member.role || 'Barbiere'}</p>
+                        <p className="text-[#d4a855] text-sm md:text-lg">{member.role || 'Barbiere'}</p>
                       </div>
                     </div>
 
-                    <p className="text-white/60 text-sm md:text-base mb-4 line-clamp-2 group-hover:line-clamp-none transition-all">
+                    <p className="text-white/60 text-sm md:text-base lg:text-lg mb-4 line-clamp-2 group-hover:line-clamp-none transition-all">
                       {member.shortBio || 'Esperto barbiere con passione per il suo lavoro.'}
                     </p>
 
@@ -241,8 +241,8 @@ export default function TeamSection({ barbers }: TeamSectionProps) {
                           >
                             {member.name}
                           </h3>
-                          <p className="text-[#d4a855] text-sm md:text-base">{member.role || 'Barbiere'}</p>
-                          <div className="flex items-center gap-3 mt-1 text-xs text-white/60">
+                          <p className="text-[#d4a855] text-sm md:text-lg">{member.role || 'Barbiere'}</p>
+                          <div className="flex items-center gap-3 mt-1 text-xs md:text-sm text-white/60">
                             <span className="flex items-center gap-1">
                               <Award className="w-3 h-3 text-[#d4a855]" />
                               {experienceYears}
@@ -256,7 +256,7 @@ export default function TeamSection({ barbers }: TeamSectionProps) {
                       </div>
 
                       {/* Bio */}
-                      <p className="text-white/80 text-sm md:text-base mb-4">
+                      <p className="text-white/80 text-sm md:text-lg mb-4">
                         {member.shortBio || 'Esperto barbiere con passione per il suo lavoro.'}
                       </p>
 

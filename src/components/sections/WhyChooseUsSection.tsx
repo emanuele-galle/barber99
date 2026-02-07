@@ -67,7 +67,7 @@ export default function WhyChooseUsSection() {
             <>
               <div className="text-center mb-12">
                 <p
-                  className="text-[#d4a855] text-sm md:text-base tracking-[0.3em] uppercase mb-4"
+                  className="text-[#d4a855] text-sm md:text-lg tracking-[0.3em] uppercase mb-4"
                   style={{ fontFamily: 'var(--font-cormorant), serif' }}
                 >
                   I Numeri Parlano
@@ -98,7 +98,7 @@ export default function WhyChooseUsSection() {
                       >
                         {stat.value.toLocaleString('it-IT')}{stat.suffix}
                       </p>
-                      <p className="text-white/60 text-sm md:text-base">{stat.label}</p>
+                      <p className="text-white/60 text-sm md:text-lg">{stat.label}</p>
                     </div>
                   )
                 })}
@@ -114,7 +114,7 @@ export default function WhyChooseUsSection() {
                 className="text-center mb-12"
               >
                 <p
-                  className="text-[#d4a855] text-sm md:text-base tracking-[0.3em] uppercase mb-4"
+                  className="text-[#d4a855] text-sm md:text-lg tracking-[0.3em] uppercase mb-4"
                   style={{ fontFamily: 'var(--font-cormorant), serif' }}
                 >
                   I Numeri Parlano
@@ -150,7 +150,7 @@ export default function WhyChooseUsSection() {
                       >
                         <AnimatedCounter value={stat.value} suffix={stat.suffix} inView={isInView} />
                       </p>
-                      <p className="text-white/60 text-sm md:text-base">{stat.label}</p>
+                      <p className="text-white/60 text-sm md:text-lg">{stat.label}</p>
                     </motion.div>
                   )
                 })}

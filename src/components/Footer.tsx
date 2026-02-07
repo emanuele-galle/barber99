@@ -87,7 +87,7 @@ export default function Footer() {
                 className="h-24 w-auto"
               />
             </Link>
-            <p className="text-white/60 text-sm mb-6">
+            <p className="text-white/60 text-sm md:text-base mb-6">
               Cosimo Pisani — Il tuo barbiere di fiducia a Serra San Bruno dal 2023.
               Taglio, barba e meches con passione e precisione.
             </p>
@@ -124,7 +124,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-white/60 hover:text-[#d4a855] transition-colors text-sm"
+                    className="text-white/60 hover:text-[#d4a855] transition-colors text-sm md:text-base"
                   >
                     {link.label}
                   </Link>
@@ -146,7 +146,7 @@ export default function Footer() {
                 <li key={service.label}>
                   <Link
                     href={service.href}
-                    className="text-white/60 hover:text-[#d4a855] transition-colors text-sm"
+                    className="text-white/60 hover:text-[#d4a855] transition-colors text-sm md:text-base"
                   >
                     {service.label}
                   </Link>
@@ -163,7 +163,7 @@ export default function Footer() {
             >
               Contatti
             </h4>
-            <div className="space-y-3 text-sm">
+            <div className="space-y-3 text-sm md:text-base">
               <p className="text-white/60">
                 <span className="text-white">Indirizzo:</span>
                 <br />

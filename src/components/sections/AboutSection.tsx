@@ -61,7 +61,7 @@ export default function AboutSection() {
               initial={{ opacity: 0, letterSpacing: '0.2em' }}
               whileInView={{ opacity: 1, letterSpacing: '0.3em' }}
               transition={{ duration: 0.8 }}
-              className="text-[#d4a855] text-sm md:text-base uppercase mb-4"
+              className="text-[#d4a855] text-sm md:text-lg uppercase mb-4"
               style={{ fontFamily: 'var(--font-cormorant), serif' }}
             >
               La Mia Storia
@@ -179,17 +179,17 @@ export default function AboutSection() {
                       3+
                     </span>
                   </motion.div>
-                  <p className="text-white/80">Anni di Esperienza</p>
+                  <p className="text-white/80 md:text-lg">Anni di Esperienza</p>
                 </div>
 
                 <h3
-                  className="text-2xl md:text-3xl font-semibold text-white mb-6"
+                  className="text-2xl md:text-4xl font-semibold text-white mb-6"
                   style={{ fontFamily: 'var(--font-cinzel), serif' }}
                 >
                   Cosimo Pisani — Il Tuo Barbiere di Fiducia
                 </h3>
 
-                <div className="space-y-4 text-white/70 mb-8">
+                <div className="space-y-4 text-white/70 md:text-lg mb-8">
                   <p>
                     Sono Cosimo Pisani, titolare di Barber 99. Dal 2023 accolgo i miei
                     clienti in Via San Biagio 3, nel cuore di Serra San Bruno. Qui ho creato
@@ -221,10 +221,10 @@ export default function AboutSection() {
                         <feature.icon className="w-5 h-5 text-[#d4a855] transition-transform duration-300 group-hover:scale-110" />
                       </motion.div>
                       <div>
-                        <h4 className="text-white font-medium text-sm md:text-base group-hover:text-[#d4a855] transition-colors duration-300">
+                        <h4 className="text-white font-medium text-sm md:text-lg group-hover:text-[#d4a855] transition-colors duration-300">
                           {feature.title}
                         </h4>
-                        <p className="text-white/50 text-xs md:text-sm mt-1">
+                        <p className="text-white/50 text-xs md:text-base mt-1">
                           {feature.description}
                         </p>
                       </div>

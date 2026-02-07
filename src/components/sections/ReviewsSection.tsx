@@ -80,7 +80,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-12">
             <p
-              className="text-[#d4a855] text-sm md:text-base tracking-[0.3em] uppercase mb-4"
+              className="text-[#d4a855] text-sm md:text-lg tracking-[0.3em] uppercase mb-4"
               style={{ fontFamily: 'var(--font-cormorant), serif' }}
             >
               Cosa Dicono di Noi
@@ -123,7 +123,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
           {/* Section Header */}
           <div className="text-center mb-12">
             <p
-              className="text-[#d4a855] text-sm md:text-base tracking-[0.3em] uppercase mb-4"
+              className="text-[#d4a855] text-sm md:text-lg tracking-[0.3em] uppercase mb-4"
               style={{ fontFamily: 'var(--font-cormorant), serif' }}
             >
               Cosa Dicono di Noi
@@ -199,16 +199,16 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
                   ))}
                 </div>
 
-                <p className="text-white/80 mb-6 leading-relaxed">
+                <p className="text-white/80 mb-6 md:text-lg leading-relaxed">
                   &ldquo;{review.text}&rdquo;
                 </p>
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-white font-medium">{review.author}</p>
+                    <p className="text-white font-medium md:text-lg">{review.author}</p>
                     <p className="text-white/40 text-sm md:text-base">{review.date}</p>
                   </div>
-                  <span className="text-xs px-3 py-1 rounded-full bg-[#d4a855]/10 text-[#d4a855]">
+                  <span className="text-xs md:text-sm px-3 py-1 rounded-full bg-[#d4a855]/10 text-[#d4a855]">
                     {review.source}
                   </span>
                 </div>
@@ -222,7 +222,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
               href="https://www.google.com/maps/search/?api=1&query=Barber+99+Via+San+Biagio+3+Serra+San+Bruno+VV"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#d4a855] underline underline-offset-4"
+              className="text-[#d4a855] md:text-lg underline underline-offset-4"
             >
               Lascia una recensione su Google →
             </a>
@@ -266,7 +266,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
           className="text-center mb-16"
         >
           <p
-            className="text-[#d4a855] text-sm md:text-base tracking-[0.3em] uppercase mb-4"
+            className="text-[#d4a855] text-sm md:text-lg tracking-[0.3em] uppercase mb-4"
             style={{ fontFamily: 'var(--font-cormorant), serif' }}
           >
             Cosa Dicono di Noi
@@ -324,7 +324,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
                   ))}
                 </div>
 
-                <p className="text-white/80 mb-6 leading-relaxed">
+                <p className="text-white/80 mb-6 leading-relaxed md:text-lg">
                   &ldquo;{displayReviews[currentIndex].text}&rdquo;
                 </p>
 
@@ -403,13 +403,13 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
                   ))}
                 </div>
 
-                <p className="text-white/80 mb-6 leading-relaxed">
+                <p className="text-white/80 mb-6 md:text-lg leading-relaxed">
                   &ldquo;{review.text}&rdquo;
                 </p>
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-white font-medium">{review.author}</p>
+                    <p className="text-white font-medium md:text-lg">{review.author}</p>
                     <p className="text-white/40 text-sm md:text-base">{review.date}</p>
                   </div>
                   <span className="text-xs md:text-sm px-3 py-1 rounded-full bg-[#d4a855]/10 text-[#d4a855]">
@@ -449,7 +449,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
             href="https://www.google.com/maps/search/?api=1&query=Barber+99+Via+San+Biagio+3+Serra+San+Bruno+VV"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#d4a855] hover:text-[#e8c882] transition-colors underline underline-offset-4"
+            className="text-[#d4a855] md:text-lg hover:text-[#e8c882] transition-colors underline underline-offset-4"
           >
             Lascia una recensione su Google →
           </a>

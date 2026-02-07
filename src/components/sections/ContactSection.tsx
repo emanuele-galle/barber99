@@ -96,7 +96,7 @@ export default function ContactSection() {
           className="text-center mb-16"
         >
           <p
-            className="text-[#d4a855] text-sm md:text-base tracking-[0.3em] uppercase mb-4"
+            className="text-[#d4a855] text-sm md:text-lg tracking-[0.3em] uppercase mb-4"
             style={{ fontFamily: 'var(--font-cormorant), serif' }}
           >
             Vieni a Trovarci
@@ -119,7 +119,7 @@ export default function ContactSection() {
             transition={{ duration: 0.6 }}
           >
             <h3
-              className="text-2xl font-semibold text-white mb-8"
+              className="text-2xl md:text-3xl font-semibold text-white mb-8"
               style={{ fontFamily: 'var(--font-cinzel), serif' }}
             >
               Informazioni di Contatto
@@ -145,15 +145,15 @@ export default function ContactSection() {
                         href={item.href}
                         target={item.href.startsWith('http') ? '_blank' : undefined}
                         rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                        className="text-white hover:text-[#d4a855] transition-colors"
+                        className="text-white md:text-lg hover:text-[#d4a855] transition-colors"
                       >
                         {item.value}
                       </a>
                     ) : (
-                      <p className="text-white">{item.value}</p>
+                      <p className="text-white md:text-lg">{item.value}</p>
                     )}
                     {item.subValue && (
-                      <p className="text-white/60 text-sm">{item.subValue}</p>
+                      <p className="text-white/60 text-sm md:text-base">{item.subValue}</p>
                     )}
                   </div>
                 </motion.div>
@@ -194,7 +194,7 @@ export default function ContactSection() {
           >
             <div className="bg-[#1a1a1a] rounded-2xl p-6 md:p-8 border border-white/5">
               <h3
-                className="text-xl font-semibold text-white mb-6"
+                className="text-xl md:text-2xl font-semibold text-white mb-6"
                 style={{ fontFamily: 'var(--font-cinzel), serif' }}
               >
                 Inviaci un Messaggio
@@ -227,7 +227,7 @@ export default function ContactSection() {
                   {/* Name & Email */}
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="name" className="block text-sm text-white/70 mb-2">
+                      <label htmlFor="name" className="block text-sm md:text-base text-white/70 mb-2">
                         Nome *
                       </label>
                       <input
@@ -242,7 +242,7 @@ export default function ContactSection() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="email" className="block text-sm text-white/70 mb-2">
+                      <label htmlFor="email" className="block text-sm md:text-base text-white/70 mb-2">
                         Email *
                       </label>
                       <input
@@ -260,7 +260,7 @@ export default function ContactSection() {
 
                   {/* Phone */}
                   <div>
-                    <label htmlFor="phone" className="block text-sm text-white/70 mb-2">
+                    <label htmlFor="phone" className="block text-sm md:text-base text-white/70 mb-2">
                       Telefono
                     </label>
                     <input
@@ -276,7 +276,7 @@ export default function ContactSection() {
 
                   {/* Message */}
                   <div>
-                    <label htmlFor="message" className="block text-sm text-white/70 mb-2">
+                    <label htmlFor="message" className="block text-sm md:text-base text-white/70 mb-2">
                       Messaggio *
                     </label>
                     <textarea

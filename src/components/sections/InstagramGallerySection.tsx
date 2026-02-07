@@ -53,7 +53,7 @@ export default function InstagramGallerySection({ instagramHandle = 'barber___99
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-12">
             <p
-              className="text-[#d4a855] text-sm md:text-base tracking-[0.3em] uppercase mb-4"
+              className="text-[#d4a855] text-sm md:text-lg tracking-[0.3em] uppercase mb-4"
               style={{ fontFamily: 'var(--font-cormorant), serif' }}
             >
               @{instagramHandle}
@@ -86,7 +86,7 @@ export default function InstagramGallerySection({ instagramHandle = 'barber___99
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-12">
             <p
-              className="text-[#d4a855] text-sm md:text-base tracking-[0.3em] uppercase mb-4"
+              className="text-[#d4a855] text-sm md:text-lg tracking-[0.3em] uppercase mb-4"
               style={{ fontFamily: 'var(--font-cormorant), serif' }}
             >
               I Nostri Lavori
@@ -131,7 +131,7 @@ export default function InstagramGallerySection({ instagramHandle = 'barber___99
           {/* Header */}
           <div className="text-center mb-12">
             <p
-              className="text-[#d4a855] text-sm md:text-base tracking-[0.3em] uppercase mb-4 flex items-center justify-center gap-2"
+              className="text-[#d4a855] text-sm md:text-lg tracking-[0.3em] uppercase mb-4 flex items-center justify-center gap-2"
               style={{ fontFamily: 'var(--font-cormorant), serif' }}
             >
               <Instagram className="w-4 h-4" />

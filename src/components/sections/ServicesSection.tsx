@@ -89,7 +89,7 @@ export default function ServicesSection({ services }: ServicesSectionProps) {
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="text-[#d4a855] text-sm md:text-base tracking-[0.3em] uppercase mb-4"
+              className="text-[#d4a855] text-sm md:text-lg tracking-[0.3em] uppercase mb-4"
               style={{ fontFamily: 'var(--font-cormorant), serif' }}
             >
               I Nostri Servizi
@@ -113,7 +113,7 @@ export default function ServicesSection({ services }: ServicesSectionProps) {
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="text-white/60 max-w-2xl mx-auto mt-6"
+              className="text-white/60 text-base md:text-lg max-w-2xl mx-auto mt-6"
             >
               Ogni servizio è eseguito con cura e attenzione ai dettagli,
               utilizzando tecniche tradizionali e prodotti di qualità superiore.
@@ -188,11 +188,11 @@ export default function ServicesSection({ services }: ServicesSectionProps) {
                     >
                       {service.name}
                     </h3>
-                    <p className="text-white/60 text-sm md:text-base mb-4">{service.shortDescription}</p>
+                    <p className="text-white/60 text-sm md:text-lg mb-4">{service.shortDescription}</p>
 
                     {/* Duration Progress Bar */}
                     <div className="mb-6">
-                      <div className="flex justify-between text-xs md:text-sm text-white/40 mb-1">
+                      <div className="flex justify-between text-xs md:text-base text-white/40 mb-1">
                         <span>Durata</span>
                         <span>{service.duration} min</span>
                       </div>
@@ -315,7 +315,7 @@ export default function ServicesSection({ services }: ServicesSectionProps) {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-center mt-12"
           >
-            <p className="text-white/60 mb-4">
+            <p className="text-white/60 text-base md:text-lg mb-4">
               Non trovi quello che cerchi?
             </p>
             <Link
