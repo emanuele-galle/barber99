@@ -1,5 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// Prisma schema - barber99
+// Note: The booking system uses Payload CMS collections (not Prisma).
+// This schema is kept minimal. Prisma is not actively used.
 
 generator client {
   provider = "prisma-client-js"
@@ -8,98 +9,4 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-}
-
-// ============================================
-// BOOKING SYSTEM MODELS
-// ============================================
-
-// Service types for tattoo booking
-enum ServiceType {
-  CONSULTATION    // Initial consultation (30-60 min)
-  TATTOO_SESSION  // Actual tattoo session (2-8 hours)
-}
-
-// Booking request statuses
-enum BookingStatus {
-  PENDING    // Awaiting artist approval
-  APPROVED   // Artist approved, slot reserved
-  REJECTED   // Artist rejected
-  CANCELLED  // User or artist cancelled
-  COMPLETED  // Session completed
-}
-
-// Main booking request model
-model BookingRequest {
-  id          String        @id @default(cuid())
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-
-  // Client information
-  clientName  String
-  clientEmail String
-  clientPhone String?
-
-  // Service details
-  serviceType ServiceType
-  artistId    String        // Links to Payload CMS artist
-
-  // Scheduling
-  preferredDate   DateTime
-  preferredTimeSlot String    // e.g., "09:00-11:00"
-  estimatedDuration Int       // Minutes (30 for consultation, 120-480 for tattoo)
-
-  // Tattoo details (for TATTOO_SESSION)
-  description     String?     // What they want
-  referenceImages String[]    // URLs to reference images
-  bodyPlacement   String?     // Where on body
-  sizeEstimate    String?     // Small, medium, large, etc.
-
-  // Status tracking
-  status          BookingStatus @default(PENDING)
-  rejectionReason String?
-  internalNotes   String?      // Artist's private notes
-
-  // Multi-session support
-  isMultiSession  Boolean      @default(false)
-  sessionNumber   Int          @default(1)
-  parentBookingId String?      // Links to first session of multi-session tattoo
-
-  @@index([artistId, preferredDate])
-  @@index([status, createdAt])
-  @@index([clientEmail])
-}
-
-// Artist availability configuration
-model AvailabilitySlot {
-  id          String   @id @default(cuid())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Artist & schedule
-  artistId    String
-  dayOfWeek   Int      // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-  startTime   String   // HH:MM format (e.g., "09:00")
-  endTime     String   // HH:MM format (e.g., "18:00")
-
-  // Configuration
-  slotDuration Int     @default(120) // Duration of bookable slots in minutes
-  isActive     Boolean @default(true)
-
-  @@index([artistId, dayOfWeek])
-  @@unique([artistId, dayOfWeek, startTime])
-}
-
-// Exceptions to availability (vacations, holidays, blocked dates)
-model AvailabilityException {
-  id          String   @id @default(cuid())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  artistId    String
-  date        DateTime // Specific date to block
-  reason      String?  // "Vacation", "Holiday", "Personal", etc.
-  isRecurring Boolean  @default(false) // For annual holidays
-
-  @@index([artistId, date])
 }

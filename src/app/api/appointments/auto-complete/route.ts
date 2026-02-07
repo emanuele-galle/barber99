@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
       where: {
         and: [
           { status: { in: ['confirmed', 'pending'] } },
-          { date: { less_than_equal: todayStr } },
+          { date: { less_than_equal: `${todayStr}T23:59:59.999Z` } },
         ],
       },
       depth: 1,

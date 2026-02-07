@@ -1,8 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import { isSlotAvailable, timeToMinutes, defaultOpeningHours } from '@/lib/booking'
+import { isSlotAvailable, defaultOpeningHours, isDateClosed } from '@/lib/booking'
 import { bookingEvents } from '@/lib/booking-events'
+
+// Helper: build date range query for Payload (handles ISO timezone issues)
+function dateRangeQuery(date: string) {
+  return [
+    { date: { greater_than_equal: `${date}T00:00:00.000Z` } },
+    { date: { less_than: `${date}T23:59:59.999Z` } },
+  ]
+}
+
+// Fetch opening hours from CMS with fallback to defaults
+async function getOpeningHours(payload: Awaited<ReturnType<typeof getPayload>>) {
+  try {
+    const result = await payload.find({ collection: 'opening-hours', limit: 7 })
+    if (result.docs.length > 0) {
+      const dayNameToNumber: Record<string, number> = {
+        sunday: 0, monday: 1, tuesday: 2, wednesday: 3,
+        thursday: 4, friday: 5, saturday: 6,
+      }
+      return result.docs.map((h) => ({
+        dayOfWeek: dayNameToNumber[h.dayOfWeek as string] ?? 0,
+        openTime: (h.openTime as string) || '09:00',
+        closeTime: (h.closeTime as string) || '19:30',
+        isClosed: Boolean(h.isClosed),
+        breakStart: h.breakStart as string | undefined,
+        breakEnd: h.breakEnd as string | undefined,
+      }))
+    }
+  } catch (e) {
+    console.error('Error fetching opening hours:', e)
+  }
+  return defaultOpeningHours
+}
 
 const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || 'http://vps-panel-n8n:5678/webhook/barber99-booking'
 
@@ -121,13 +153,29 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // --- FASE 1: Validazione anti-conflitto slot ---
+    // --- Validazione giorni chiusi (server-side) ---
+    const closedDaysResult = await payload.find({ collection: 'closed-days', limit: 100 })
+    const closedDays = closedDaysResult.docs.map((d) => ({
+      id: String(d.id),
+      date: d.date as string,
+      type: d.type as 'holiday' | 'vacation' | 'special',
+      reason: d.reason as string | undefined,
+      recurring: Boolean(d.recurring),
+    }))
+    if (isDateClosed(new Date(date + 'T00:00:00'), closedDays)) {
+      return NextResponse.json(
+        { error: 'date_closed', message: 'Siamo chiusi in questa data.' },
+        { status: 400 }
+      )
+    }
+
+    // --- Validazione anti-conflitto slot ---
     // Fetch all appointments for this date (non-cancelled)
     const existingAppointments = await payload.find({
       collection: 'appointments',
       where: {
         and: [
-          { date: { equals: date } },
+          ...dateRangeQuery(date),
           { status: { not_equals: 'cancelled' } },
         ],
       },
@@ -138,15 +186,16 @@ export async function POST(request: NextRequest) {
     // Build appointment list for overlap check
     const bookedSlots = existingAppointments.docs.map((apt) => ({
       time: apt.time as string,
-      duration: typeof apt.service === 'object' && apt.service ? (apt.service as { duration?: number }).duration || 45 : 45,
+      duration: (typeof apt.service === 'object' && apt.service ? (apt.service as { duration?: number }).duration : null) || 45,
       date: date,
       barberId: 'cosimo',
     }))
 
-    // Get closing time for the day
+    // Get closing time for the day (from CMS or defaults)
+    const openingHours = await getOpeningHours(payload)
     const dateObj = new Date(date + 'T00:00:00')
     const dayOfWeek = dateObj.getDay()
-    const dayHours = defaultOpeningHours.find((h) => h.dayOfWeek === dayOfWeek)
+    const dayHours = openingHours.find((h) => h.dayOfWeek === dayOfWeek)
     const closeTime = dayHours?.closeTime || '19:30'
 
     // Check if slot is available (using existing isSlotAvailable logic)
@@ -176,12 +225,32 @@ export async function POST(request: NextRequest) {
         clientPhone,
         notes: notes || '',
         status: 'confirmed',
-        emailSent: false,
-        whatsappSent: false,
       },
     })
 
-    // --- FASE 3: Emit SSE event for real-time notifications ---
+    // --- Race condition mitigation: re-check after create ---
+    const recheck = await payload.find({
+      collection: 'appointments',
+      where: {
+        and: [
+          ...dateRangeQuery(date),
+          { time: { equals: time } },
+          { status: { not_equals: 'cancelled' } },
+          { id: { not_equals: appointment.id } },
+        ],
+      },
+      limit: 1,
+    })
+    if (recheck.docs.length > 0) {
+      // Conflict detected - rollback
+      await payload.delete({ collection: 'appointments', id: appointment.id })
+      return NextResponse.json(
+        { error: 'slot_conflict', message: 'Slot appena occupato da qualcun altro. Riprova.' },
+        { status: 409 }
+      )
+    }
+
+    // --- Emit SSE event for real-time notifications ---
     bookingEvents.emit('new_booking', {
       appointmentId: appointment.id,
       clientName,
@@ -215,7 +284,7 @@ export async function POST(request: NextRequest) {
         await payload.update({
           collection: 'appointments',
           id: appointment.id,
-          data: { emailSent: true },
+          data: { confirmationSent: true },
         })
       }
     }
@@ -268,12 +337,12 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Fetch appointments for the date
+    // Fetch appointments for the date (use range to handle ISO timezone)
     const appointments = await payload.find({
       collection: 'appointments',
       where: {
         and: [
-          { date: { equals: date } },
+          ...dateRangeQuery(date),
           { status: { not_equals: 'cancelled' } },
         ],
       },
@@ -283,7 +352,7 @@ export async function GET(request: NextRequest) {
     // Return simplified slot data (for availability checking)
     const bookedSlots = appointments.docs.map((apt) => ({
       time: apt.time,
-      duration: typeof apt.service === 'object' ? apt.service.duration : 45,
+      duration: (typeof apt.service === 'object' && apt.service?.duration) || 45,
       date: date,
       barberId: typeof apt.barber === 'string' ? apt.barber : 'cosimo',
     }))

@@ -156,6 +156,7 @@ export default function BookingForm() {
   // Data from API
   const [services, setServices] = useState<Service[]>([])
   const [closedDays, setClosedDays] = useState<ClosedDay[]>([])
+  const [openingHours, setOpeningHours] = useState(defaultOpeningHours)
   const [isLoadingData, setIsLoadingData] = useState(true)
   const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([])
   const [isLoadingSlots, setIsLoadingSlots] = useState(false)
@@ -164,14 +165,15 @@ export default function BookingForm() {
   const [bookingConfirmed, setBookingConfirmed] = useState(false)
   const [bookingLinks, setBookingLinks] = useState<{ whatsapp?: string; cancel?: string }>({})
 
-  // Fetch services and closed days
+  // Fetch services, closed days, and opening hours
   useEffect(() => {
     async function fetchData() {
       setIsLoadingData(true)
       try {
-        const [servicesRes, closedDaysRes] = await Promise.all([
+        const [servicesRes, closedDaysRes, hoursRes] = await Promise.all([
           fetch('/api/services'),
           fetch('/api/closed-days?limit=100'),
+          fetch('/api/opening-hours'),
         ])
         if (servicesRes.ok) {
           const data = await servicesRes.json()
@@ -180,6 +182,12 @@ export default function BookingForm() {
         if (closedDaysRes.ok) {
           const data = await closedDaysRes.json()
           setClosedDays(data.docs || [])
+        }
+        if (hoursRes.ok) {
+          const data = await hoursRes.json()
+          if (data.openingHours?.length > 0) {
+            setOpeningHours(data.openingHours)
+          }
         }
       } catch (error) {
         console.error('Error fetching data:', error)
@@ -225,7 +233,7 @@ export default function BookingForm() {
     for (let day = 1; day <= lastDay.getDate(); day++) {
       const d = new Date(year, month, day)
       const dayOfWeek = d.getDay()
-      const dayHours = defaultOpeningHours.find((h) => h.dayOfWeek === dayOfWeek)
+      const dayHours = openingHours.find((h) => h.dayOfWeek === dayOfWeek)
       const isPast = d < tomorrow
       const isTooFar = d > maxDate
       const isClosed = !dayHours || dayHours.isClosed || isDateClosed(d, closedDays)
@@ -242,7 +250,7 @@ export default function BookingForm() {
     }
 
     return days
-  }, [calendarMonth, closedDays])
+  }, [calendarMonth, closedDays, openingHours])
 
   const navigateMonth = (dir: number) => {
     setCalendarMonth((prev) => {
@@ -289,14 +297,14 @@ export default function BookingForm() {
         if (service) {
           setIsLoadingSlots(true)
           const bookedSlots = await fetchBookedSlots(formData.date, formData.barberId)
-          const slots = getAvailableSlots(new Date(formData.date), formData.barberId, service.duration, bookedSlots)
+          const slots = getAvailableSlots(new Date(formData.date), formData.barberId, service.duration, bookedSlots, openingHours)
           setAvailableSlots(slots)
           setIsLoadingSlots(false)
         }
       }
     }
     loadSlots()
-  }, [formData.date, formData.barberId, formData.serviceId, services, fetchBookedSlots])
+  }, [formData.date, formData.barberId, formData.serviceId, services, fetchBookedSlots, openingHours])
 
   const selectedService = services.find((s) => s.id === formData.serviceId)
 
@@ -372,7 +380,7 @@ export default function BookingForm() {
             const service = services.find((s) => s.id === formData.serviceId)
             if (service) {
               const bookedSlots = await fetchBookedSlots(formData.date, formData.barberId)
-              const slots = getAvailableSlots(new Date(formData.date), formData.barberId, service.duration, bookedSlots)
+              const slots = getAvailableSlots(new Date(formData.date), formData.barberId, service.duration, bookedSlots, openingHours)
               setAvailableSlots(slots)
             }
           }

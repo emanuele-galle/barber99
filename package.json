@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed": "tsx scripts/seed-gallery.ts",
-    "seed:availability": "tsx scripts/seed-availability.ts"
+    "seed": "tsx scripts/seed-gallery.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.73.0",
