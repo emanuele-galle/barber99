@@ -114,7 +114,7 @@ export default function Footer() {
           {/* Quick Links */}
           <div>
             <h4
-              className="text-white font-semibold mb-6"
+              className="text-white font-semibold text-base md:text-lg mb-6"
               style={{ fontFamily: 'var(--font-cinzel), serif' }}
             >
               Link Rapidi
@@ -136,7 +136,7 @@ export default function Footer() {
           {/* Services */}
           <div>
             <h4
-              className="text-white font-semibold mb-6"
+              className="text-white font-semibold text-base md:text-lg mb-6"
               style={{ fontFamily: 'var(--font-cinzel), serif' }}
             >
               Servizi
@@ -158,7 +158,7 @@ export default function Footer() {
           {/* Contact */}
           <div>
             <h4
-              className="text-white font-semibold mb-6"
+              className="text-white font-semibold text-base md:text-lg mb-6"
               style={{ fontFamily: 'var(--font-cinzel), serif' }}
             >
               Contatti
@@ -289,7 +289,7 @@ export default function Footer() {
               © {new Date().getFullYear()} Barber 99 Serra San Bruno. Tutti i diritti
               riservati.
             </p>
-            <p className="text-white/30 text-xs mt-1">
+            <p className="text-white/30 text-xs md:text-sm mt-1">
               Sito web realizzato da{' '}
               <a
                 href="https://www.fodisrl.it"

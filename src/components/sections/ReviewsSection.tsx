@@ -80,7 +80,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-12">
             <p
-              className="text-[#d4a855] text-sm tracking-[0.3em] uppercase mb-4"
+              className="text-[#d4a855] text-sm md:text-base tracking-[0.3em] uppercase mb-4"
               style={{ fontFamily: 'var(--font-cormorant), serif' }}
             >
               Cosa Dicono di Noi
@@ -123,7 +123,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
           {/* Section Header */}
           <div className="text-center mb-12">
             <p
-              className="text-[#d4a855] text-sm tracking-[0.3em] uppercase mb-4"
+              className="text-[#d4a855] text-sm md:text-base tracking-[0.3em] uppercase mb-4"
               style={{ fontFamily: 'var(--font-cormorant), serif' }}
             >
               Cosa Dicono di Noi
@@ -174,7 +174,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-white font-medium text-sm">{review.author}</p>
-                    <p className="text-white/40 text-xs">{review.date}</p>
+                    <p className="text-white/40 text-xs md:text-sm">{review.date}</p>
                   </div>
                   <span className="text-xs px-2 py-1 rounded-full bg-[#d4a855]/10 text-[#d4a855]">
                     {review.source}
@@ -206,7 +206,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-white font-medium">{review.author}</p>
-                    <p className="text-white/40 text-sm">{review.date}</p>
+                    <p className="text-white/40 text-sm md:text-base">{review.date}</p>
                   </div>
                   <span className="text-xs px-3 py-1 rounded-full bg-[#d4a855]/10 text-[#d4a855]">
                     {review.source}
@@ -266,7 +266,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
           className="text-center mb-16"
         >
           <p
-            className="text-[#d4a855] text-sm tracking-[0.3em] uppercase mb-4"
+            className="text-[#d4a855] text-sm md:text-base tracking-[0.3em] uppercase mb-4"
             style={{ fontFamily: 'var(--font-cormorant), serif' }}
           >
             Cosa Dicono di Noi
@@ -331,7 +331,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-white font-medium">{displayReviews[currentIndex].author}</p>
-                    <p className="text-white/40 text-sm">{displayReviews[currentIndex].date}</p>
+                    <p className="text-white/40 text-xs">{displayReviews[currentIndex].date}</p>
                   </div>
                   <span className="text-xs px-3 py-1 rounded-full bg-[#d4a855]/10 text-[#d4a855]">
                     {displayReviews[currentIndex].source}
@@ -410,9 +410,9 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-white font-medium">{review.author}</p>
-                    <p className="text-white/40 text-sm">{review.date}</p>
+                    <p className="text-white/40 text-sm md:text-base">{review.date}</p>
                   </div>
-                  <span className="text-xs px-3 py-1 rounded-full bg-[#d4a855]/10 text-[#d4a855]">
+                  <span className="text-xs md:text-sm px-3 py-1 rounded-full bg-[#d4a855]/10 text-[#d4a855]">
                     {review.source}
                   </span>
                 </div>

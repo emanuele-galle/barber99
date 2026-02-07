@@ -87,7 +87,7 @@ export default function TeamSection({ barbers }: TeamSectionProps) {
           className="text-center mb-16"
         >
           <p
-            className="text-[#d4a855] text-sm tracking-[0.3em] uppercase mb-4"
+            className="text-[#d4a855] text-sm md:text-base tracking-[0.3em] uppercase mb-4"
             style={{ fontFamily: 'var(--font-cormorant), serif' }}
           >
             Il Nostro Team
@@ -183,11 +183,11 @@ export default function TeamSection({ barbers }: TeamSectionProps) {
                         >
                           {member.name}
                         </h3>
-                        <p className="text-[#d4a855] text-sm">{member.role || 'Barbiere'}</p>
+                        <p className="text-[#d4a855] text-sm md:text-base">{member.role || 'Barbiere'}</p>
                       </div>
                     </div>
 
-                    <p className="text-white/60 text-sm mb-4 line-clamp-2 group-hover:line-clamp-none transition-all">
+                    <p className="text-white/60 text-sm md:text-base mb-4 line-clamp-2 group-hover:line-clamp-none transition-all">
                       {member.shortBio || 'Esperto barbiere con passione per il suo lavoro.'}
                     </p>
 
@@ -197,7 +197,7 @@ export default function TeamSection({ barbers }: TeamSectionProps) {
                         {specialties.slice(0, 3).map((specialty) => (
                           <span
                             key={specialty}
-                            className="text-xs px-3 py-1 rounded-full bg-[#d4a855]/10 text-[#d4a855]"
+                            className="text-xs md:text-sm px-3 py-1 rounded-full bg-[#d4a855]/10 text-[#d4a855]"
                           >
                             {specialty}
                           </span>
@@ -241,7 +241,7 @@ export default function TeamSection({ barbers }: TeamSectionProps) {
                           >
                             {member.name}
                           </h3>
-                          <p className="text-[#d4a855] text-sm">{member.role || 'Barbiere'}</p>
+                          <p className="text-[#d4a855] text-sm md:text-base">{member.role || 'Barbiere'}</p>
                           <div className="flex items-center gap-3 mt-1 text-xs text-white/60">
                             <span className="flex items-center gap-1">
                               <Award className="w-3 h-3 text-[#d4a855]" />
@@ -256,7 +256,7 @@ export default function TeamSection({ barbers }: TeamSectionProps) {
                       </div>
 
                       {/* Bio */}
-                      <p className="text-white/80 text-sm mb-4">
+                      <p className="text-white/80 text-sm md:text-base mb-4">
                         {member.shortBio || 'Esperto barbiere con passione per il suo lavoro.'}
                       </p>
 
@@ -268,7 +268,7 @@ export default function TeamSection({ barbers }: TeamSectionProps) {
                             {specialties.map((specialty) => (
                               <span
                                 key={specialty}
-                                className="text-xs px-3 py-1.5 rounded-full bg-[#d4a855]/10 text-[#d4a855] border border-[#d4a855]/20"
+                                className="text-xs md:text-sm px-3 py-1.5 rounded-full bg-[#d4a855]/10 text-[#d4a855] border border-[#d4a855]/20"
                               >
                                 {specialty}
                               </span>

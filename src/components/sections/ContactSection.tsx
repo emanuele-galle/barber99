@@ -96,7 +96,7 @@ export default function ContactSection() {
           className="text-center mb-16"
         >
           <p
-            className="text-[#d4a855] text-sm tracking-[0.3em] uppercase mb-4"
+            className="text-[#d4a855] text-sm md:text-base tracking-[0.3em] uppercase mb-4"
             style={{ fontFamily: 'var(--font-cormorant), serif' }}
           >
             Vieni a Trovarci
@@ -139,7 +139,7 @@ export default function ContactSection() {
                     <item.icon className="w-5 h-5 text-[#d4a855]" />
                   </div>
                   <div>
-                    <p className="text-white/50 text-sm">{item.label}</p>
+                    <p className="text-white/50 text-sm md:text-base">{item.label}</p>
                     {item.href ? (
                       <a
                         href={item.href}
@@ -162,7 +162,7 @@ export default function ContactSection() {
 
             {/* Social Links */}
             <div className="mb-8 pt-6 border-t border-white/10">
-              <p className="text-white/50 text-sm mb-4">Seguici sui Social</p>
+              <p className="text-white/50 text-sm md:text-base mb-4">Seguici sui Social</p>
               <div className="flex gap-4">
                 <a
                   href="https://www.instagram.com/barber___99/"

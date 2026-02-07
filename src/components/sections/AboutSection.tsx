@@ -61,7 +61,7 @@ export default function AboutSection() {
               initial={{ opacity: 0, letterSpacing: '0.2em' }}
               whileInView={{ opacity: 1, letterSpacing: '0.3em' }}
               transition={{ duration: 0.8 }}
-              className="text-[#d4a855] text-sm uppercase mb-4"
+              className="text-[#d4a855] text-sm md:text-base uppercase mb-4"
               style={{ fontFamily: 'var(--font-cormorant), serif' }}
             >
               La Mia Storia
@@ -221,10 +221,10 @@ export default function AboutSection() {
                         <feature.icon className="w-5 h-5 text-[#d4a855] transition-transform duration-300 group-hover:scale-110" />
                       </motion.div>
                       <div>
-                        <h4 className="text-white font-medium text-sm group-hover:text-[#d4a855] transition-colors duration-300">
+                        <h4 className="text-white font-medium text-sm md:text-base group-hover:text-[#d4a855] transition-colors duration-300">
                           {feature.title}
                         </h4>
-                        <p className="text-white/50 text-xs mt-1">
+                        <p className="text-white/50 text-xs md:text-sm mt-1">
                           {feature.description}
                         </p>
                       </div>

@@ -89,7 +89,7 @@ export default function ServicesSection({ services }: ServicesSectionProps) {
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="text-[#d4a855] text-sm tracking-[0.3em] uppercase mb-4"
+              className="text-[#d4a855] text-sm md:text-base tracking-[0.3em] uppercase mb-4"
               style={{ fontFamily: 'var(--font-cormorant), serif' }}
             >
               I Nostri Servizi
@@ -175,7 +175,7 @@ export default function ServicesSection({ services }: ServicesSectionProps) {
                         >
                           €{service.price}
                         </motion.p>
-                        <div className="flex items-center justify-end gap-1 text-white/40 text-sm">
+                        <div className="flex items-center justify-end gap-1 text-white/40 text-sm md:text-base">
                           <Clock className="w-3 h-3" />
                           <span>{service.duration} min</span>
                         </div>
@@ -188,11 +188,11 @@ export default function ServicesSection({ services }: ServicesSectionProps) {
                     >
                       {service.name}
                     </h3>
-                    <p className="text-white/60 text-sm mb-4">{service.shortDescription}</p>
+                    <p className="text-white/60 text-sm md:text-base mb-4">{service.shortDescription}</p>
 
                     {/* Duration Progress Bar */}
                     <div className="mb-6">
-                      <div className="flex justify-between text-xs text-white/40 mb-1">
+                      <div className="flex justify-between text-xs md:text-sm text-white/40 mb-1">
                         <span>Durata</span>
                         <span>{service.duration} min</span>
                       </div>

@@ -20,7 +20,7 @@ export default function CTABanner() {
         >
           Prenota il Tuo Appuntamento
         </h2>
-        <p className="text-white/60 mb-6 max-w-lg mx-auto">
+        <p className="text-white/60 text-base md:text-lg mb-6 max-w-lg mx-auto">
           Scegli il servizio che preferisci e prenota online in pochi secondi.
           Ti aspettiamo in Via San Biagio 3, Serra San Bruno.
         </p>
