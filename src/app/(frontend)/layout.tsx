@@ -70,21 +70,12 @@ export const metadata: Metadata = {
     title: 'Barber 99 di Cosimo Pisani | Barbiere a Serra San Bruno',
     description:
       'Cosimo Pisani, il tuo barbiere di fiducia a Serra San Bruno dal 2023. Taglio capelli, barba e meches. Prenota online il tuo appuntamento.',
-    images: [
-      {
-        url: '/images/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Barber 99 di Cosimo Pisani - Barbiere a Serra San Bruno',
-      },
-    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Barber 99 di Cosimo Pisani | Barbiere Serra San Bruno',
     description:
       'Cosimo Pisani, barbiere professionista. Taglio, barba e meches. Prenota online.',
-    images: ['/images/og-image.jpg'],
   },
   robots: {
     index: true,
@@ -121,7 +112,6 @@ const jsonLd = {
   logo: 'https://barber99.it/images/logo/barber99-logo.png',
   image: [
     'https://barber99.it/images/hero-bg.jpg',
-    'https://barber99.it/images/og-image.jpg',
   ],
   telephone: '+39 327 126 3091',
   email: 'info@barber99.it',

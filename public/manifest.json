@@ -5,7 +5,7 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0c0c0c",
-  "theme_color": "#F4662F",
+  "theme_color": "#d4a855",
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "it",
@@ -74,22 +74,7 @@
       ]
     }
   ],
-  "screenshots": [
-    {
-      "src": "/screenshots/home.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Homepage"
-    },
-    {
-      "src": "/screenshots/booking.png",
-      "sizes": "750x1334",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Prenotazione"
-    }
-  ],
+  "screenshots": [],
   "related_applications": [],
   "prefer_related_applications": false
 }

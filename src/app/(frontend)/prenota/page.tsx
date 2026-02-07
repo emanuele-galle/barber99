@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   title: 'Prenota Appuntamento | Barber 99 Serra San Bruno',
   description:
     'Prenota il tuo appuntamento online da Barber 99. Taglio capelli, barba, meches. Via San Biagio 3, Serra San Bruno (VV).',
+  alternates: {
+    canonical: '/prenota',
+  },
   openGraph: {
     title: 'Prenota Appuntamento | Barber 99 Serra San Bruno',
   },
