@@ -4,7 +4,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { notFound } from 'next/navigation'
 import { ClientForm } from '@/components/admin-panel/ClientForm'
-import { DeleteClientButton } from '@/components/admin-panel/DeleteClientButton'
+import { DeleteButton } from '@/components/admin-panel/DeleteButton'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -41,7 +41,7 @@ export default async function ModificaClientePage({ params }: PageProps) {
             Modifica i dettagli del cliente
           </p>
         </div>
-        <DeleteClientButton clientId={String(client.id)} clientName={client.name as string} />
+        <DeleteButton collection="clients" id={String(client.id)} name={client.name as string} redirectTo="/admin-panel/clienti" />
       </div>
 
       <ClientForm

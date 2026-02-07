@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   UserPlus,
@@ -55,6 +55,12 @@ export function WalkinQueue({ initialWalkins, services }: WalkinQueueProps) {
     serviceId: services[0]?.id || '',
     notes: '',
   })
+
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => router.refresh(), 30000)
+    return () => clearInterval(interval)
+  }, [router])
 
   const inQueue = walkins.filter((w) => w.status === 'inqueue')
   const inService = walkins.filter((w) => w.status === 'inservice')

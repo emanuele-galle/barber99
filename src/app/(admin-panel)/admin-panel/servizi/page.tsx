@@ -4,7 +4,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import Link from 'next/link'
 import { Plus, Pencil, Trash2, Scissors, Clock, Euro } from 'lucide-react'
-import { DeleteServiceButton } from '@/components/admin-panel/DeleteServiceButton'
+import { DeleteButton } from '@/components/admin-panel/DeleteButton'
 
 async function getServices() {
   const payload = await getPayload({ config })
@@ -96,7 +96,7 @@ export default async function ServiziPage() {
                   <Pencil className="w-4 h-4" />
                   <span className="hidden sm:inline">Modifica</span>
                 </Link>
-                <DeleteServiceButton serviceId={String(service.id)} serviceName={service.name as string} />
+                <DeleteButton collection="services" id={String(service.id)} name={service.name as string} />
               </div>
             </div>
           ))}

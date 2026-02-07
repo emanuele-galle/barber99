@@ -3,7 +3,6 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 
 const APIFY_API_TOKEN = process.env.APIFY_API_TOKEN
-const SYNC_SECRET = process.env.INSTAGRAM_SYNC_SECRET // reuse same secret
 const GOOGLE_MAPS_SEARCH = 'Barber 99 Serra San Bruno'
 
 interface ApifyReview {
@@ -87,26 +86,18 @@ export async function POST(request: NextRequest) {
   try {
     const payload = await getPayload({ config })
 
-    const secret = request.headers.get('x-sync-secret')
-    const isSecretValid = SYNC_SECRET && secret === SYNC_SECRET
-
-    // Also allow authenticated admin users (from admin panel)
-    let isAdmin = false
-    if (!isSecretValid) {
-      try {
-        const authHeader = request.headers.get('authorization')
-        const cookie = request.headers.get('cookie')
-        const headers = new Headers()
-        if (authHeader) headers.set('Authorization', authHeader)
-        if (cookie) headers.set('Cookie', cookie)
-        const { user } = await payload.auth({ headers })
-        isAdmin = Boolean(user)
-      } catch {
-        isAdmin = false
+    // Require authenticated admin user
+    try {
+      const authHeader = request.headers.get('authorization')
+      const cookie = request.headers.get('cookie')
+      const headers = new Headers()
+      if (authHeader) headers.set('Authorization', authHeader)
+      if (cookie) headers.set('Cookie', cookie)
+      const { user } = await payload.auth({ headers })
+      if (!user) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
       }
-    }
-
-    if (!isSecretValid && !isAdmin) {
+    } catch {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

@@ -63,7 +63,7 @@ export async function POST(request: Request) {
       )
     }
 
-    // Trova la prossima posizione in coda
+    // Trova la prossima posizione in coda e calcola attesa reale
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     const tomorrow = new Date(today)
@@ -80,28 +80,20 @@ export async function POST(request: Request) {
         },
       },
       sort: '-queuePosition',
-      limit: 1,
+      depth: 1,
     })
 
     const nextPosition = existingWalkins.docs.length > 0
       ? ((existingWalkins.docs[0].queuePosition as number) || 0) + 1
       : 1
 
-    // Calcola tempo di attesa stimato basato sulla coda
-    const inQueueCount = await payload.count({
-      collection: 'appointments',
-      where: {
-        appointmentType: { equals: 'walkin' },
-        status: { equals: 'inqueue' },
-        date: {
-          greater_than_equal: today.toISOString(),
-          less_than: tomorrow.toISOString(),
-        },
-      },
-    })
-
-    // Stima: ~20 minuti per cliente in coda
-    const estimatedWait = inQueueCount.totalDocs * 20
+    // Calcola attesa sommando le durate reali dei servizi in coda
+    const estimatedWait = existingWalkins.docs
+      .filter((w) => w.status === 'inqueue')
+      .reduce((total, w) => {
+        const service = w.service as { duration?: number } | null
+        return total + (service?.duration || 20)
+      }, 0)
 
     // Crea il walk-in
     const walkin = await payload.create({

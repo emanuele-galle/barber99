@@ -4,9 +4,9 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  Menu, X, Bell, ExternalLink, Scissors, Clock, MessageSquare,
-  LayoutDashboard, Calendar, UserPlus, User, BarChart2, Star, Settings, LogOut, Plus,
+  Menu, X, Bell, ExternalLink, Scissors, Clock, MessageSquare, LogOut, Plus,
 } from 'lucide-react'
+import { adminMenuItemsWithSettings } from '@/lib/admin-menu'
 
 interface Notification {
   id: string
@@ -21,18 +21,7 @@ interface AdminHeaderProps {
   user: { email?: string; name?: string } | null
 }
 
-const menuItems = [
-  { href: '/admin-panel', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/admin-panel/appuntamenti', label: 'Appuntamenti', icon: Calendar },
-  { href: '/admin-panel/coda', label: 'Senza appuntamento', icon: UserPlus },
-  { href: '/admin-panel/clienti', label: 'Clienti', icon: User },
-  { href: '/admin-panel/servizi', label: 'Servizi', icon: Scissors },
-  { href: '/admin-panel/analytics', label: 'Analytics', icon: BarChart2 },
-  { href: '/admin-panel/orari', label: 'Orari', icon: Clock },
-  { href: '/admin-panel/recensioni', label: 'Recensioni', icon: Star },
-  { href: '/admin-panel/contatti', label: 'Contatti', icon: MessageSquare },
-  { href: '/admin-panel/impostazioni', label: 'Impostazioni', icon: Settings },
-]
+const menuItems = adminMenuItemsWithSettings
 
 export function AdminHeader({ user }: AdminHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -70,59 +59,37 @@ export function AdminHeader({ user }: AdminHeaderProps) {
   // Fetch notifications (initial + fallback polling)
   const fetchNotifications = useCallback(async () => {
     try {
-      const [appointmentsRes, contactsRes] = await Promise.all([
-        fetch('/api/appointments'),
-        fetch('/api/contact')
-      ])
+      const res = await fetch('/api/admin/notifications')
+      if (!res.ok) return
 
+      const data = await res.json()
       const notifs: Notification[] = []
-      const now = new Date()
-      const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000)
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      const todayStr = today.toISOString().split('T')[0]
 
-      if (appointmentsRes.ok) {
-        const appointments = await appointmentsRes.json()
-        const imminent = appointments.filter((apt: { status: string; date: string; time: string }) => {
-          if (apt.status !== 'confirmed') return false
-          const aptDateStr = new Date(apt.date).toISOString().split('T')[0]
-          if (aptDateStr !== todayStr) return false
-          const [hours, minutes] = apt.time.split(':').map(Number)
-          const aptTime = new Date(today)
-          aptTime.setHours(hours, minutes, 0, 0)
-          return aptTime >= now && aptTime <= oneHourFromNow
-        })
-
-        imminent.forEach((apt: { id: string; clientName: string; time: string; service?: { name: string } }) => {
+      if (data.imminent?.length > 0) {
+        data.imminent.forEach((apt: { id: string; clientName: string; time: string; serviceName?: string }) => {
           notifs.push({
             id: `imminent-${apt.id}`,
             type: 'imminent',
             title: `${apt.clientName} alle ${apt.time}`,
-            message: apt.service?.name || 'Appuntamento',
-            time: 'Prossima ora',
+            message: apt.serviceName || 'Appuntamento',
+            time: 'Prossime 2 ore',
             link: '/admin-panel/appuntamenti'
           })
         })
       }
 
-      if (contactsRes.ok) {
-        const contacts = await contactsRes.json()
-        const unread = contacts.filter((c: { status: string }) => c.status === 'new' || c.status === 'unread')
-        if (unread.length > 0) {
-          notifs.push({
-            id: 'contacts-count',
-            type: 'contact',
-            title: `${unread.length} messagg${unread.length > 1 ? 'i' : 'io'} non lett${unread.length > 1 ? 'i' : 'o'}`,
-            message: 'Da leggere',
-            time: 'Adesso',
-            link: '/admin-panel/contatti'
-          })
-        }
+      if (data.unreadContacts > 0) {
+        notifs.push({
+          id: 'contacts-count',
+          type: 'contact',
+          title: `${data.unreadContacts} messagg${data.unreadContacts > 1 ? 'i' : 'io'} non lett${data.unreadContacts > 1 ? 'i' : 'o'}`,
+          message: 'Da leggere',
+          time: 'Adesso',
+          link: '/admin-panel/contatti'
+        })
       }
 
       setNotifications((prev) => {
-        // Keep real-time booking notifications, replace the rest
         const realtimeNotifs = prev.filter((n) => n.type === 'new_booking')
         return [...realtimeNotifs, ...notifs]
       })

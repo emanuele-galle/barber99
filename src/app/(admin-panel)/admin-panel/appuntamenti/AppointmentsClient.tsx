@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Calendar, Clock, User, Phone, Mail, CheckCircle, XCircle, AlertCircle, Search, Filter, X, Bell, FileText, ChevronLeft, ChevronRight, List, CalendarDays, UserX, Plus } from 'lucide-react'
@@ -51,8 +51,15 @@ export function AppointmentsClient({ initialAppointments }: AppointmentsClientPr
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('')
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [dateFilter, setDateFilter] = useState<string>('')
+
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 300)
+    return () => clearTimeout(timer)
+  }, [searchQuery])
 
   // Quick action handlers
   const handleQuickAction = async (id: string, status: string) => {
@@ -229,8 +236,8 @@ export function AppointmentsClient({ initialAppointments }: AppointmentsClientPr
         const aptDate = new Date(apt.date).toISOString().split('T')[0]
         if (aptDate !== dateFilter) return false
       }
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase()
+      if (debouncedSearchQuery) {
+        const query = debouncedSearchQuery.toLowerCase()
         const matchesName = apt.clientName?.toLowerCase().includes(query)
         const matchesPhone = apt.clientPhone?.toLowerCase().includes(query)
         const matchesEmail = apt.clientEmail?.toLowerCase().includes(query)
@@ -246,7 +253,7 @@ export function AppointmentsClient({ initialAppointments }: AppointmentsClientPr
       return (a.time || '').localeCompare(b.time || '')
     })
     return filtered
-  }, [appointments, statusFilter, dateFilter, searchQuery])
+  }, [appointments, statusFilter, dateFilter, debouncedSearchQuery])
 
   // Calendar derived state
   const weekDays = useMemo(() => getWeekDays(currentWeekStart), [currentWeekStart])
@@ -284,7 +291,7 @@ export function AppointmentsClient({ initialAppointments }: AppointmentsClientPr
     setDateFilter('')
   }
 
-  const hasActiveFilters = searchQuery || statusFilter !== 'all' || dateFilter
+  const hasActiveFilters = debouncedSearchQuery || statusFilter !== 'all' || dateFilter
 
   return (
     <div className="space-y-6 admin-fade-in">

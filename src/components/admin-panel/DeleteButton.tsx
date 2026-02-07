@@ -10,9 +10,10 @@ interface DeleteButtonProps {
   id: string
   name: string
   onDeleted?: () => void
+  redirectTo?: string
 }
 
-export function DeleteButton({ collection, id, name, onDeleted }: DeleteButtonProps) {
+export function DeleteButton({ collection, id, name, onDeleted, redirectTo }: DeleteButtonProps) {
   const router = useRouter()
   const { showToast } = useToast()
   const [showConfirm, setShowConfirm] = useState(false)
@@ -31,6 +32,8 @@ export function DeleteButton({ collection, id, name, onDeleted }: DeleteButtonPr
       showToast('success', `${name} eliminato correttamente`, 'Eliminato')
       if (onDeleted) {
         onDeleted()
+      } else if (redirectTo) {
+        router.push(redirectTo)
       } else {
         router.refresh()
       }

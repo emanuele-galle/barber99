@@ -15,10 +15,7 @@ export function SyncReviewsButton() {
     try {
       const res = await fetch('/api/reviews/sync', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-sync-secret': 'internal',
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
       })
 

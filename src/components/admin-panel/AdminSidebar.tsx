@@ -3,35 +3,12 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import {
-  LayoutDashboard,
-  Scissors,
-  Calendar,
-  Clock,
-  Star,
-  MessageSquare,
-  Settings,
-  LogOut,
-  UserPlus,
-  BarChart2,
-  User,
-} from 'lucide-react'
+import { Settings, LogOut } from 'lucide-react'
+import { adminMenuItems } from '@/lib/admin-menu'
 
 interface AdminSidebarProps {
   user: { email?: string; name?: string } | null
 }
-
-const menuItems = [
-  { href: '/admin-panel', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/admin-panel/appuntamenti', label: 'Appuntamenti', icon: Calendar },
-  { href: '/admin-panel/coda', label: 'Senza appuntamento', icon: UserPlus },
-  { href: '/admin-panel/clienti', label: 'Clienti', icon: User },
-  { href: '/admin-panel/servizi', label: 'Servizi', icon: Scissors },
-  { href: '/admin-panel/analytics', label: 'Analytics', icon: BarChart2 },
-  { href: '/admin-panel/orari', label: 'Orari', icon: Clock },
-  { href: '/admin-panel/recensioni', label: 'Recensioni', icon: Star },
-  { href: '/admin-panel/contatti', label: 'Contatti', icon: MessageSquare },
-]
 
 export function AdminSidebar({ user }: AdminSidebarProps) {
   const pathname = usePathname()
@@ -64,7 +41,7 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto admin-scrollbar">
-        {menuItems.map((item) => {
+        {adminMenuItems.map((item) => {
           const Icon = item.icon
           const active = isActive(item.href)
           return (
