@@ -16,7 +16,12 @@ async function getOpeningHours() {
   return hours.docs
 }
 
-const dayNames: Record<number, string> = {
+const dayNameToNumber: Record<string, number> = {
+  sunday: 0, monday: 1, tuesday: 2, wednesday: 3,
+  thursday: 4, friday: 5, saturday: 6,
+}
+
+const dayLabels: Record<number, string> = {
   0: 'Domenica',
   1: 'Lunedì',
   2: 'Martedì',
@@ -29,16 +34,17 @@ const dayNames: Record<number, string> = {
 export default async function OrariPage() {
   const hours = await getOpeningHours()
 
-  // Create a map of existing hours
+  // Create a map of existing hours (dayOfWeek in DB is a string like 'monday')
   const hoursMap = hours.reduce((acc, h) => {
-    acc[h.dayOfWeek as number] = h
+    const dayNum = dayNameToNumber[h.dayOfWeek as string]
+    if (dayNum !== undefined) acc[dayNum] = h
     return acc
   }, {} as Record<number, typeof hours[0]>)
 
   // Ensure all days are represented
   const allDays = [1, 2, 3, 4, 5, 6, 0].map((day) => ({
     dayOfWeek: day,
-    dayName: dayNames[day],
+    dayName: dayLabels[day],
     data: hoursMap[day] || null,
   }))
 
@@ -94,7 +100,7 @@ export default async function OrariPage() {
                 dayOfWeek={day.dayOfWeek}
                 existingData={day.data ? {
                   id: String(day.data.id),
-                  isOpen: day.data.isOpen as boolean,
+                  isOpen: !day.data.isClosed as boolean,
                   openTime: day.data.openTime as string,
                   closeTime: day.data.closeTime as string,
                   breakStart: day.data.breakStart as string | undefined,

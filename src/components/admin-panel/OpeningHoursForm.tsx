@@ -30,6 +30,22 @@ export function OpeningHoursForm({ dayOfWeek, existingData }: OpeningHoursFormPr
   const [breakEnd, setBreakEnd] = useState(existingData?.breakEnd || '')
 
   const handleSave = async () => {
+    // Validate break times if provided
+    if (isOpen && breakStart && breakEnd) {
+      if (breakStart >= breakEnd) {
+        showToast('error', 'L\'inizio pausa deve essere prima della fine pausa', 'Errore')
+        return
+      }
+      if (breakStart < openTime || breakEnd > closeTime) {
+        showToast('error', 'La pausa deve essere dentro l\'orario di apertura', 'Errore')
+        return
+      }
+    }
+    if (isOpen && ((breakStart && !breakEnd) || (!breakStart && breakEnd))) {
+      showToast('error', 'Inserisci sia inizio che fine pausa, o nessuno dei due', 'Errore')
+      return
+    }
+
     setLoading(true)
     try {
       const url = existingData
@@ -42,7 +58,7 @@ export function OpeningHoursForm({ dayOfWeek, existingData }: OpeningHoursFormPr
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           dayOfWeek,
-          isOpen,
+          isClosed: !isOpen,
           openTime: isOpen ? openTime : null,
           closeTime: isOpen ? closeTime : null,
           breakStart: isOpen && breakStart ? breakStart : null,

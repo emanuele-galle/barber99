@@ -7,7 +7,16 @@ import {
   Calendar, Clock, Scissors,
 } from 'lucide-react'
 import Link from 'next/link'
-import { getAvailableSlots, formatDate, type TimeSlot, type Appointment } from '@/lib/booking'
+import {
+  getAvailableSlots,
+  formatDate,
+  isDateClosed,
+  defaultOpeningHours,
+  type TimeSlot,
+  type Appointment,
+  type OpeningHour,
+  type ClosedDay,
+} from '@/lib/booking'
 
 interface Service {
   id: string
@@ -37,6 +46,8 @@ export default function NuovoAppuntamentoPage() {
   const [clientEmail, setClientEmail] = useState('')
 
   const [services, setServices] = useState<Service[]>([])
+  const [openingHours, setOpeningHours] = useState<OpeningHour[]>(defaultOpeningHours)
+  const [closedDays, setClosedDays] = useState<ClosedDay[]>([])
   const [selectedService, setSelectedService] = useState('')
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedTime, setSelectedTime] = useState('')
@@ -47,12 +58,34 @@ export default function NuovoAppuntamentoPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
 
-  // Fetch services
+  // Fetch services, opening hours, and closed days
   useEffect(() => {
-    fetch('/api/services')
-      .then((res) => res.json())
-      .then((data) => setServices(data.docs || []))
-      .catch(console.error)
+    async function fetchData() {
+      try {
+        const [servicesRes, closedDaysRes, hoursRes] = await Promise.all([
+          fetch('/api/services'),
+          fetch('/api/closed-days?limit=100'),
+          fetch('/api/opening-hours'),
+        ])
+        if (servicesRes.ok) {
+          const data = await servicesRes.json()
+          setServices(data.docs || [])
+        }
+        if (closedDaysRes.ok) {
+          const data = await closedDaysRes.json()
+          setClosedDays(data.docs || [])
+        }
+        if (hoursRes.ok) {
+          const data = await hoursRes.json()
+          if (data.openingHours?.length > 0) {
+            setOpeningHours(data.openingHours)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+    }
+    fetchData()
   }, [])
 
   // Search clients
@@ -94,12 +127,12 @@ export default function NuovoAppuntamentoPage() {
 
       setIsLoadingSlots(true)
       const booked = await fetchBookedSlots(selectedDate)
-      const slots = getAvailableSlots(new Date(selectedDate), '1', service.duration, booked)
+      const slots = getAvailableSlots(new Date(selectedDate), '1', service.duration, booked, openingHours, closedDays)
       setAvailableSlots(slots)
       setIsLoadingSlots(false)
     }
     loadSlots()
-  }, [selectedDate, selectedService, services, fetchBookedSlots])
+  }, [selectedDate, selectedService, services, fetchBookedSlots, openingHours, closedDays])
 
   const selectClient = (client: Client) => {
     setSelectedClient(client)
@@ -149,6 +182,17 @@ export default function NuovoAppuntamentoPage() {
       setIsSubmitting(false)
     }
   }
+
+  // Check if the selected date is closed
+  const isSelectedDateClosed = (() => {
+    if (!selectedDate) return false
+    const date = new Date(selectedDate)
+    const dayOfWeek = date.getDay()
+    const dayHours = openingHours.find((h) => h.dayOfWeek === dayOfWeek)
+    if (!dayHours || dayHours.isClosed) return true
+    if (isDateClosed(date, closedDays)) return true
+    return false
+  })()
 
   const serviceDuration = services.find((s) => s.id === selectedService)?.duration
 
@@ -315,6 +359,12 @@ export default function NuovoAppuntamentoPage() {
             className="admin-input w-full sm:w-auto"
           />
         </div>
+
+        {isSelectedDateClosed && (
+          <p className="text-sm text-amber-400 mt-1">
+            Questo giorno risulta chiuso. Non ci sono orari disponibili.
+          </p>
+        )}
 
         {selectedDate && selectedService && (
           <div>

@@ -312,14 +312,14 @@ export default function BookingForm() {
         if (service) {
           setIsLoadingSlots(true)
           const bookedSlots = await fetchBookedSlots(formData.date, formData.barberId)
-          const slots = getAvailableSlots(new Date(formData.date), formData.barberId, service.duration, bookedSlots, openingHours)
+          const slots = getAvailableSlots(new Date(formData.date), formData.barberId, service.duration, bookedSlots, openingHours, closedDays)
           setAvailableSlots(slots)
           setIsLoadingSlots(false)
         }
       }
     }
     loadSlots()
-  }, [formData.date, formData.barberId, formData.serviceId, services, fetchBookedSlots, openingHours])
+  }, [formData.date, formData.barberId, formData.serviceId, services, fetchBookedSlots, openingHours, closedDays])
 
   const selectedService = services.find((s) => s.id === formData.serviceId)
 
@@ -395,7 +395,7 @@ export default function BookingForm() {
             const service = services.find((s) => s.id === formData.serviceId)
             if (service) {
               const bookedSlots = await fetchBookedSlots(formData.date, formData.barberId)
-              const slots = getAvailableSlots(new Date(formData.date), formData.barberId, service.duration, bookedSlots, openingHours)
+              const slots = getAvailableSlots(new Date(formData.date), formData.barberId, service.duration, bookedSlots, openingHours, closedDays)
               setAvailableSlots(slots)
             }
           }

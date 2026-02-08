@@ -119,8 +119,14 @@ export function getAvailableSlots(
   barberId: string,
   serviceDuration: number,
   existingAppointments: Appointment[],
-  openingHours: OpeningHour[] = defaultOpeningHours
+  openingHours: OpeningHour[] = defaultOpeningHours,
+  closedDays: ClosedDay[] = []
 ): TimeSlot[] {
+  // Check if this date is a special closed day (holiday, vacation, etc.)
+  if (isDateClosed(date, closedDays)) {
+    return []
+  }
+
   const dayOfWeek = date.getDay()
   const dayHours = openingHours.find((h) => h.dayOfWeek === dayOfWeek)
 

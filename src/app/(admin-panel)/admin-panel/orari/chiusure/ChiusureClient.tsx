@@ -95,6 +95,7 @@ export default function ChiusurePage() {
     try {
       // If range mode, create multiple closed days
       const datesToCreate = isRange ? generateDateRange(date, dateEnd) : [date]
+      const errors: string[] = []
 
       for (const dateToCreate of datesToCreate) {
         const res = await fetch('/api/closed-days', {
@@ -104,15 +105,25 @@ export default function ChiusurePage() {
             date: dateToCreate,
             type,
             reason: reason || undefined,
-            recurring: false, // Range closures are never recurring
+            recurring: isRange ? false : recurring,
           }),
           credentials: 'include',
         })
 
         if (!res.ok) {
           const data = await res.json()
-          throw new Error(data.errors?.[0]?.message || 'Errore durante salvataggio')
+          const msg = data.errors?.[0]?.message || `Errore per ${dateToCreate}`
+          // For ranges, collect errors but continue creating the rest
+          if (isRange) {
+            errors.push(msg)
+          } else {
+            throw new Error(msg)
+          }
         }
+      }
+
+      if (errors.length > 0 && errors.length === datesToCreate.length) {
+        throw new Error('Nessuna data creata. Alcune date potrebbero essere gia\' presenti.')
       }
 
       // Reset form
@@ -122,6 +133,11 @@ export default function ChiusurePage() {
       setType('holiday')
       setReason('')
       setRecurring(false)
+
+      // Show partial success warning for ranges
+      if (errors.length > 0) {
+        setError(`${datesToCreate.length - errors.length} date create, ${errors.length} saltate (gia\' presenti)`)
+      }
 
       // Refresh list
       fetchClosedDays()
@@ -144,12 +160,17 @@ export default function ChiusurePage() {
         credentials: 'include',
       })
 
-      if (res.ok) {
-        fetchClosedDays()
-        router.refresh()
+      if (!res.ok) {
+        setError('Errore durante eliminazione')
+        return
       }
+
+      setError('')
+      fetchClosedDays()
+      router.refresh()
     } catch (err) {
       console.error('Error deleting:', err)
+      setError('Errore durante eliminazione')
     }
   }
 
