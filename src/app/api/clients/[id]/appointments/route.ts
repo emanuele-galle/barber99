@@ -62,8 +62,9 @@ export async function GET(
     })
 
     // Retroactively link any orphan appointments found by email/phone
+    const numericId = Number(id)
     const orphans = appointments.docs.filter(
-      (apt) => !apt.client || (typeof apt.client === 'object' ? apt.client.id !== id : String(apt.client) !== id)
+      (apt) => !apt.client || (typeof apt.client === 'object' ? String(apt.client.id) !== id : String(apt.client) !== id)
     )
     if (orphans.length > 0) {
       await Promise.all(
@@ -71,7 +72,7 @@ export async function GET(
           payload.update({
             collection: 'appointments',
             id: apt.id,
-            data: { client: id },
+            data: { client: numericId },
           }).catch((err) => console.error(`Failed to link orphan appointment ${apt.id}:`, err))
         )
       )
@@ -83,6 +84,7 @@ export async function GET(
         date: apt.date,
         time: apt.time,
         status: apt.status,
+        cancellationToken: apt.cancellationToken || null,
         service: apt.service
           ? {
               name: typeof apt.service === 'object' ? apt.service.name : null,
@@ -90,11 +92,7 @@ export async function GET(
               duration: typeof apt.service === 'object' ? apt.service.duration : null,
             }
           : null,
-        barber: apt.barber
-          ? {
-              name: typeof apt.barber === 'object' ? apt.barber.name : null,
-            }
-          : null,
+        barber: typeof apt.barber === 'string' ? apt.barber : null,
       })),
     })
   } catch (error) {

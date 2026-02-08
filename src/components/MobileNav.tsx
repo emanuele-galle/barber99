@@ -2,19 +2,21 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Scissors, Calendar, User, Phone } from 'lucide-react'
+import { Home, Scissors, Calendar, UserCircle, Phone } from 'lucide-react'
 import { motion } from 'motion/react'
+import { useClientAuth } from '@/components/auth/ClientAuthProvider'
 
 const navItems = [
   { href: '/', icon: Home, label: 'Home' },
   { href: '/#services', icon: Scissors, label: 'Servizi' },
   { href: '/prenota', icon: Calendar, label: 'Prenota', featured: true },
-  { href: '/#reviews', icon: User, label: 'Recensioni' },
+  { href: '/account', icon: UserCircle, label: 'Account' },
   { href: 'tel:+393271263091', icon: Phone, label: 'Chiama', isExternal: true },
 ]
 
 export default function MobileNav() {
   const pathname = usePathname()
+  const { isAuthenticated } = useClientAuth()
 
   // Non mostrare su /prenota (ha la sua nav)
   if (pathname === '/prenota') return null
@@ -22,28 +24,26 @@ export default function MobileNav() {
   return (
     <nav className="mobile-nav md:hidden" aria-label="Navigazione mobile">
       <div className="absolute inset-0 bg-[#0c0c0c]/95 backdrop-blur-xl border-t border-white/10" />
-      <div className="relative flex justify-around items-end px-2 pb-safe-bottom">
-        {navItems.map((item, index) => {
-          const isActive = pathname === item.href
+      <div className="relative flex justify-around items-center px-2 pt-2 pb-safe-bottom">
+        {navItems.map((item) => {
+          const isActive = pathname === item.href || (item.href === '/account' && pathname?.startsWith('/account'))
           const isFeatured = item.featured
           const isExternal = item.isExternal
+          const isAccount = item.href === '/account'
 
           if (isFeatured) {
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className="relative -mt-6 group"
+                className="relative -mt-5 group"
               >
-                {/* Glow effect */}
-                <div className="absolute inset-0 bg-[#d4a855] rounded-full blur-xl opacity-40 group-active:opacity-60 transition-opacity" />
-
                 <motion.div
-                  whileTap={{ scale: 0.95 }}
+                  whileTap={{ scale: 0.93 }}
                   className="relative flex flex-col items-center"
                 >
-                  <div className="w-16 h-16 bg-gradient-to-br from-[#d4a855] to-[#b8923d] rounded-full flex items-center justify-center shadow-lg shadow-[#d4a855]/30">
-                    <item.icon className="w-7 h-7 text-[#0c0c0c]" />
+                  <div className="w-14 h-14 bg-gradient-to-br from-[#d4a855] to-[#b8923d] rounded-2xl flex items-center justify-center shadow-[0_4px_20px_rgba(212,168,85,0.35)]">
+                    <item.icon className="w-6 h-6 text-[#0c0c0c]" />
                   </div>
                   <span className="text-[#d4a855] text-[10px] font-bold mt-1 uppercase tracking-wide">
                     {item.label}
@@ -54,22 +54,25 @@ export default function MobileNav() {
           }
 
           const Component = isExternal ? 'a' : Link
-          const props = isExternal ? { href: item.href } : { href: item.href }
+          const href = isAccount && !isAuthenticated ? '/account/login' : item.href
 
           return (
             <Component
               key={item.href}
-              {...props}
-              className={`flex flex-col items-center gap-1 py-4 px-4 rounded-xl transition-all ${
+              href={href}
+              className={`relative flex flex-col items-center gap-0.5 py-3 px-3 transition-colors ${
                 isActive
                   ? 'text-[#d4a855]'
-                  : 'text-white/50 active:text-white/80'
+                  : 'text-white/45 active:text-white/70'
               }`}
             >
               <motion.div whileTap={{ scale: 0.9 }}>
-                <item.icon className="w-6 h-6" />
+                <item.icon className="w-[22px] h-[22px]" strokeWidth={isActive ? 2.2 : 1.8} />
               </motion.div>
               <span className="text-[10px] font-medium">{item.label}</span>
+              {isAccount && isAuthenticated && (
+                <div className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-green-500 rounded-full" />
+              )}
             </Component>
           )
         })}

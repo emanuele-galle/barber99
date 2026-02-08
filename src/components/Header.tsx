@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'motion/react'
-import { Menu, X, Phone, Calendar, MapPin } from 'lucide-react'
+import { Menu, X, Phone, Calendar, MapPin, UserCircle } from 'lucide-react'
+import { useClientAuth } from '@/components/auth/ClientAuthProvider'
 
 const navItems = [
   { href: '#about', label: 'Chi Siamo' },
@@ -18,6 +19,7 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState('')
   const menuRef = useRef<HTMLDivElement>(null)
+  const { isAuthenticated } = useClientAuth()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -187,7 +189,7 @@ export default function Header() {
           </nav>
 
           {/* CTA Buttons */}
-          <div className="hidden lg:flex items-center gap-4 shrink-0">
+          <div className="hidden lg:flex items-center gap-3 shrink-0">
             {/* Phone - only when scrolled (top bar hidden) */}
             <AnimatePresence>
               {isScrolled && (
@@ -206,6 +208,17 @@ export default function Header() {
                 </motion.a>
               )}
             </AnimatePresence>
+
+            <Link
+              href={isAuthenticated ? '/account' : '/account/login'}
+              className="relative flex items-center gap-2 text-sm text-white/70 hover:text-white px-3 py-2 rounded-lg hover:bg-white/5 transition-all"
+            >
+              <UserCircle className="w-5 h-5" />
+              <span className="font-medium">{isAuthenticated ? 'Account' : 'Accedi'}</span>
+              {isAuthenticated && (
+                <div className="absolute top-1.5 left-2 w-2 h-2 bg-green-500 rounded-full" />
+              )}
+            </Link>
 
             <Link
               href="/prenota"
@@ -340,6 +353,16 @@ export default function Header() {
                       <span className="text-white/80 text-sm font-medium">Mappa</span>
                     </a>
                   </div>
+
+                  {/* Account Link */}
+                  <Link
+                    href={isAuthenticated ? '/account' : '/account/login'}
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-white/5 border border-white/10 text-white/80 hover:border-[#d4a855]/30 transition-colors"
+                  >
+                    <UserCircle className="w-5 h-5 text-[#d4a855]" />
+                    <span className="font-medium">{isAuthenticated ? 'Il mio Account' : 'Accedi al tuo Account'}</span>
+                  </Link>
 
                   {/* Main CTA */}
                   <Link

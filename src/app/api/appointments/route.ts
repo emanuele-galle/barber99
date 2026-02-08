@@ -142,11 +142,20 @@ export async function POST(request: NextRequest) {
       today.setHours(0, 0, 0, 0)
       const todayStr = today.toISOString().split('T')[0]
 
+      // Check by phone, email, or client relationship
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const identityConditions: any[] = [
+        { clientPhone: { equals: clientPhone } },
+      ]
+      if (clientEmail) {
+        identityConditions.push({ clientEmail: { equals: clientEmail } })
+      }
+
       const existingBooking = await payload.find({
         collection: 'appointments',
         where: {
           and: [
-            { clientPhone: { equals: clientPhone } },
+            { or: identityConditions },
             { status: { in: ['pending', 'confirmed'] } },
             { date: { greater_than_equal: todayStr } },
           ],

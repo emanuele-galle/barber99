@@ -1,16 +1,17 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useClientAuth } from '@/components/auth/ClientAuthProvider'
-import { ArrowLeft, Loader2, Calendar, Clock, User, CheckCircle, XCircle, AlertCircle, RotateCcw } from 'lucide-react'
+import { ArrowLeft, Loader2, Calendar, Clock, User, CheckCircle, XCircle, AlertCircle, RotateCcw, Trash2 } from 'lucide-react'
 
 interface Appointment {
   id: string
   date: string
   time: string
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'noshow'
+  cancellationToken: string | null
   service: {
     name: string
     price: number
@@ -24,6 +25,8 @@ export default function PrenotazioniPage() {
   const { client, isLoading, isAuthenticated } = useClientAuth()
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loadingAppointments, setLoadingAppointments] = useState(true)
+  const [cancellingId, setCancellingId] = useState<string | null>(null)
+  const [confirmCancelId, setConfirmCancelId] = useState<string | null>(null)
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -31,15 +34,10 @@ export default function PrenotazioniPage() {
     }
   }, [isLoading, isAuthenticated, router])
 
-  useEffect(() => {
-    if (client?.id) {
-      fetchAppointments()
-    }
-  }, [client?.id])
-
-  const fetchAppointments = async () => {
+  const fetchAppointments = useCallback(async () => {
+    if (!client?.id) return
     try {
-      const res = await fetch(`/api/clients/${client?.id}/appointments`)
+      const res = await fetch(`/api/clients/${client.id}/appointments`)
       if (res.ok) {
         const data = await res.json()
         setAppointments(data.appointments || [])
@@ -48,6 +46,32 @@ export default function PrenotazioniPage() {
       console.error('Error fetching appointments:', error)
     } finally {
       setLoadingAppointments(false)
+    }
+  }, [client?.id])
+
+  useEffect(() => {
+    if (client?.id) {
+      fetchAppointments()
+    }
+  }, [client?.id, fetchAppointments])
+
+  const handleCancel = async (appointment: Appointment) => {
+    if (!appointment.cancellationToken) return
+    setCancellingId(appointment.id)
+    try {
+      const res = await fetch('/api/appointments/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: appointment.cancellationToken }),
+      })
+      if (res.ok) {
+        await fetchAppointments()
+      }
+    } catch (error) {
+      console.error('Error cancelling appointment:', error)
+    } finally {
+      setCancellingId(null)
+      setConfirmCancelId(null)
     }
   }
 
@@ -107,11 +131,13 @@ export default function PrenotazioniPage() {
   // Separate upcoming and past appointments
   const now = new Date()
   const upcomingAppointments = appointments.filter((a) => {
-    const appointmentDate = new Date(`${a.date}T${a.time}`)
+    const dateOnly = a.date.split('T')[0]
+    const appointmentDate = new Date(`${dateOnly}T${a.time}`)
     return appointmentDate >= now && !['cancelled', 'noshow', 'completed'].includes(a.status)
   })
   const pastAppointments = appointments.filter((a) => {
-    const appointmentDate = new Date(`${a.date}T${a.time}`)
+    const dateOnly = a.date.split('T')[0]
+    const appointmentDate = new Date(`${dateOnly}T${a.time}`)
     return appointmentDate < now || ['cancelled', 'noshow', 'completed'].includes(a.status)
   })
 
@@ -131,7 +157,7 @@ export default function PrenotazioniPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Le tue prenotazioni</h1>
           <p className="text-[rgba(255,255,255,0.6)]">
-            Visualizza i tuoi appuntamenti passati e futuri
+            Visualizza e gestisci i tuoi appuntamenti
           </p>
         </div>
 
@@ -175,7 +201,7 @@ export default function PrenotazioniPage() {
                         </div>
                         <div className="text-right">
                           <div className="text-[#d4a855] font-semibold">
-                            {appointment.service?.price?.toFixed(2)}
+                            {appointment.service?.price != null && `€${appointment.service.price.toFixed(2)}`}
                           </div>
                         </div>
                       </div>
@@ -195,6 +221,46 @@ export default function PrenotazioniPage() {
                           </div>
                         )}
                       </div>
+
+                      {/* Cancel section */}
+                      {appointment.cancellationToken && (
+                        <div className="mt-4 pt-3 border-t border-white/10">
+                          {confirmCancelId === appointment.id ? (
+                            <div className="flex items-center justify-between gap-3">
+                              <span className="text-white/60 text-sm">Sei sicuro?</span>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => setConfirmCancelId(null)}
+                                  disabled={cancellingId === appointment.id}
+                                  className="px-3 py-1.5 text-sm rounded-lg border border-white/20 text-white/70 hover:bg-white/5 transition-colors"
+                                >
+                                  No
+                                </button>
+                                <button
+                                  onClick={() => handleCancel(appointment)}
+                                  disabled={cancellingId === appointment.id}
+                                  className="px-3 py-1.5 text-sm rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                                >
+                                  {cancellingId === appointment.id ? (
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                  ) : (
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  )}
+                                  Cancella
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => setConfirmCancelId(appointment.id)}
+                              className="flex items-center gap-1.5 text-red-400 text-sm hover:text-red-300 transition-colors"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              Cancella prenotazione
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -220,7 +286,7 @@ export default function PrenotazioniPage() {
                           </div>
                         </div>
                         <div className="text-right text-[rgba(255,255,255,0.5)]">
-                          {appointment.service?.price?.toFixed(2)}
+                          {appointment.service?.price != null && `€${appointment.service.price.toFixed(2)}`}
                         </div>
                       </div>
                       <div className="flex items-center justify-between">

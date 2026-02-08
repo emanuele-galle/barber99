@@ -204,17 +204,6 @@ body {
 
 /* Mobile App-like styles */
 @media (max-width: 768px) {
-  .mobile-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: var(--color-dark-lighter);
-    border-top: 1px solid rgba(212, 168, 85, 0.2);
-    padding: 0.75rem 0;
-    z-index: 50;
-  }
-
   .mobile-safe-bottom {
     padding-bottom: env(safe-area-inset-bottom, 80px);
   }
@@ -585,14 +574,13 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    height: calc(70px + env(safe-area-inset-bottom, 0px));
+    height: calc(68px + env(safe-area-inset-bottom, 0px));
     z-index: 50;
-    padding-top: 8px;
   }
 
   /* Ensure content doesn't hide behind nav */
   .mobile-safe-bottom {
-    padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
   }
 }
 
