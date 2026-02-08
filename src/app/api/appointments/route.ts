@@ -76,10 +76,17 @@ export async function POST(request: NextRequest) {
   try {
     const payload = await getPayload({ config })
 
-    // Rate limiting (skip for admin bookings, checked after body parse)
     const ip = getClientIP(request)
-
     const body = await request.json()
+
+    // Rate limiting - always applied regardless of request claims
+    const { allowed } = rateLimit(`booking:${ip}`, RATE_LIMITS.booking)
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'Troppi tentativi. Riprova tra qualche minuto.' },
+        { status: 429 }
+      )
+    }
 
     const {
       service,
@@ -91,17 +98,6 @@ export async function POST(request: NextRequest) {
       notes,
       isAdminBooking,
     } = body
-
-    // Rate limiting for non-admin requests
-    if (!isAdminBooking) {
-      const { allowed } = rateLimit(`booking:${ip}`, RATE_LIMITS.booking)
-      if (!allowed) {
-        return NextResponse.json(
-          { error: 'Troppi tentativi. Riprova tra qualche minuto.' },
-          { status: 429 }
-        )
-      }
-    }
 
     // Validate required fields (email is optional)
     if (!service || !date || !time || !clientName || !clientPhone) {

@@ -49,10 +49,19 @@ export async function PATCH(
     const { id } = await params
     const body = await request.json()
 
+    // Whitelist allowed fields to prevent mass-assignment
+    const allowedFields = ['name', 'email', 'phone', 'preferences', 'tags', 'notes'] as const
+    const filteredData: Record<string, unknown> = {}
+    for (const field of allowedFields) {
+      if (body[field] !== undefined) {
+        filteredData[field] = body[field]
+      }
+    }
+
     const updated = await payload.update({
       collection: 'clients',
       id,
-      data: body,
+      data: filteredData,
     })
 
     return NextResponse.json({

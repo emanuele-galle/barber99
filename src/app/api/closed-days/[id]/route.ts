@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { requireAdmin, unauthorizedResponse } from '@/lib/admin-auth'
 
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const user = await requireAdmin(req)
+    if (!user) return unauthorizedResponse()
+
     const { id } = await params
     const payload = await getPayload({ config })
 

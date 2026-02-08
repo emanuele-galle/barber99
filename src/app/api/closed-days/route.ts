@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { requireAdmin, unauthorizedResponse } from '@/lib/admin-auth'
 
 export async function GET(req: NextRequest) {
   try {
@@ -29,6 +30,9 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const user = await requireAdmin(req)
+    if (!user) return unauthorizedResponse()
+
     const payload = await getPayload({ config })
     const body = await req.json()
 

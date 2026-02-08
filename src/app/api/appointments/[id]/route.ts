@@ -90,11 +90,20 @@ export async function PATCH(
       }
     }
 
+    // Whitelist allowed fields to prevent mass-assignment
+    const allowedFields = ['status', 'date', 'time', 'service', 'clientName', 'clientEmail', 'clientPhone', 'notes', 'barber', 'type'] as const
+    const filteredData: Record<string, unknown> = {}
+    for (const field of allowedFields) {
+      if (body[field] !== undefined) {
+        filteredData[field] = body[field]
+      }
+    }
+
     // Update appointment
     const updated = await payload.update({
       collection: 'appointments',
       id,
-      data: body,
+      data: filteredData,
     })
 
     return NextResponse.json({
@@ -128,6 +137,18 @@ export async function GET(
       return NextResponse.json(
         { error: 'Appointment not found' },
         { status: 404 }
+      )
+    }
+
+    // Auth: allow admin OR valid cancellation token
+    const user = await requireAdmin(request)
+    const { searchParams } = new URL(request.url)
+    const token = searchParams.get('token')
+
+    if (!user && token !== appointment.cancellationToken) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
       )
     }
 

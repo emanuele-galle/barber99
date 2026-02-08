@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { requireAdmin, unauthorizedResponse } from '@/lib/admin-auth'
 
 // GET - Fetch Instagram posts for gallery display
 export async function GET(request: NextRequest) {
@@ -43,6 +44,9 @@ export async function GET(request: NextRequest) {
 // POST - Create/Update Instagram post (used by N8N sync)
 export async function POST(request: NextRequest) {
   try {
+    const user = await requireAdmin(request)
+    if (!user) return unauthorizedResponse()
+
     const payload = await getPayload({ config })
     const body = await request.json()
 
@@ -119,6 +123,9 @@ export async function POST(request: NextRequest) {
 // DELETE - Remove posts not in Instagram anymore (cleanup)
 export async function DELETE(request: NextRequest) {
   try {
+    const user = await requireAdmin(request)
+    if (!user) return unauthorizedResponse()
+
     const payload = await getPayload({ config })
     const body = await request.json()
 

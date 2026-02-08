@@ -1,19 +1,15 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
+import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin, unauthorizedResponse } from '@/lib/admin-auth'
 
 // GET - Lista walk-in in coda
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const payload = await getPayload({ config })
+    const user = await requireAdmin(request)
+    if (!user) return unauthorizedResponse()
 
-    // Verifica autenticazione
-    const cookieStore = await cookies()
-    const token = cookieStore.get('payload-token')?.value
-    if (!token) {
-      return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
-    }
+    const payload = await getPayload({ config })
 
     const today = new Date()
     today.setHours(0, 0, 0, 0)
@@ -42,16 +38,12 @@ export async function GET() {
 }
 
 // POST - Crea nuovo walk-in
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const payload = await getPayload({ config })
+    const user = await requireAdmin(request)
+    if (!user) return unauthorizedResponse()
 
-    // Verifica autenticazione
-    const cookieStore = await cookies()
-    const token = cookieStore.get('payload-token')?.value
-    if (!token) {
-      return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
-    }
+    const payload = await getPayload({ config })
 
     const body = await request.json()
     const { clientName, clientPhone, serviceId, barberId, notes } = body
