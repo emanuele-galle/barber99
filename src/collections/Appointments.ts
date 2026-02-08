@@ -336,7 +336,7 @@ export const Appointments: CollectionConfig = {
                 data: {
                   name: data.clientName,
                   phone: data.clientPhone,
-                  email: data.clientEmail || undefined,
+                  ...(data.clientEmail ? { email: data.clientEmail } : {}),
                   tags: ['new'],
                   totalVisits: 0,
                   noShowCount: 0,

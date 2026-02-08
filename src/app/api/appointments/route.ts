@@ -248,7 +248,7 @@ export async function POST(request: NextRequest) {
         date,
         time,
         clientName,
-        clientEmail,
+        ...(clientEmail ? { clientEmail } : {}),
         clientPhone,
         notes: notes || '',
         status: 'confirmed',

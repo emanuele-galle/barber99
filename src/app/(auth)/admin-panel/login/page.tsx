@@ -28,7 +28,12 @@ export default function AdminLoginPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        throw new Error(data.errors?.[0]?.message || 'Credenziali non valide')
+        const msg = data.errors?.[0]?.message || 'Credenziali non valide'
+        // Translate Payload CMS English lock message to Italian
+        const translated = msg.includes('locked')
+          ? 'Account bloccato per troppi tentativi. Riprova tra qualche minuto.'
+          : msg
+        throw new Error(translated)
       }
 
       router.push('/admin-panel')

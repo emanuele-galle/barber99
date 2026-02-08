@@ -495,7 +495,7 @@ export default async function AnalyticsPage() {
                                 ? `rgba(212, 168, 85, ${0.2 + intensity * 0.8})`
                                 : 'rgba(255, 255, 255, 0.05)',
                           }}
-                          title={`${days[dayIndex]} ${hour}:00 - ${count} appuntamenti`}
+                          title={`${days[dayIndex]} ${hour}:00 - ${count} ${count === 1 ? 'appuntamento' : 'appuntamenti'}`}
                         />
                       </div>
                     )

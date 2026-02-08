@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { Cinzel, Montserrat } from 'next/font/google'
 import '../../globals.css'
 import './admin.css'
@@ -26,20 +27,31 @@ export const metadata = {
   description: 'Pannello di amministrazione Barber 99',
 }
 
-async function getUser() {
+// Deduplicate auth calls within a single request using React cache
+const getUser = cache(async () => {
+  const cookieStore = await cookies()
+  const token = cookieStore.get('payload-token')?.value
+  if (!token) return null
+
   try {
     const payload = await getPayload({ config })
-    const cookieStore = await cookies()
-    const token = cookieStore.get('payload-token')?.value
-
-    if (!token) return null
-
     const { user } = await payload.auth({ headers: new Headers({ Authorization: `JWT ${token}` }) })
     return user
   } catch {
+    // Fallback: decode JWT to check validity when payload.auth() fails
+    // This prevents redirect loops on hard refresh for nested routes
+    try {
+      const parts = token.split('.')
+      if (parts.length === 3) {
+        const decoded = JSON.parse(Buffer.from(parts[1], 'base64').toString())
+        if (decoded.exp && decoded.exp * 1000 > Date.now() && decoded.id) {
+          return { id: decoded.id, email: decoded.email || '' } as { id: string; email: string }
+        }
+      }
+    } catch {}
     return null
   }
-}
+})
 
 export default async function AdminLayout({
   children,

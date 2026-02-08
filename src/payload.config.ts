@@ -33,18 +33,6 @@ export default buildConfig({
     meta: {
       titleSuffix: '- Barber 99 Admin',
     },
-    components: {
-      graphics: {
-        Logo: '@/components/admin/Logo',
-        Icon: '@/components/admin/Icon',
-      },
-      beforeDashboard: [
-        '@/components/admin/dashboard/WelcomeBanner',
-        '@/components/admin/dashboard/QuickStats',
-        '@/components/admin/dashboard/QuickActions',
-        '@/components/admin/dashboard/DashboardLayout',
-      ],
-    },
   },
   i18n: {
     supportedLanguages: { it, en },
