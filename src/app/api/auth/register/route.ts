@@ -117,7 +117,6 @@ export async function POST(req: NextRequest) {
               })
             )
           )
-          console.log(`Linked ${orphanAppointments.docs.length} orphan appointments to client ${client.id}`)
         }
       }
     } catch (linkError) {

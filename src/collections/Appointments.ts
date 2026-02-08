@@ -344,7 +344,6 @@ export const Appointments: CollectionConfig = {
                 },
               })
               data.client = newClient.id
-              console.log(`Created new client: ${newClient.id} for phone ${data.clientPhone}`)
             }
           } catch (error) {
             console.error('Error linking/creating client:', error)
@@ -411,7 +410,6 @@ export const Appointments: CollectionConfig = {
                   id: clientId,
                   data: updates,
                 })
-                console.log(`Updated client ${clientId} stats:`, updates)
               }
 
               // Review request logic (non-annoying)
@@ -451,7 +449,6 @@ export const Appointments: CollectionConfig = {
                       data: { lastReviewRequestAt: new Date().toISOString() },
                     }).catch((err) => console.error('Failed to update lastReviewRequestAt:', err))
 
-                    console.log(`Review request sent for client ${clientId}`)
                   }
                 }
               }
@@ -530,9 +527,7 @@ export const Appointments: CollectionConfig = {
             body: JSON.stringify(webhookPayload),
           })
 
-          if (response.ok) {
-            console.log(`N8N webhook sent for appointment_${doc.status}: ${doc.id}`)
-          } else {
+          if (!response.ok) {
             console.error(`N8N webhook failed: ${response.status} ${response.statusText}`)
           }
         } catch (error) {
