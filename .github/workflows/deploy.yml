@@ -22,23 +22,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          timeout: 60s
+          command_timeout: 15m
           envs: PROJECT_PATH
           script: |
             cd $PROJECT_PATH
 
             # Pull latest changes
             git pull origin main
-
-            # Install dependencies
-            npm ci --prefer-offline
-
-            # Build application
-            npm run build
 
             # Rebuild and restart container
             docker compose build --no-cache
@@ -48,8 +45,7 @@ jobs:
             sleep 15
 
             # Health check
-            HEALTH_URL="http://localhost:3000/api/health"
-            if curl -sf $HEALTH_URL > /dev/null 2>&1; then
+            if curl -sf https://barber99.fodivps2.cloud/api/health > /dev/null 2>&1; then
               echo "Health check passed"
             else
               echo "Warning: Health check endpoint not responding"
@@ -57,14 +53,8 @@ jobs:
 
       - name: Notify deployment
         if: always()
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          envs: PROJECT_SLUG
-          script: |
-            curl -s -X POST "https://n8n.fodivps2.cloud/webhook/deploy-notify" \
-              -H "Content-Type: application/json" \
-              -d "{\"project\": \"$PROJECT_SLUG\", \"status\": \"${{ job.status }}\", \"commit\": \"${{ github.sha }}\", \"actor\": \"${{ github.actor }}\"}" \
-              || echo "Notification webhook failed (non-critical)"
+        run: |
+          curl -s -X POST "https://n8n.fodivps2.cloud/webhook/deploy-notify" \
+            -H "Content-Type: application/json" \
+            -d "{\"project\": \"$PROJECT_SLUG\", \"status\": \"${{ job.status }}\", \"commit\": \"${{ github.sha }}\", \"actor\": \"${{ github.actor }}\"}" \
+            || echo "Notification webhook failed (non-critical)"
