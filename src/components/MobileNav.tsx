@@ -20,7 +20,7 @@ export default function MobileNav() {
   if (pathname === '/prenota') return null
 
   return (
-    <nav className="mobile-nav md:hidden">
+    <nav className="mobile-nav md:hidden" aria-label="Navigazione mobile">
       <div className="absolute inset-0 bg-[#0c0c0c]/95 backdrop-blur-xl border-t border-white/10" />
       <div className="relative flex justify-around items-end px-2 pb-safe-bottom">
         {navItems.map((item, index) => {

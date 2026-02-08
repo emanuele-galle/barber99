@@ -50,14 +50,14 @@ export function RegisterForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+        <div role="alert" className="p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
           {error}
         </div>
       )}
 
       <div className="p-4 rounded-lg bg-[#d4a855]/10 border border-[#d4a855]/30 text-[#d4a855] text-sm">
         <div className="flex items-start gap-3">
-          <CheckCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
+          <CheckCircle className="w-5 h-5 mt-0.5 flex-shrink-0" aria-hidden="true" />
           <div>
             <p className="font-medium">Registrazione veloce</p>
             <p className="text-[rgba(255,255,255,0.6)] mt-1">
@@ -68,16 +68,18 @@ export function RegisterForm() {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[rgba(255,255,255,0.7)] mb-2">
+        <label htmlFor="register-email" className="block text-sm font-medium text-[rgba(255,255,255,0.7)] mb-2">
           Email
         </label>
         <div className="relative">
-          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[rgba(255,255,255,0.4)]" />
+          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[rgba(255,255,255,0.4)]" aria-hidden="true" />
           <input
+            id="register-email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            aria-required="true"
             className="w-full bg-[#1a1a1a] border border-[rgba(255,255,255,0.1)] rounded-lg px-4 py-3 pl-10 text-white text-[16px] placeholder:text-[rgba(255,255,255,0.3)] focus:outline-none focus:border-[#d4a855] transition-colors"
             placeholder="La tua email (usata per prenotare)"
           />
@@ -85,16 +87,18 @@ export function RegisterForm() {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[rgba(255,255,255,0.7)] mb-2">
+        <label htmlFor="register-password" className="block text-sm font-medium text-[rgba(255,255,255,0.7)] mb-2">
           Password
         </label>
         <div className="relative">
-          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[rgba(255,255,255,0.4)]" />
+          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[rgba(255,255,255,0.4)]" aria-hidden="true" />
           <input
+            id="register-password"
             type={showPassword ? 'text' : 'password'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            aria-required="true"
             minLength={8}
             className="w-full bg-[#1a1a1a] border border-[rgba(255,255,255,0.1)] rounded-lg px-4 py-3 pl-10 pr-10 text-white text-[16px] placeholder:text-[rgba(255,255,255,0.3)] focus:outline-none focus:border-[#d4a855] transition-colors"
             placeholder="Crea una password (min. 8 caratteri)"
@@ -103,6 +107,7 @@ export function RegisterForm() {
             type="button"
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(255,255,255,0.4)] hover:text-white transition-colors"
+            aria-label={showPassword ? 'Nascondi password' : 'Mostra password'}
           >
             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
           </button>
@@ -110,16 +115,18 @@ export function RegisterForm() {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[rgba(255,255,255,0.7)] mb-2">
+        <label htmlFor="register-confirm-password" className="block text-sm font-medium text-[rgba(255,255,255,0.7)] mb-2">
           Conferma Password
         </label>
         <div className="relative">
-          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[rgba(255,255,255,0.4)]" />
+          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[rgba(255,255,255,0.4)]" aria-hidden="true" />
           <input
+            id="register-confirm-password"
             type={showPassword ? 'text' : 'password'}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
+            aria-required="true"
             minLength={8}
             className="w-full bg-[#1a1a1a] border border-[rgba(255,255,255,0.1)] rounded-lg px-4 py-3 pl-10 pr-10 text-white text-[16px] placeholder:text-[rgba(255,255,255,0.3)] focus:outline-none focus:border-[#d4a855] transition-colors"
             placeholder="Ripeti la password"

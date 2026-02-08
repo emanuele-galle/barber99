@@ -154,6 +154,7 @@ export default function InstagramGallerySection({ instagramHandle = 'barber___99
                 href={post.permalink}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label={`${post.caption?.slice(0, 50) || 'Post Instagram'} (apre Instagram)`}
                 className={`relative overflow-hidden rounded-lg group ${
                   index === 0 ? 'md:col-span-2 md:row-span-2' : ''
                 }`}
@@ -170,7 +171,7 @@ export default function InstagramGallerySection({ instagramHandle = 'barber___99
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
 
                 {/* Instagram icon */}
-                <div className="absolute top-3 right-3 p-2 bg-black/50 rounded-full">
+                <div className="absolute top-3 right-3 p-2 bg-black/50 rounded-full" aria-hidden="true">
                   <Instagram className="w-4 h-4 text-white" />
                 </div>
 
@@ -261,6 +262,7 @@ export default function InstagramGallerySection({ instagramHandle = 'barber___99
                 href={post.permalink}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label={`${post.caption?.slice(0, 50) || 'Post Instagram'} (apre Instagram)`}
                 layout
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}

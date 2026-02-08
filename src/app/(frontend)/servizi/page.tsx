@@ -30,17 +30,8 @@ export const metadata: Metadata = {
   },
 }
 
-interface ServiceDoc {
-  id: string | number
-  slug: string
-  name: string
-  shortDescription?: string
-  price: number
-  duration: number
-  icon?: string
-  category: string
-  featured?: boolean
-}
+import { asPayloadDocs } from '@/lib/payload-docs'
+import type { ServiceDoc } from '@/lib/payload-docs'
 
 const categoryLabels: Record<string, string> = {
   haircut: 'Taglio',
@@ -59,7 +50,7 @@ async function getServices() {
     sort: 'order',
     limit: 50,
   })
-  return data.docs as unknown as ServiceDoc[]
+  return asPayloadDocs<ServiceDoc>(data.docs)
 }
 
 export default async function ServiziPage() {

@@ -52,7 +52,9 @@ export async function createClientToken(payload: ClientTokenPayload): Promise<st
 export async function verifyClientToken(token: string): Promise<ClientTokenPayload | null> {
   try {
     const { payload } = await jwtVerify(token, CLIENT_AUTH_SECRET)
-    return payload as unknown as ClientTokenPayload
+    const { clientId, email, name } = payload as ClientTokenPayload
+    if (!clientId || !email || !name) return null
+    return payload as ClientTokenPayload
   } catch {
     return null
   }

@@ -10,18 +10,8 @@ import Footer from '@/components/Footer'
 import MobileNav from '@/components/MobileNav'
 import { Scissors, Clock, ArrowRight, ArrowLeft, MapPin, Phone, Calendar } from 'lucide-react'
 
-interface ServiceDoc {
-  id: string | number
-  slug: string
-  name: string
-  shortDescription?: string
-  description?: string
-  price: number
-  duration: number
-  icon?: string
-  category: string
-  featured?: boolean
-}
+import { asPayloadDocs } from '@/lib/payload-docs'
+import type { ServiceDoc } from '@/lib/payload-docs'
 
 // SEO descriptions per service slug
 const seoContent: Record<
@@ -111,7 +101,7 @@ async function getService(slug: string) {
     },
     limit: 1,
   })
-  return data.docs[0] as unknown as ServiceDoc | undefined
+  return asPayloadDocs<ServiceDoc>(data.docs)[0]
 }
 
 async function getAllServices() {
@@ -122,7 +112,7 @@ async function getAllServices() {
     sort: 'order',
     limit: 50,
   })
-  return data.docs as unknown as ServiceDoc[]
+  return asPayloadDocs<ServiceDoc>(data.docs)
 }
 
 export async function generateMetadata({

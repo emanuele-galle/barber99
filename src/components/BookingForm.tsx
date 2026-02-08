@@ -62,6 +62,14 @@ function getServiceIcon(name: string): string {
 // Easing curve per transizioni
 const easeOut: [number, number, number, number] = [0.4, 0, 0.2, 1]
 
+// Step label map for accessibility
+const STEP_LABELS: Record<Step, string> = {
+  service: 'Servizio',
+  datetime: 'Data e Ora',
+  details: 'Dati Personali',
+  confirm: 'Conferma',
+}
+
 // Progress dots component
 function ProgressDots({ currentStep }: { currentStep: Step }) {
   const steps: Step[] = ['service', 'datetime', 'details']
@@ -69,7 +77,14 @@ function ProgressDots({ currentStep }: { currentStep: Step }) {
   if (currentStep === 'confirm') return null
 
   return (
-    <div className="flex items-center justify-center gap-0 mb-6 md:mb-8">
+    <div
+      className="flex items-center justify-center gap-0 mb-6 md:mb-8"
+      role="progressbar"
+      aria-valuenow={currentIndex + 1}
+      aria-valuemin={1}
+      aria-valuemax={steps.length}
+      aria-label={`Passaggio ${currentIndex + 1} di ${steps.length}: ${STEP_LABELS[currentStep]}`}
+    >
       {steps.map((s, i) => {
         const isCompleted = i < currentIndex
         const isActive = i === currentIndex
@@ -427,8 +442,8 @@ export default function BookingForm() {
   // Loading state
   if (isLoadingData) {
     return (
-      <div className="max-w-2xl mx-auto text-center py-12">
-        <div className="animate-spin w-8 h-8 border-2 border-gold border-t-transparent rounded-full mx-auto mb-4" />
+      <div className="max-w-2xl mx-auto text-center py-12" role="status" aria-label="Caricamento servizi">
+        <div className="animate-spin w-8 h-8 border-2 border-gold border-t-transparent rounded-full mx-auto mb-4" aria-hidden="true" />
         <p className="text-gray-400">Caricamento servizi...</p>
       </div>
     )
@@ -437,6 +452,20 @@ export default function BookingForm() {
   return (
     <div className="max-w-2xl mx-auto">
       <ProgressDots currentStep={step} />
+
+      {/* Live region for step announcements */}
+      <div aria-live="polite" className="sr-only">
+        {step !== 'confirm' && `Passaggio: ${STEP_LABELS[step]}`}
+        {step === 'confirm' && 'Prenotazione confermata'}
+      </div>
+
+      {/* Live region for error announcements */}
+      <div aria-live="assertive" className="sr-only">
+        {errors.submit && errors.submit}
+        {errors.clientName && `Nome: ${errors.clientName}`}
+        {errors.clientPhone && `Telefono: ${errors.clientPhone}`}
+        {errors.clientEmail && `Email: ${errors.clientEmail}`}
+      </div>
 
       <AnimatePresence mode="wait" custom={direction}>
         {/* ===== STEP 1: SERVIZIO ===== */}
@@ -464,7 +493,8 @@ export default function BookingForm() {
                     key={service.id}
                     onClick={() => handleServiceSelect(service.id)}
                     whileTap={{ scale: 0.97 }}
-                    className={`w-full p-4 rounded-xl border text-left transition-all duration-200 ${
+                    aria-pressed={formData.serviceId === service.id}
+                    className={`w-full p-4 rounded-xl border text-left transition-all duration-200 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c0c0c] focus-visible:outline-none ${
                       formData.serviceId === service.id
                         ? 'border-gold bg-gold/10 shadow-[0_0_20px_rgba(212,168,85,0.15)]'
                         : 'border-white/10 bg-[#1a1a1a] hover:border-gold/30'
@@ -503,7 +533,7 @@ export default function BookingForm() {
             {/* Back button */}
             <button
               onClick={goBack}
-              className="text-gold hover:text-gold-light mb-4 flex items-center gap-1.5 text-sm"
+              className="text-gold hover:text-gold-light mb-4 flex items-center gap-1.5 text-sm focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none rounded"
             >
               <ChevronLeft className="w-4 h-4" />
               Indietro
@@ -528,17 +558,19 @@ export default function BookingForm() {
                 <button
                   onClick={() => canGoPrev && navigateMonth(-1)}
                   disabled={!canGoPrev}
-                  className="p-1.5 rounded-lg text-white hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  aria-label="Mese precedente"
+                  className="p-1.5 rounded-lg text-white hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
-                <span className="text-white font-medium capitalize">
+                <span className="text-white font-medium capitalize" aria-live="polite">
                   {new Date(calendarMonth.year, calendarMonth.month).toLocaleDateString('it-IT', { month: 'long', year: 'numeric' })}
                 </span>
                 <button
                   onClick={() => canGoNext && navigateMonth(1)}
                   disabled={!canGoNext}
-                  className="p-1.5 rounded-lg text-white hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  aria-label="Mese successivo"
+                  className="p-1.5 rounded-lg text-white hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none"
                 >
                   <ChevronLeft className="w-5 h-5 rotate-180" />
                 </button>
@@ -552,15 +584,21 @@ export default function BookingForm() {
               </div>
 
               {/* Calendar grid */}
-              <div className="grid grid-cols-7 gap-1.5">
+              <div className="grid grid-cols-7 gap-1.5" role="grid" aria-label="Calendario disponibilità">
                 {calendarDays.map((day, i) => {
                   const isSelected = formData.date === day.dateStr
+                  const dayLabel = day.isCurrentMonth
+                    ? day.date.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' })
+                    : undefined
                   return (
                     <button
                       key={i}
                       onClick={() => day.available && handleDateSelect(day.dateStr)}
                       disabled={!day.available}
-                      className={`aspect-square rounded-lg flex items-center justify-center text-sm font-medium transition-all duration-150 ${
+                      aria-label={dayLabel}
+                      aria-current={isSelected ? 'date' : undefined}
+                      aria-disabled={!day.available}
+                      className={`aspect-square rounded-lg flex items-center justify-center text-sm font-medium transition-all duration-150 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c0c0c] focus-visible:outline-none ${
                         !day.isCurrentMonth
                           ? 'text-gray-800'
                           : isSelected
@@ -608,11 +646,13 @@ export default function BookingForm() {
                           key={slot.time}
                           onClick={() => slot.available && handleTimeSelect(slot.time)}
                           disabled={!slot.available}
+                          aria-pressed={formData.time === slot.time}
+                          aria-label={`Orario ${slot.time}${!slot.available ? ', non disponibile' : ''}`}
                           initial={{ opacity: 0, y: 8 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: index * 0.02, duration: 0.2 }}
                           whileTap={slot.available ? { scale: 0.93 } : undefined}
-                          className={`min-h-[52px] py-3 px-2 rounded-xl text-center text-[15px] font-medium transition-colors duration-200 ${
+                          className={`min-h-[52px] py-3 px-2 rounded-xl text-center text-[15px] font-medium transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c0c0c] focus-visible:outline-none ${
                             formData.time === slot.time
                               ? 'bg-gold text-[#0c0c0c] shadow-[0_0_16px_rgba(212,168,85,0.3)]'
                               : slot.available
@@ -645,7 +685,7 @@ export default function BookingForm() {
             {/* Back button */}
             <button
               onClick={goBack}
-              className="text-gold hover:text-gold-light mb-4 flex items-center gap-1.5 text-sm"
+              className="text-gold hover:text-gold-light mb-4 flex items-center gap-1.5 text-sm focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none rounded"
             >
               <ChevronLeft className="w-4 h-4" />
               Indietro
@@ -697,81 +737,93 @@ export default function BookingForm() {
             <div className="space-y-4">
               {/* Nome */}
               <div>
-                <label className="flex items-center gap-1.5 text-sm text-gray-400 mb-1.5">
+                <label htmlFor="booking-name" className="flex items-center gap-1.5 text-sm text-gray-400 mb-1.5">
                   <User className="w-3.5 h-3.5" />
                   Nome e Cognome *
                 </label>
                 <input
+                  id="booking-name"
                   type="text"
                   value={formData.clientName}
                   onChange={(e) => handleDetailsChange('clientName', e.target.value)}
-                  className={`w-full p-4 rounded-xl bg-[#1a1a1a] border text-[16px] ${
+                  aria-required="true"
+                  aria-invalid={!!errors.clientName}
+                  aria-describedby={errors.clientName ? 'booking-name-error' : undefined}
+                  className={`w-full p-4 rounded-xl bg-[#1a1a1a] border text-[16px] focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c0c0c] ${
                     errors.clientName ? 'border-red-500' : 'border-white/10'
                   } text-white focus:border-gold focus:outline-none transition-colors`}
                   placeholder="Mario Rossi"
                 />
                 {errors.clientName && (
-                  <p className="text-red-400 text-xs mt-1">{errors.clientName}</p>
+                  <p id="booking-name-error" role="alert" className="text-red-400 text-xs mt-1">{errors.clientName}</p>
                 )}
               </div>
 
               {/* Telefono */}
               <div>
-                <label className="flex items-center gap-1.5 text-sm text-gray-400 mb-1.5">
+                <label htmlFor="booking-phone" className="flex items-center gap-1.5 text-sm text-gray-400 mb-1.5">
                   <Phone className="w-3.5 h-3.5" />
                   Telefono *
                 </label>
                 <input
+                  id="booking-phone"
                   type="tel"
                   value={formData.clientPhone}
                   onChange={(e) => handleDetailsChange('clientPhone', e.target.value)}
-                  className={`w-full p-4 rounded-xl bg-[#1a1a1a] border text-[16px] ${
+                  aria-required="true"
+                  aria-invalid={!!errors.clientPhone}
+                  aria-describedby={errors.clientPhone ? 'booking-phone-error' : undefined}
+                  className={`w-full p-4 rounded-xl bg-[#1a1a1a] border text-[16px] focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c0c0c] ${
                     errors.clientPhone ? 'border-red-500' : 'border-white/10'
                   } text-white focus:border-gold focus:outline-none transition-colors`}
                   placeholder="+39 320 123 4567"
                 />
                 {errors.clientPhone && (
-                  <p className="text-red-400 text-xs mt-1">{errors.clientPhone}</p>
+                  <p id="booking-phone-error" role="alert" className="text-red-400 text-xs mt-1">{errors.clientPhone}</p>
                 )}
               </div>
 
               {/* Email */}
               <div>
-                <label className="flex items-center gap-1.5 text-sm text-gray-400 mb-1.5">
+                <label htmlFor="booking-email" className="flex items-center gap-1.5 text-sm text-gray-400 mb-1.5">
                   <Mail className="w-3.5 h-3.5" />
                   Email <span className="text-gray-600">(opzionale)</span>
                 </label>
                 <input
+                  id="booking-email"
                   type="email"
                   value={formData.clientEmail}
                   onChange={(e) => handleDetailsChange('clientEmail', e.target.value)}
-                  className={`w-full p-4 rounded-xl bg-[#1a1a1a] border text-[16px] ${
+                  aria-invalid={!!errors.clientEmail}
+                  aria-describedby={errors.clientEmail ? 'booking-email-error' : undefined}
+                  className={`w-full p-4 rounded-xl bg-[#1a1a1a] border text-[16px] focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c0c0c] ${
                     errors.clientEmail ? 'border-red-500' : 'border-white/10'
                   } text-white focus:border-gold focus:outline-none transition-colors`}
                   placeholder="Per ricevere conferma email"
                 />
                 {errors.clientEmail && (
-                  <p className="text-red-400 text-xs mt-1">{errors.clientEmail}</p>
+                  <p id="booking-email-error" role="alert" className="text-red-400 text-xs mt-1">{errors.clientEmail}</p>
                 )}
               </div>
 
               {/* Note */}
               <div>
-                <label className="flex items-center gap-1.5 text-sm text-gray-400 mb-1.5">
+                <label htmlFor="booking-notes" className="flex items-center gap-1.5 text-sm text-gray-400 mb-1.5">
                   <MessageSquare className="w-3.5 h-3.5" />
                   Note <span className="text-gray-600">(opzionale)</span>
                 </label>
                 <textarea
+                  id="booking-notes"
                   value={formData.notes}
                   onChange={(e) => handleDetailsChange('notes', e.target.value)}
-                  className="w-full p-4 rounded-xl bg-[#1a1a1a] border border-white/10 text-white text-[16px] focus:border-gold focus:outline-none transition-colors"
+                  className="w-full p-4 rounded-xl bg-[#1a1a1a] border border-white/10 text-white text-[16px] focus:border-gold focus:outline-none transition-colors focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c0c0c]"
                   placeholder="Preferenze particolari..."
                   rows={3}
                 />
               </div>
 
               {errors.submit && (
-                <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-center">
+                <div role="alert" className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-center">
                   <p className="text-red-400 text-sm">{errors.submit}</p>
                   {errors.existingCancelLink && (
                     <a
@@ -789,7 +841,7 @@ export default function BookingForm() {
                 onClick={handleSubmit}
                 disabled={isSubmitting}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-4 rounded-xl bg-gradient-to-r from-gold to-gold-light text-[#0c0c0c] font-bold text-lg uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+                className="w-full py-4 rounded-xl bg-gradient-to-r from-gold to-gold-light text-[#0c0c0c] font-bold text-lg uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed transition-opacity focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c0c0c] focus-visible:outline-none"
               >
                 {isSubmitting ? (
                   <span className="flex items-center justify-center gap-2">
@@ -819,6 +871,8 @@ export default function BookingForm() {
             exit="exit"
             transition={{ duration: 0.25, ease: easeOut }}
             className="text-center"
+            role="status"
+            aria-live="polite"
           >
             <AnimatedCheckmark />
 

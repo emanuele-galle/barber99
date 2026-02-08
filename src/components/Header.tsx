@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'motion/react'
@@ -17,6 +17,7 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState('')
+  const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,10 +41,45 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Prevent body scroll when mobile menu is open
+  // Prevent body scroll when mobile menu is open + keyboard trap
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden'
+
+      // Close on Escape key
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          setIsOpen(false)
+        }
+
+        // Focus trap within menu
+        if (e.key === 'Tab' && menuRef.current) {
+          const focusable = menuRef.current.querySelectorAll<HTMLElement>(
+            'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+          )
+          if (focusable.length === 0) return
+          const first = focusable[0]
+          const last = focusable[focusable.length - 1]
+
+          if (e.shiftKey) {
+            if (document.activeElement === first) {
+              e.preventDefault()
+              last.focus()
+            }
+          } else {
+            if (document.activeElement === last) {
+              e.preventDefault()
+              first.focus()
+            }
+          }
+        }
+      }
+
+      document.addEventListener('keydown', handleKeyDown)
+      return () => {
+        document.body.style.overflow = ''
+        document.removeEventListener('keydown', handleKeyDown)
+      }
     } else {
       document.body.style.overflow = ''
     }
@@ -123,7 +159,7 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden lg:flex items-center gap-1" aria-label="Navigazione principale">
             {navItems.map((item) => {
               const isActive = activeSection === item.href.replace('#', '')
               return (
@@ -161,6 +197,7 @@ export default function Header() {
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ duration: 0.2 }}
                   href="tel:+393271263091"
+                  aria-label="Chiama 327 126 3091"
                   className="flex items-center gap-2 text-[#d4a855] hover:text-[#e8c882] transition-colors"
                 >
                   <div className="w-9 h-9 rounded-full bg-[#d4a855]/10 flex items-center justify-center">
@@ -185,8 +222,10 @@ export default function Header() {
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden w-11 h-11 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-colors"
-            aria-label="Toggle menu"
+            className="lg:hidden w-11 h-11 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-colors focus-visible:ring-2 focus-visible:ring-[#d4a855] focus-visible:outline-none"
+            aria-label={isOpen ? 'Chiudi menu' : 'Apri menu'}
+            aria-expanded={isOpen}
+            aria-controls="mobile-menu"
           >
             <AnimatePresence mode="wait">
               {isOpen ? (
@@ -232,6 +271,11 @@ export default function Header() {
 
             {/* Menu Content */}
             <motion.div
+              ref={menuRef}
+              id="mobile-menu"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Menu di navigazione"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}

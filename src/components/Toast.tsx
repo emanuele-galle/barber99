@@ -77,7 +77,11 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
 
       {/* Toast Container */}
-      <div className="fixed bottom-24 md:bottom-8 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none">
+      <div
+        aria-live="polite"
+        aria-relevant="additions"
+        className="fixed bottom-24 md:bottom-8 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"
+      >
         <AnimatePresence mode="popLayout">
           {toasts.map((toast) => {
             const config = toastConfig[toast.type]
@@ -87,6 +91,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               <motion.div
                 key={toast.id}
                 layout
+                role="status"
                 initial={{ opacity: 0, y: 50, scale: 0.9 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, x: 100, scale: 0.9 }}

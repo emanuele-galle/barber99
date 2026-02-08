@@ -3,17 +3,22 @@ interface RateLimitEntry {
   resetAt: number
 }
 
-// Use globalThis to persist rate limit store across module reloads in Next.js
-const globalStore = globalThis as unknown as { __rateLimitStore?: Map<string, RateLimitEntry> }
-if (!globalStore.__rateLimitStore) {
-  globalStore.__rateLimitStore = new Map<string, RateLimitEntry>()
+// Extend globalThis to persist rate limit store across module reloads in Next.js
+declare global {
+  // eslint-disable-next-line no-var
+  var __rateLimitStore: Map<string, RateLimitEntry> | undefined
+  // eslint-disable-next-line no-var
+  var __rateLimitCleanup: boolean | undefined
 }
-const store = globalStore.__rateLimitStore
+
+if (!globalThis.__rateLimitStore) {
+  globalThis.__rateLimitStore = new Map<string, RateLimitEntry>()
+}
+const store = globalThis.__rateLimitStore
 
 // Cleanup stale entries every 60 seconds
-const globalCleanup = globalThis as unknown as { __rateLimitCleanup?: boolean }
-if (!globalCleanup.__rateLimitCleanup) {
-  globalCleanup.__rateLimitCleanup = true
+if (!globalThis.__rateLimitCleanup) {
+  globalThis.__rateLimitCleanup = true
   setInterval(() => {
     const now = Date.now()
     for (const [key, entry] of store) {

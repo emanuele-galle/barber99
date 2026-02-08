@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Barber 99 - Cosimo Pisani
 
-## Getting Started
+Sito web e sistema di prenotazione online per **Barber 99**, barbershop di Cosimo Pisani a Serra San Bruno (VV).
 
-First, run the development server:
+**Dominio:** [barber99.it](https://barber99.it)
+**Preview:** [barber99.fodivps2.cloud](https://barber99.fodivps2.cloud)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Funzionalita
+
+- Homepage con sezioni Hero, Chi Siamo, Servizi, Galleria Instagram, Recensioni, Contatti
+- Prenotazione online appuntamenti con selezione servizio, data e orario
+- Area clienti con registrazione, login, gestione profilo e storico prenotazioni
+- Pannello admin per gestione appuntamenti, clienti, servizi, orari, galleria, recensioni
+- Cancellazione appuntamento via link email
+- PWA (Progressive Web App) con service worker
+- SEO ottimizzato con JSON-LD (BarberShop), sitemap dinamica, meta tags per pagina
+- Galleria Instagram integrata
+
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router)
+- **UI:** React 19, Tailwind CSS 4, Lucide Icons, Motion (Framer Motion)
+- **CMS/Backend:** Payload CMS 3 (collections: services, reviews, gallery, users)
+- **Database:** PostgreSQL (Prisma + Payload adapter)
+- **Storage:** MinIO S3 (immagini galleria)
+- **Auth:** JWT custom con jose (area clienti) + Payload auth (admin)
+- **Language:** TypeScript 5
+
+## Struttura Progetto
+
+```
+src/app/
+  (frontend)/     # Pagine pubbliche (home, prenota, servizi, account, privacy, cookie, termini)
+  (admin-panel)/  # Pannello amministrazione (appuntamenti, clienti, servizi, orari, galleria)
+  (auth)/         # Login admin panel
+  (payload)/      # Payload CMS admin UI
+  api/            # API routes (auth, booking, services, health)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Setup Locale
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cp .env.example .env
+# Configurare DATABASE_URL, PAYLOAD_SECRET, NEXT_PUBLIC_SITE_URL
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deploy
 
-## Learn More
+Il progetto gira in Docker su VPS con Traefik come reverse proxy.
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+# Build e avvio
+docker compose build && docker compose up -d
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Rebuild dopo modifiche
+/home/sviluppatore/scripts/docker-smart-rebuild.sh app --no-cache
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Logs
+docker compose logs -f app
+```
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Il deploy automatico avviene tramite GitHub Actions su push al branch `main`.
