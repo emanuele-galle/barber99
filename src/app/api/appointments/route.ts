@@ -46,10 +46,12 @@ async function sendBookingNotification(data: {
   client_phone: string
   service_name: string
   barber_name: string
+  barberEmail: string
   date: string
   time: string
   duration: number
   price: string
+  cancellationLink: string
 }) {
   try {
     const response = await fetch(N8N_WEBHOOK_URL, {
@@ -282,6 +284,10 @@ export async function POST(request: NextRequest) {
       time,
     })
 
+    // Build cancellation and WhatsApp links
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://barber99.it'
+    const cancellationLink = `${baseUrl}/cancella?token=${appointment.cancellationToken}`
+
     // Send confirmation email via N8N webhook (only if email provided)
     let emailSent = false
     if (clientEmail) {
@@ -292,6 +298,7 @@ export async function POST(request: NextRequest) {
         client_phone: clientPhone,
         service_name: serviceDoc?.name || 'Servizio',
         barber_name: DEFAULT_BARBER_NAME,
+        barberEmail: 'info@barber99.it',
         date: new Date(date).toLocaleDateString('it-IT', {
           weekday: 'long',
           year: 'numeric',
@@ -301,6 +308,7 @@ export async function POST(request: NextRequest) {
         time,
         duration: serviceDoc?.duration || 45,
         price: serviceDoc?.price ? `€${serviceDoc.price}` : 'Da confermare',
+        cancellationLink,
       })
 
       if (emailSent) {
@@ -311,10 +319,6 @@ export async function POST(request: NextRequest) {
         })
       }
     }
-
-    // Build cancellation and WhatsApp links
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://barber99.it'
-    const cancellationLink = `${baseUrl}/cancella?token=${appointment.cancellationToken}`
     const formattedDate = new Date(date).toLocaleDateString('it-IT', {
       weekday: 'long', day: 'numeric', month: 'long',
     })

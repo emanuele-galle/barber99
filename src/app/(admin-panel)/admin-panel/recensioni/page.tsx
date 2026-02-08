@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Star, Calendar, User, CheckCircle, XCircle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { ReviewActions } from '@/components/admin-panel/ReviewActions'
 import { SyncReviewsButton } from '@/components/admin-panel/SyncReviewsButton'
+import { ReviewRequestForm } from '@/components/admin-panel/ReviewRequestForm'
 
 const PAGE_SIZE = 20
 
@@ -77,6 +78,9 @@ export default async function RecensioniPage({
           </div>
         </div>
       </div>
+
+      {/* Review Request Form */}
+      <ReviewRequestForm />
 
       {/* Reviews list */}
       {reviews.length > 0 ? (

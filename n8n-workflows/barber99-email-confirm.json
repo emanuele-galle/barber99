@@ -5,57 +5,114 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "barber99-booking",
-        "options": {}
+        "options": {
+          "responseMode": "onReceived",
+          "responseData": "allEntries"
+        }
       },
       "id": "webhook-trigger",
       "name": "Webhook Booking",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "position": [250, 300]
+      "position": [250, 400],
+      "webhookId": "barber99-booking"
     },
     {
       "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict"
-          },
-          "conditions": [
+        "rules": {
+          "values": [
             {
-              "id": "condition-confirmation",
-              "leftValue": "={{ $json.event }}",
-              "rightValue": "manual_reminder",
-              "operator": {
-                "type": "string",
-                "operation": "notEquals"
-              }
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.event }}",
+                    "rightValue": "appointment_confirmed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputLabel": "Confirmed"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.event }}",
+                    "rightValue": "review_request",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputLabel": "Review"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.event }}",
+                    "rightValue": "appointment_cancelled",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputLabel": "Cancelled"
             }
-          ],
-          "combinator": "and"
+          ]
         },
-        "options": {}
+        "options": {
+          "fallbackOutput": "none"
+        }
       },
-      "id": "if-confirmation",
-      "name": "Is Confirmation?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [470, 300]
+      "id": "switch-event",
+      "name": "Route by Event",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [480, 400]
     },
     {
       "parameters": {
         "fromEmail": "info@barber99.it",
-        "toEmail": "={{ $json.client_email }}",
-        "subject": "Conferma Appuntamento - Barber 99",
+        "toEmail": "={{ $json.clientEmail }}",
+        "subject": "Conferma Prenotazione - Barber99",
         "emailType": "html",
-        "html": "<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; background: #0c0c0c; color: #fff; padding: 20px; }\n    .container { max-width: 600px; margin: 0 auto; background: #1a1a1a; border-radius: 12px; overflow: hidden; }\n    .header { background: linear-gradient(135deg, #d4a855, #b8943f); padding: 30px; text-align: center; }\n    .header h1 { margin: 0; color: #0c0c0c; font-size: 24px; }\n    .content { padding: 30px; }\n    .detail { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #333; }\n    .detail:last-child { border-bottom: none; }\n    .label { color: #888; }\n    .value { color: #fff; font-weight: bold; }\n    .cta { text-align: center; margin-top: 30px; }\n    .button { display: inline-block; background: #d4a855; color: #0c0c0c; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; }\n    .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"header\">\n      <h1>Prenotazione Confermata</h1>\n    </div>\n    <div class=\"content\">\n      <p>Ciao <strong>{{ $json.client_name }}</strong>!</p>\n      <p>Il tuo appuntamento e' stato confermato. Ecco i dettagli:</p>\n      \n      <div class=\"detail\">\n        <span class=\"label\">Data</span>\n        <span class=\"value\">{{ $json.date }}</span>\n      </div>\n      <div class=\"detail\">\n        <span class=\"label\">Ora</span>\n        <span class=\"value\">{{ $json.time }}</span>\n      </div>\n      <div class=\"detail\">\n        <span class=\"label\">Servizio</span>\n        <span class=\"value\">{{ $json.service_name }}</span>\n      </div>\n      <div class=\"detail\">\n        <span class=\"label\">Barbiere</span>\n        <span class=\"value\">{{ $json.barber_name }}</span>\n      </div>\n      <div class=\"detail\">\n        <span class=\"label\">Durata</span>\n        <span class=\"value\">{{ $json.duration }} minuti</span>\n      </div>\n      <div class=\"detail\">\n        <span class=\"label\">Prezzo</span>\n        <span class=\"value\">{{ $json.price }}</span>\n      </div>\n      \n      <p style=\"margin-top: 20px;\"><strong>Indirizzo:</strong><br>Via San Biagio 3, Serra San Bruno (VV)</p>\n    </div>\n    <div class=\"footer\">\n      <p>Barber 99 - L'arte del taglio dal 1999</p>\n      <p>Per cancellare o modificare, contattaci al 0963 XXXXXX</p>\n    </div>\n  </div>\n</body>\n</html>",
+        "html": "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\"><title>Conferma Prenotazione</title></head><body style=\"margin:0;padding:0;background-color:#0c0c0c;font-family:'Helvetica Neue',Arial,sans-serif;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background-color:#0c0c0c;padding:30px 10px;\"><tr><td align=\"center\"><table role=\"presentation\" width=\"600\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width:600px;width:100%;background-color:#1a1a1a;border-radius:16px;overflow:hidden;\"><tr><td style=\"background:linear-gradient(135deg,#d4a855 0%,#b8943f 100%);padding:40px 30px;text-align:center;\"><h1 style=\"margin:0;color:#0c0c0c;font-size:28px;font-weight:800;letter-spacing:3px;\">BARBER 99</h1><p style=\"margin:8px 0 0;color:#0c0c0c;font-size:14px;opacity:0.8;letter-spacing:1px;\">PRENOTAZIONE CONFERMATA</p></td></tr><tr><td style=\"padding:35px 30px;\"><p style=\"color:#ffffff;font-size:18px;margin:0 0 8px;\">Ciao <strong style=\"color:#d4a855;\">{{ $json.clientName }}</strong>!</p><p style=\"color:#aaaaaa;font-size:15px;margin:0 0 25px;line-height:1.5;\">La tua prenotazione è confermata.</p><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background-color:#111111;border-radius:12px;overflow:hidden;\"><tr><td style=\"padding:16px 20px;border-bottom:1px solid #2a2a2a;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\"><tr><td style=\"color:#888888;font-size:14px;\">Data</td><td align=\"right\" style=\"color:#ffffff;font-size:14px;font-weight:600;\">{{ $json.date }}</td></tr></table></td></tr><tr><td style=\"padding:16px 20px;border-bottom:1px solid #2a2a2a;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\"><tr><td style=\"color:#888888;font-size:14px;\">Ora</td><td align=\"right\" style=\"color:#ffffff;font-size:14px;font-weight:600;\">{{ $json.time }}</td></tr></table></td></tr><tr><td style=\"padding:16px 20px;border-bottom:1px solid #2a2a2a;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\"><tr><td style=\"color:#888888;font-size:14px;\">Servizio</td><td align=\"right\" style=\"color:#ffffff;font-size:14px;font-weight:600;\">{{ $json.serviceName }}</td></tr></table></td></tr><tr><td style=\"padding:16px 20px;border-bottom:1px solid #2a2a2a;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\"><tr><td style=\"color:#888888;font-size:14px;\">Durata</td><td align=\"right\" style=\"color:#ffffff;font-size:14px;font-weight:600;\">{{ $json.duration }} min</td></tr></table></td></tr><tr><td style=\"padding:16px 20px;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\"><tr><td style=\"color:#888888;font-size:14px;\">Prezzo</td><td align=\"right\" style=\"color:#d4a855;font-size:16px;font-weight:700;\">{{ $json.price }}</td></tr></table></td></tr></table><p style=\"color:#aaaaaa;font-size:13px;margin:25px 0 5px;line-height:1.5;\"><strong style=\"color:#ffffff;\">Dove trovarci:</strong><br>Via San Biagio 3, 89813 Serra San Bruno (VV)</p><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"margin-top:30px;\"><tr><td align=\"center\"><a href=\"{{ $json.cancellationLink }}\" style=\"display:inline-block;background:linear-gradient(135deg,#e74c3c,#c0392b);color:#ffffff;padding:16px 40px;text-decoration:none;border-radius:8px;font-weight:700;font-size:15px;letter-spacing:0.5px;\">Annulla Prenotazione</a></td></tr></table></td></tr><tr><td style=\"padding:25px 30px;border-top:1px solid #2a2a2a;text-align:center;\"><p style=\"color:#666666;font-size:12px;margin:0;line-height:1.6;\">Per info: <a href=\"mailto:info@barber99.it\" style=\"color:#d4a855;text-decoration:none;\">info@barber99.it</a> | Tel: <a href=\"tel:+393271263091\" style=\"color:#d4a855;text-decoration:none;\">327 126 3091</a></p></td></tr></table></td></tr></table></body></html>",
         "options": {}
       },
-      "id": "send-confirmation-email",
-      "name": "Send Confirmation Email",
+      "id": "send-client-confirmation",
+      "name": "Email Conferma → Cliente",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
-      "position": [700, 200],
+      "position": [760, 200],
       "credentials": {
         "smtp": {
           "id": "barber99smtp01",
@@ -66,17 +123,59 @@
     {
       "parameters": {
         "fromEmail": "info@barber99.it",
-        "toEmail": "={{ $json.client_email }}",
-        "subject": "Promemoria Appuntamento Domani - Barber 99",
+        "toEmail": "info@barber99.it",
+        "subject": "=Nuova Prenotazione - {{ $json.clientName }} - {{ $json.date }} ore {{ $json.time }}",
         "emailType": "html",
-        "html": "<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; background: #0c0c0c; color: #fff; padding: 20px; }\n    .container { max-width: 600px; margin: 0 auto; background: #1a1a1a; border-radius: 12px; overflow: hidden; }\n    .header { background: linear-gradient(135deg, #3b82f6, #1d4ed8); padding: 30px; text-align: center; }\n    .header h1 { margin: 0; color: #fff; font-size: 24px; }\n    .content { padding: 30px; }\n    .detail { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #333; }\n    .detail:last-child { border-bottom: none; }\n    .label { color: #888; }\n    .value { color: #fff; font-weight: bold; }\n    .highlight { background: #d4a855; color: #0c0c0c; padding: 15px; border-radius: 8px; text-align: center; margin: 20px 0; }\n    .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"header\">\n      <h1>Promemoria Appuntamento</h1>\n    </div>\n    <div class=\"content\">\n      <p>Ciao <strong>{{ $json.client_name }}</strong>!</p>\n      <p>Ti ricordiamo che hai un appuntamento domani:</p>\n      \n      <div class=\"highlight\">\n        <strong>{{ $json.date }} alle {{ $json.time }}</strong>\n      </div>\n      \n      <div class=\"detail\">\n        <span class=\"label\">Servizio</span>\n        <span class=\"value\">{{ $json.service_name }}</span>\n      </div>\n      <div class=\"detail\">\n        <span class=\"label\">Barbiere</span>\n        <span class=\"value\">{{ $json.barber_name }}</span>\n      </div>\n      \n      <p style=\"margin-top: 20px;\"><strong>Indirizzo:</strong><br>Via San Biagio 3, Serra San Bruno (VV)</p>\n      \n      <p style=\"color: #888; margin-top: 20px;\">Se non puoi venire, ti preghiamo di avvisarci il prima possibile.</p>\n    </div>\n    <div class=\"footer\">\n      <p>Barber 99 - L'arte del taglio dal 1999</p>\n      <p>Per cancellare o modificare, contattaci al 0963 XXXXXX</p>\n    </div>\n  </div>\n</body>\n</html>",
+        "html": "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\"><title>Nuova Prenotazione</title></head><body style=\"margin:0;padding:0;background-color:#0c0c0c;font-family:'Helvetica Neue',Arial,sans-serif;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background-color:#0c0c0c;padding:30px 10px;\"><tr><td align=\"center\"><table role=\"presentation\" width=\"600\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width:600px;width:100%;background-color:#1a1a1a;border-radius:16px;overflow:hidden;\"><tr><td style=\"background:linear-gradient(135deg,#d4a855 0%,#b8943f 100%);padding:30px;text-align:center;\"><h1 style=\"margin:0;color:#0c0c0c;font-size:22px;font-weight:800;\">NUOVA PRENOTAZIONE</h1></td></tr><tr><td style=\"padding:30px;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background-color:#111111;border-radius:12px;overflow:hidden;\"><tr><td style=\"padding:14px 20px;border-bottom:1px solid #2a2a2a;\"><table role=\"presentation\" width=\"100%\"><tr><td style=\"color:#888;font-size:13px;\">Cliente</td><td align=\"right\" style=\"color:#fff;font-size:14px;font-weight:600;\">{{ $json.clientName }}</td></tr></table></td></tr><tr><td style=\"padding:14px 20px;border-bottom:1px solid #2a2a2a;\"><table role=\"presentation\" width=\"100%\"><tr><td style=\"color:#888;font-size:13px;\">Telefono</td><td align=\"right\" style=\"color:#fff;font-size:14px;font-weight:600;\">{{ $json.clientPhone }}</td></tr></table></td></tr><tr><td style=\"padding:14px 20px;border-bottom:1px solid #2a2a2a;\"><table role=\"presentation\" width=\"100%\"><tr><td style=\"color:#888;font-size:13px;\">Email</td><td align=\"right\" style=\"color:#fff;font-size:14px;font-weight:600;\">{{ $json.clientEmail }}</td></tr></table></td></tr><tr><td style=\"padding:14px 20px;border-bottom:1px solid #2a2a2a;\"><table role=\"presentation\" width=\"100%\"><tr><td style=\"color:#888;font-size:13px;\">Servizio</td><td align=\"right\" style=\"color:#d4a855;font-size:14px;font-weight:600;\">{{ $json.serviceName }}</td></tr></table></td></tr><tr><td style=\"padding:14px 20px;border-bottom:1px solid #2a2a2a;\"><table role=\"presentation\" width=\"100%\"><tr><td style=\"color:#888;font-size:13px;\">Data</td><td align=\"right\" style=\"color:#fff;font-size:14px;font-weight:600;\">{{ $json.date }}</td></tr></table></td></tr><tr><td style=\"padding:14px 20px;border-bottom:1px solid #2a2a2a;\"><table role=\"presentation\" width=\"100%\"><tr><td style=\"color:#888;font-size:13px;\">Ora</td><td align=\"right\" style=\"color:#fff;font-size:14px;font-weight:600;\">{{ $json.time }}</td></tr></table></td></tr><tr><td style=\"padding:14px 20px;\"><table role=\"presentation\" width=\"100%\"><tr><td style=\"color:#888;font-size:13px;\">Note</td><td align=\"right\" style=\"color:#fff;font-size:14px;\">{{ $json.notes || '-' }}</td></tr></table></td></tr></table></td></tr></table></td></tr></table></body></html>",
         "options": {}
       },
-      "id": "send-reminder-email",
-      "name": "Send Reminder Email",
+      "id": "send-barber-notification",
+      "name": "Email Notifica → Barbiere",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
-      "position": [700, 400],
+      "position": [760, 380],
+      "credentials": {
+        "smtp": {
+          "id": "barber99smtp01",
+          "name": "Hostinger SMTP - Barber99"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "info@barber99.it",
+        "toEmail": "={{ $json.clientEmail }}",
+        "subject": "La tua opinione conta! - Barber99",
+        "emailType": "html",
+        "html": "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\"><title>Lascia una Recensione</title></head><body style=\"margin:0;padding:0;background-color:#0c0c0c;font-family:'Helvetica Neue',Arial,sans-serif;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background-color:#0c0c0c;padding:30px 10px;\"><tr><td align=\"center\"><table role=\"presentation\" width=\"600\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width:600px;width:100%;background-color:#1a1a1a;border-radius:16px;overflow:hidden;\"><tr><td style=\"background:linear-gradient(135deg,#d4a855 0%,#b8943f 100%);padding:40px 30px;text-align:center;\"><h1 style=\"margin:0;color:#0c0c0c;font-size:28px;font-weight:800;letter-spacing:3px;\">BARBER 99</h1></td></tr><tr><td style=\"padding:35px 30px;text-align:center;\"><p style=\"color:#ffffff;font-size:18px;margin:0 0 8px;\">Ciao <strong style=\"color:#d4a855;\">{{ $json.clientName }}</strong>!</p><p style=\"color:#aaaaaa;font-size:15px;margin:20px 0 30px;line-height:1.6;\">{{ $json.customMessage || \"Ci farebbe molto piacere conoscere la tua opinione sulla tua esperienza da Barber99.\" }}</p><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"margin:10px 0 30px;\"><tr><td align=\"center\"><a href=\"{{ $json.reviewUrl }}\" style=\"display:inline-block;background:linear-gradient(135deg,#d4a855,#b8943f);color:#0c0c0c;padding:18px 45px;text-decoration:none;border-radius:8px;font-weight:700;font-size:16px;letter-spacing:0.5px;\">Lascia una Recensione su Google</a></td></tr></table><p style=\"color:#888888;font-size:14px;margin:0;line-height:1.5;\">La tua recensione ci aiuta a migliorare e a far conoscere il nostro lavoro.</p></td></tr><tr><td style=\"padding:25px 30px;border-top:1px solid #2a2a2a;text-align:center;\"><p style=\"color:#666666;font-size:12px;margin:0;line-height:1.6;\">Per info: <a href=\"mailto:info@barber99.it\" style=\"color:#d4a855;text-decoration:none;\">info@barber99.it</a> | Tel: <a href=\"tel:+393271263091\" style=\"color:#d4a855;text-decoration:none;\">327 126 3091</a></p></td></tr></table></td></tr></table></body></html>",
+        "options": {}
+      },
+      "id": "send-review-request",
+      "name": "Email Recensione → Cliente",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [760, 560],
+      "credentials": {
+        "smtp": {
+          "id": "barber99smtp01",
+          "name": "Hostinger SMTP - Barber99"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "info@barber99.it",
+        "toEmail": "={{ $json.clientEmail }}",
+        "subject": "Prenotazione Annullata - Barber99",
+        "emailType": "html",
+        "html": "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\"><title>Prenotazione Annullata</title></head><body style=\"margin:0;padding:0;background-color:#0c0c0c;font-family:'Helvetica Neue',Arial,sans-serif;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background-color:#0c0c0c;padding:30px 10px;\"><tr><td align=\"center\"><table role=\"presentation\" width=\"600\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width:600px;width:100%;background-color:#1a1a1a;border-radius:16px;overflow:hidden;\"><tr><td style=\"background:linear-gradient(135deg,#d4a855 0%,#b8943f 100%);padding:40px 30px;text-align:center;\"><h1 style=\"margin:0;color:#0c0c0c;font-size:28px;font-weight:800;letter-spacing:3px;\">BARBER 99</h1></td></tr><tr><td style=\"padding:35px 30px;text-align:center;\"><p style=\"color:#ffffff;font-size:18px;margin:0 0 8px;\">Ciao <strong style=\"color:#d4a855;\">{{ $json.clientName }}</strong>,</p><p style=\"color:#aaaaaa;font-size:15px;margin:20px 0 10px;line-height:1.6;\">La tua prenotazione è stata annullata con successo.</p><p style=\"color:#888888;font-size:14px;margin:0 0 30px;line-height:1.5;\">Se hai cambiato idea, puoi prenotare di nuovo in qualsiasi momento.</p><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"margin:10px 0 0;\"><tr><td align=\"center\"><a href=\"https://barber99.it/prenota\" style=\"display:inline-block;background:linear-gradient(135deg,#d4a855,#b8943f);color:#0c0c0c;padding:18px 45px;text-decoration:none;border-radius:8px;font-weight:700;font-size:16px;letter-spacing:0.5px;\">Prenota di Nuovo</a></td></tr></table></td></tr><tr><td style=\"padding:25px 30px;border-top:1px solid #2a2a2a;text-align:center;\"><p style=\"color:#666666;font-size:12px;margin:0;line-height:1.6;\">Per info: <a href=\"mailto:info@barber99.it\" style=\"color:#d4a855;text-decoration:none;\">info@barber99.it</a> | Tel: <a href=\"tel:+393271263091\" style=\"color:#d4a855;text-decoration:none;\">327 126 3091</a></p></td></tr></table></td></tr></table></body></html>",
+        "options": {}
+      },
+      "id": "send-cancellation-email",
+      "name": "Email Cancellazione → Cliente",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [760, 740],
       "credentials": {
         "smtp": {
           "id": "barber99smtp01",
@@ -90,25 +189,37 @@
       "main": [
         [
           {
-            "node": "Is Confirmation?",
+            "node": "Route by Event",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Is Confirmation?": {
+    "Route by Event": {
       "main": [
         [
           {
-            "node": "Send Confirmation Email",
+            "node": "Email Conferma → Cliente",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email Notifica → Barbiere",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Send Reminder Email",
+            "node": "Email Recensione → Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Email Cancellazione → Cliente",
             "type": "main",
             "index": 0
           }

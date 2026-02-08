@@ -17,7 +17,7 @@ export const adminMenuItems = [
   { href: '/admin-panel/clienti', label: 'Clienti', icon: User },
   { href: '/admin-panel/servizi', label: 'Servizi', icon: Scissors },
   { href: '/admin-panel/analytics', label: 'Analytics', icon: BarChart2 },
-  { href: '/admin-panel/orari', label: 'Orari', icon: Clock },
+  { href: '/admin-panel/orari', label: 'Orari e Chiusure', icon: Clock },
   { href: '/admin-panel/recensioni', label: 'Recensioni', icon: Star },
   { href: '/admin-panel/contatti', label: 'Contatti', icon: MessageSquare },
 ] as const
