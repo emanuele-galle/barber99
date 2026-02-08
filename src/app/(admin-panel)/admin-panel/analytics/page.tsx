@@ -152,9 +152,10 @@ async function getAnalyticsData() {
   // Hour distribution for heatmap
   const hourCounts: Record<string, number> = {}
   thisMonthAppts.docs.forEach((appt) => {
-    const apt = appt as Appointment
+    const apt = appt as Appointment & { time?: string }
     const date = new Date(apt.date)
-    const dayHour = `${date.getDay()}-${date.getHours()}`
+    const hour = apt.time ? parseInt(apt.time.split(':')[0], 10) : date.getHours()
+    const dayHour = `${date.getDay()}-${hour}`
     hourCounts[dayHour] = (hourCounts[dayHour] || 0) + 1
   })
 

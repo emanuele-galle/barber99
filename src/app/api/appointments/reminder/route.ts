@@ -18,12 +18,14 @@ export async function POST(request: NextRequest) {
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
     const tomorrowStr = tomorrow.toISOString().split('T')[0]
+    const dayAfterStr = new Date(tomorrow.getTime() + 86400000).toISOString().split('T')[0]
 
     const appointments = await payload.find({
       collection: 'appointments',
       where: {
         and: [
-          { date: { equals: tomorrowStr } },
+          { date: { greater_than_equal: `${tomorrowStr}T00:00:00.000Z` } },
+          { date: { less_than: `${dayAfterStr}T00:00:00.000Z` } },
           { status: { in: ['pending', 'confirmed'] } },
           { reminderSent: { equals: false } },
         ],
