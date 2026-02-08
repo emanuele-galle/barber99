@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useClientAuth } from '@/components/auth/ClientAuthProvider'
-import { Calendar, User, Clock, LogOut, Loader2, Scissors, ArrowRight } from 'lucide-react'
+import { Calendar, User, Clock, LogOut, Loader2, Scissors, ArrowRight, Star } from 'lucide-react'
 
 export default function AccountPage() {
   const router = useRouter()
@@ -115,6 +115,27 @@ export default function AccountPage() {
             </div>
           </Link>
         </div>
+
+        {/* Google Review CTA */}
+        <a
+          href="https://www.google.com/maps/place/Barber99/@38.5794179,16.332718,17z"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block bg-gradient-to-r from-[#1a1a1a] to-[#1f1f1f] border border-[#d4a855]/20 hover:border-[#d4a855]/40 rounded-xl p-5 transition-all group mb-8"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-[#d4a855]/10 rounded-lg flex items-center justify-center shrink-0">
+              <Star className="w-6 h-6 text-[#d4a855] fill-[#d4a855]" />
+            </div>
+            <div className="flex-1">
+              <div className="text-white font-semibold">Lascia una recensione</div>
+              <div className="text-[rgba(255,255,255,0.5)] text-sm">
+                La tua opinione ci aiuta a migliorare. Racconta la tua esperienza su Google!
+              </div>
+            </div>
+            <ArrowRight className="w-5 h-5 text-[#d4a855] group-hover:translate-x-1 transition-transform shrink-0" />
+          </div>
+        </a>
 
         {/* Menu Links */}
         <div className="bg-[#1a1a1a] border border-[rgba(255,255,255,0.1)] rounded-xl overflow-hidden">

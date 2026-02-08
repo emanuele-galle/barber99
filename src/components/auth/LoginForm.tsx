@@ -85,6 +85,12 @@ export function LoginForm() {
         </div>
       </div>
 
+      <div className="flex justify-end">
+        <Link href="/account/recupera" className="text-sm text-[rgba(255,255,255,0.5)] hover:text-[#d4a855] transition-colors">
+          Password dimenticata?
+        </Link>
+      </div>
+
       <button
         type="submit"
         disabled={loading}
