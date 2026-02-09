@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     })
 
     const response = NextResponse.json(result)
-    response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=60')
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
     return response
   } catch (error) {
     console.error('Error fetching closed days:', error)
@@ -36,10 +36,13 @@ export async function POST(req: NextRequest) {
     const payload = await getPayload({ config })
     const body = await req.json()
 
+    // Convert YYYY-MM-DD from HTML date input to ISO string for Payload
+    const dateValue = body.date.includes('T') ? body.date : `${body.date}T00:00:00.000Z`
+
     const doc = await payload.create({
       collection: 'closed-days',
       data: {
-        date: body.date,
+        date: dateValue,
         type: body.type,
         reason: body.reason,
         recurring: body.recurring ?? false,
