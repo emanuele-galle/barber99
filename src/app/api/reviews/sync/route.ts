@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 
 const APIFY_API_TOKEN = process.env.APIFY_API_TOKEN
+const SYNC_SECRET = process.env.INSTAGRAM_SYNC_SECRET
 const GOOGLE_MAPS_SEARCH = 'Barber 99 Serra San Bruno'
 
 interface ApifyReview {
@@ -25,16 +26,16 @@ async function fetchGoogleReviews(): Promise<{ reviews: ApifyReview[]; placeInfo
   const actorId = 'compass~crawler-google-places'
   const runUrl = `https://api.apify.com/v2/acts/${actorId}/runs?token=${APIFY_API_TOKEN}`
 
+  const googleMapsUrl = process.env.GOOGLE_MAPS_URL || 'https://www.google.com/maps/place/Barber99/@38.5794179,16.332718,17z/data=!4m2!3m1!1s0x1315453549585e87:0xfeb44ab340380fd1'
+
   const runResponse = await fetch(runUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      searchStringsArray: [GOOGLE_MAPS_SEARCH],
-      countryCode: 'it',
+      startUrls: [{ url: googleMapsUrl }],
       language: 'it',
       maxCrawledPlacesPerSearch: 1,
       maxReviews: 50,
-      searchMatching: 'only_includes',
       reviewsSort: 'newest',
       scrapeReviewsPersonalData: true,
     }),
@@ -86,19 +87,24 @@ export async function POST(request: NextRequest) {
   try {
     const payload = await getPayload({ config })
 
-    // Require authenticated admin user
-    try {
-      const authHeader = request.headers.get('authorization')
-      const cookie = request.headers.get('cookie')
-      const headers = new Headers()
-      if (authHeader) headers.set('Authorization', authHeader)
-      if (cookie) headers.set('Cookie', cookie)
-      const { user } = await payload.auth({ headers })
-      if (!user) {
+    // Auth: accept sync secret (for N8N) or admin session (for admin panel)
+    const syncSecret = request.headers.get('x-sync-secret')
+    if (syncSecret && SYNC_SECRET && syncSecret === SYNC_SECRET) {
+      // Authenticated via sync secret (N8N automated sync)
+    } else {
+      try {
+        const authHeader = request.headers.get('authorization')
+        const cookie = request.headers.get('cookie')
+        const headers = new Headers()
+        if (authHeader) headers.set('Authorization', authHeader)
+        if (cookie) headers.set('Cookie', cookie)
+        const { user } = await payload.auth({ headers })
+        if (!user) {
+          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        }
+      } catch {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
       }
-    } catch {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     if (!APIFY_API_TOKEN) {

@@ -96,7 +96,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
           <p className="text-white/60 text-center">Nessuna recensione disponibile al momento.</p>
           <div className="text-center mt-8">
             <a
-              href="https://www.google.com/maps/search/?api=1&query=Barber+99+Via+San+Biagio+3+Serra+San+Bruno+VV"
+              href="https://search.google.com/local/writereview?placeid=ChIJh15YSTVFFRPRDzhAs0q0%2Fg%3D%3D"
               target="_blank"
               rel="noopener noreferrer"
               className="text-[#d4a855] underline underline-offset-4"
@@ -219,7 +219,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
           {/* CTA */}
           <div className="text-center mt-12">
             <a
-              href="https://www.google.com/maps/search/?api=1&query=Barber+99+Via+San+Biagio+3+Serra+San+Bruno+VV"
+              href="https://search.google.com/local/writereview?placeid=ChIJh15YSTVFFRPRDzhAs0q0%2Fg%3D%3D"
               target="_blank"
               rel="noopener noreferrer"
               className="text-[#d4a855] md:text-lg underline underline-offset-4"
@@ -446,7 +446,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
           className="text-center mt-12"
         >
           <a
-            href="https://www.google.com/maps/search/?api=1&query=Barber+99+Via+San+Biagio+3+Serra+San+Bruno+VV"
+            href="https://search.google.com/local/writereview?placeid=ChIJh15YSTVFFRPRDzhAs0q0%2Fg%3D%3D"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[#d4a855] md:text-lg hover:text-[#e8c882] transition-colors underline underline-offset-4"

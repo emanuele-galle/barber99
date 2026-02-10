@@ -18,12 +18,12 @@ export default function GoogleReviewsBadge({
   // Hide on mobile (MobileNav already exists)
   if (isMobile) return null
 
-  const googleMapsUrl =
-    'https://www.google.com/maps/search/?api=1&query=Barber+99+Via+San+Biagio+3+Serra+San+Bruno+VV'
+  const googleReviewUrl =
+    'https://search.google.com/local/writereview?placeid=ChIJh15YSTVFFRPRDzhAs0q0%2Fg%3D%3D'
 
   return (
     <motion.a
-      href={googleMapsUrl}
+      href={googleReviewUrl}
       target="_blank"
       rel="noopener noreferrer"
       className="fixed bottom-6 left-6 z-50 group cursor-pointer"

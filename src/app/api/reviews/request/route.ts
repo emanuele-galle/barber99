@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
         clientName,
         clientEmail,
         customMessage: customMessage || '',
-        reviewUrl: 'https://www.google.com/maps/place/Barber99/@38.5794179,16.332718,17z',
+        reviewUrl: process.env.GOOGLE_REVIEW_URL || 'https://search.google.com/local/writereview?placeid=ChIJh15YSTVFFRPRDzhAs0q0%2Fg%3D%3D',
       }),
     })
 
