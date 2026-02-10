@@ -226,8 +226,6 @@ export default function BookingForm() {
     const lastDay = new Date(year, month + 1, 0)
     const today = new Date()
     today.setHours(0, 0, 0, 0)
-    const tomorrow = new Date(today)
-    tomorrow.setDate(tomorrow.getDate() + 1)
 
     // Max 2 months ahead
     const maxDate = new Date(today)
@@ -249,7 +247,7 @@ export default function BookingForm() {
       const d = new Date(year, month, day)
       const dayOfWeek = d.getDay()
       const dayHours = openingHours.find((h) => h.dayOfWeek === dayOfWeek)
-      const isPast = d < tomorrow
+      const isPast = d < today
       const isTooFar = d > maxDate
       const isClosed = !dayHours || dayHours.isClosed || isDateClosed(d, closedDays)
       const available = !isPast && !isTooFar && !isClosed
