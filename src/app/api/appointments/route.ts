@@ -5,11 +5,13 @@ import { isSlotAvailable, defaultOpeningHours, isDateClosed } from '@/lib/bookin
 import { bookingEvents } from '@/lib/booking-events'
 import { rateLimit, getClientIP, RATE_LIMITS } from '@/lib/rate-limit'
 
+export const dynamic = 'force-dynamic'
+
 // Helper: build date range query for Payload (handles ISO timezone issues)
 function dateRangeQuery(date: string) {
   return [
     { date: { greater_than_equal: `${date}T00:00:00.000Z` } },
-    { date: { less_than: `${date}T23:59:59.999Z` } },
+    { date: { less_than_equal: `${date}T23:59:59.999Z` } },
   ]
 }
 
@@ -252,7 +254,7 @@ export async function POST(request: NextRequest) {
       data: {
         service,
         barber: DEFAULT_BARBER_NAME,
-        date,
+        date: `${date}T12:00:00.000Z`,
         time,
         clientName,
         ...(clientEmail ? { clientEmail } : {}),
@@ -293,7 +295,7 @@ export async function POST(request: NextRequest) {
       time,
     })
 
-    // Build cancellation and WhatsApp links
+    // Build cancellation link
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://barber99.it'
     const cancellationLink = `${baseUrl}/cancella?token=${appointment.cancellationToken}`
 
@@ -328,28 +330,12 @@ export async function POST(request: NextRequest) {
         })
       }
     }
-    const formattedDate = new Date(date).toLocaleDateString('it-IT', {
-      weekday: 'long', day: 'numeric', month: 'long',
-    })
-    // --- FASE 7: Link cancellazione nel WhatsApp ---
-    const whatsappText = encodeURIComponent(
-      `Ciao! Ho prenotato un appuntamento da Barber 99:\n` +
-      `Servizio: ${serviceDoc?.name || 'Servizio'}\n` +
-      `Data: ${formattedDate}\n` +
-      `Ora: ${time}\n` +
-      `Nome: ${clientName}\n\n` +
-      `Per annullare: ${cancellationLink}`
-    )
-    const whatsappNumber = process.env.WHATSAPP_PHONE || '393271263091'
-    const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappText}`
-
     return NextResponse.json({
       success: true,
       appointmentId: appointment.id,
       message: 'Appointment created successfully',
       emailSent,
       cancellationLink,
-      whatsappLink,
     })
   } catch (error) {
     console.error('Error creating appointment:', error)
@@ -384,6 +370,7 @@ export async function GET(request: NextRequest) {
         ],
       },
       depth: 1,
+      limit: 100,
     })
 
     // Return simplified slot data (for availability checking)
@@ -394,7 +381,9 @@ export async function GET(request: NextRequest) {
       barberId: typeof apt.barber === 'string' ? apt.barber : 'cosimo',
     }))
 
-    return NextResponse.json({ bookedSlots })
+    const response = NextResponse.json({ bookedSlots })
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+    return response
   } catch (error) {
     console.error('Error fetching appointments:', error)
     return NextResponse.json(

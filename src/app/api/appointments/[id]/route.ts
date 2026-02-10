@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import { isSlotAvailable, defaultOpeningHours } from '@/lib/booking'
+import { isSlotAvailable } from '@/lib/booking'
+import { bookingEvents } from '@/lib/booking-events'
 import { requireAdmin, unauthorizedResponse } from '@/lib/admin-auth'
+
+const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || 'http://vps-panel-n8n:5678/webhook/barber99-booking'
 
 export async function PATCH(
   request: NextRequest,
@@ -58,7 +61,8 @@ export async function PATCH(
         collection: 'appointments',
         where: {
           and: [
-            { date: { equals: dateStr } },
+            { date: { greater_than_equal: `${dateStr}T00:00:00.000Z` } },
+            { date: { less_than_equal: `${dateStr}T23:59:59.999Z` } },
             { status: { not_equals: 'cancelled' } },
             { id: { not_equals: id } },
           ],
@@ -74,10 +78,23 @@ export async function PATCH(
         barberId: 'cosimo',
       }))
 
-      const dateObj = new Date(dateStr + 'T00:00:00')
-      const dayOfWeek = dateObj.getDay()
-      const dayHours = defaultOpeningHours.find((h) => h.dayOfWeek === dayOfWeek)
-      const closeTime = dayHours?.closeTime || '19:30'
+      // Fetch opening hours from CMS (same as POST handler)
+      const dayNameToNumber: Record<string, number> = {
+        sunday: 0, monday: 1, tuesday: 2, wednesday: 3,
+        thursday: 4, friday: 5, saturday: 6,
+      }
+      let closeTime = '19:30'
+      try {
+        const hoursResult = await payload.find({ collection: 'opening-hours', limit: 7 })
+        if (hoursResult.docs.length > 0) {
+          const dateObj = new Date(dateStr + 'T00:00:00')
+          const dayOfWeek = dateObj.getDay()
+          const dayDoc = hoursResult.docs.find((h) => dayNameToNumber[h.dayOfWeek as string] === dayOfWeek)
+          if (dayDoc) {
+            closeTime = (dayDoc.closeTime as string) || '19:30'
+          }
+        }
+      } catch { /* keep default */ }
 
       if (!isSlotAvailable(newTime as string, serviceDuration, bookedSlots, closeTime)) {
         return NextResponse.json(
@@ -98,6 +115,10 @@ export async function PATCH(
         filteredData[field] = body[field]
       }
     }
+    // Normalize date to UTC noon if it's a bare YYYY-MM-DD string
+    if (filteredData.date && typeof filteredData.date === 'string' && !String(filteredData.date).includes('T')) {
+      filteredData.date = `${filteredData.date}T12:00:00.000Z`
+    }
 
     // Update appointment
     const updated = await payload.update({
@@ -105,6 +126,95 @@ export async function PATCH(
       id,
       data: filteredData,
     })
+
+    // Emit SSE event for real-time admin notification on modifications
+    if (body.date || body.time) {
+      const svcName = typeof updated.service === 'object' && updated.service
+        ? (updated.service as { name?: string }).name || 'Servizio'
+        : 'Servizio'
+      const dStr = typeof updated.date === 'string' && updated.date.includes('T')
+        ? updated.date.split('T')[0]
+        : String(updated.date)
+      const dFmt = new Date(dStr + 'T00:00:00').toLocaleDateString('it-IT', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+      })
+      bookingEvents.emit('modification', {
+        appointmentId: id,
+        clientName: updated.clientName,
+        serviceName: svcName,
+        date: dFmt,
+        time: updated.time,
+      })
+    }
+
+    // Send cancellation notification email when admin cancels
+    if (body.status === 'cancelled' && updated.clientEmail) {
+      const svcName = typeof updated.service === 'object' && updated.service
+        ? (updated.service as { name?: string }).name || 'Servizio'
+        : 'Servizio'
+      const cDateStr = typeof updated.date === 'string' && updated.date.includes('T')
+        ? updated.date.split('T')[0]
+        : String(updated.date)
+      const cDateFmt = new Date(cDateStr + 'T00:00:00').toLocaleDateString('it-IT', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+      })
+      bookingEvents.emit('cancellation', {
+        appointmentId: id,
+        clientName: updated.clientName,
+        serviceName: svcName,
+        date: cDateFmt,
+        time: updated.time,
+      })
+      try {
+        await fetch(N8N_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            event: 'cancellation',
+            client_name: updated.clientName,
+            client_email: updated.clientEmail,
+            client_phone: updated.clientPhone,
+            service_name: svcName,
+            date: cDateFmt,
+            time: updated.time,
+            reason: 'Cancellato dall\'amministratore',
+          }),
+        })
+      } catch (e) {
+        console.error('Failed to send cancellation notification:', e)
+      }
+    }
+
+    // Send modification notification email (only if date/time changed and client has email)
+    if ((body.date || body.time) && updated.clientEmail) {
+      const serviceName = typeof updated.service === 'object' && updated.service
+        ? (updated.service as { name?: string }).name || 'Servizio'
+        : 'Servizio'
+      const dateStr = typeof updated.date === 'string' && updated.date.includes('T')
+        ? updated.date.split('T')[0]
+        : String(updated.date)
+      const dateFormatted = new Date(dateStr + 'T00:00:00').toLocaleDateString('it-IT', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+      })
+      try {
+        await fetch(N8N_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            event: 'modification',
+            client_name: updated.clientName,
+            client_email: updated.clientEmail,
+            client_phone: updated.clientPhone,
+            service_name: serviceName,
+            date: dateFormatted,
+            time: updated.time,
+            cancellationLink: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://barber99.it'}/cancella?token=${updated.cancellationToken}`,
+          }),
+        })
+      } catch (e) {
+        console.error('Failed to send modification notification:', e)
+      }
+    }
 
     return NextResponse.json({
       success: true,
