@@ -414,6 +414,15 @@ export const Appointments: CollectionConfig = {
 
               // Review request logic (non-annoying)
               if (doc.status === 'completed' && previousDoc.status !== 'completed' && client.email && process.env.GOOGLE_REVIEW_URL) {
+                // Check if client already left a review
+                const existingReview = await payload.find({
+                  collection: 'reviews',
+                  where: { author: { like: client.name } },
+                  limit: 1,
+                })
+                if (existingReview.docs.length > 0) {
+                  // Client already reviewed, skip
+                } else {
                 const lastRequest = client.lastReviewRequestAt ? new Date(client.lastReviewRequestAt as string) : null
                 const daysSinceLastRequest = lastRequest
                   ? (Date.now() - lastRequest.getTime()) / (1000 * 60 * 60 * 24)
@@ -450,6 +459,7 @@ export const Appointments: CollectionConfig = {
                     }).catch((err) => console.error('Failed to update lastReviewRequestAt:', err))
 
                   }
+                }
                 }
               }
             } catch (error) {

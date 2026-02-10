@@ -6,6 +6,8 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import MobileNav from '@/components/MobileNav'
 import GoogleReviewsBadge from '@/components/GoogleReviewsBadge'
+import MobileReviewPrompt from '@/components/MobileReviewPrompt'
+import PWAInstallPrompt from '@/components/PWAInstallPrompt'
 import HomeWrapper from '@/components/HomeWrapper'
 import HeroSection from '@/components/sections/HeroSection'
 import AboutSection from '@/components/sections/AboutSection'
@@ -76,6 +78,8 @@ export default async function Home() {
           reviewCount={totalReviewCount}
         />
       )}
+      <MobileReviewPrompt />
+      <PWAInstallPrompt />
     </HomeWrapper>
   )
 }
