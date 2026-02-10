@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { Metadata } from 'next'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'

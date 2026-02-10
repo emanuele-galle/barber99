@@ -30,13 +30,13 @@ export async function GET() {
       }))
 
       const response = NextResponse.json({ openingHours })
-      response.headers.set('Cache-Control', 'public, s-maxage=600, stale-while-revalidate=60')
+      response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
       return response
     }
 
     // Fallback to defaults if collection is empty
     const response = NextResponse.json({ openingHours: defaultOpeningHours })
-    response.headers.set('Cache-Control', 'public, s-maxage=600, stale-while-revalidate=60')
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
     return response
   } catch (error) {
     console.error('Error fetching opening hours:', error)

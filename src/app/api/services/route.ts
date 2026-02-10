@@ -16,7 +16,7 @@ export async function GET() {
     })
 
     const response = NextResponse.json(services)
-    response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=60')
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
     return response
   } catch (error) {
     console.error('Error fetching services:', error)

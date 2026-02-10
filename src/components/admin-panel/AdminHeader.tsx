@@ -4,17 +4,49 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  Menu, X, Bell, ExternalLink, Scissors, Clock, MessageSquare, LogOut, Plus,
+  Menu, X, Bell, ExternalLink, Scissors, Clock, MessageSquare, LogOut, Plus, XCircle, RefreshCw,
 } from 'lucide-react'
 import { adminMenuItems } from '@/lib/admin-menu'
 
 interface Notification {
   id: string
-  type: 'imminent' | 'contact' | 'new_booking'
+  type: 'imminent' | 'contact' | 'new_booking' | 'cancellation' | 'modification'
   title: string
   message: string
   time: string
   link: string
+  timestamp?: number
+}
+
+// LocalStorage key for persisting daily notifications
+const NOTIF_STORAGE_KEY = 'barber99_admin_notifications'
+const NOTIF_DATE_KEY = 'barber99_admin_notif_date'
+
+function loadPersistedNotifications(): Notification[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const storedDate = localStorage.getItem(NOTIF_DATE_KEY)
+    const today = new Date().toISOString().split('T')[0]
+    if (storedDate !== today) {
+      localStorage.removeItem(NOTIF_STORAGE_KEY)
+      localStorage.setItem(NOTIF_DATE_KEY, today)
+      return []
+    }
+    const stored = localStorage.getItem(NOTIF_STORAGE_KEY)
+    return stored ? JSON.parse(stored) : []
+  } catch {
+    return []
+  }
+}
+
+function persistNotifications(notifs: Notification[]) {
+  if (typeof window === 'undefined') return
+  try {
+    const today = new Date().toISOString().split('T')[0]
+    localStorage.setItem(NOTIF_DATE_KEY, today)
+    const realtime = notifs.filter((n) => ['new_booking', 'cancellation', 'modification'].includes(n.type))
+    localStorage.setItem(NOTIF_STORAGE_KEY, JSON.stringify(realtime))
+  } catch {}
 }
 
 interface AdminHeaderProps {
@@ -26,7 +58,7 @@ const menuItems = adminMenuItems
 export function AdminHeader({ user }: AdminHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [notificationsOpen, setNotificationsOpen] = useState(false)
-  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [notifications, setNotifications] = useState<Notification[]>(() => loadPersistedNotifications())
   const [loading, setLoading] = useState(true)
   const [sseConnected, setSseConnected] = useState(false)
   const notificationRef = useRef<HTMLDivElement>(null)
@@ -90,8 +122,10 @@ export function AdminHeader({ user }: AdminHeaderProps) {
       }
 
       setNotifications((prev) => {
-        const realtimeNotifs = prev.filter((n) => n.type === 'new_booking')
-        return [...realtimeNotifs, ...notifs]
+        const realtimeNotifs = prev.filter((n) => ['new_booking', 'cancellation', 'modification'].includes(n.type))
+        const merged = [...realtimeNotifs, ...notifs]
+        persistNotifications(merged)
+        return merged
       })
     } catch (error) {
       console.error('Error fetching notifications:', error)
@@ -121,22 +155,33 @@ export function AdminHeader({ user }: AdminHeaderProps) {
         try {
           const data = JSON.parse(event.data)
 
-          if (data.type === 'new_booking') {
+          const eventConfig: Record<string, { prefix: string; browserTitle: string; idPrefix: string }> = {
+            new_booking: { prefix: 'Nuova prenotazione', browserTitle: 'Nuova prenotazione!', idPrefix: 'booking' },
+            cancellation: { prefix: 'Cancellazione', browserTitle: 'Appuntamento cancellato', idPrefix: 'cancel' },
+            modification: { prefix: 'Modifica', browserTitle: 'Appuntamento modificato', idPrefix: 'modify' },
+          }
+
+          const cfg = eventConfig[data.type]
+          if (cfg) {
             const notif: Notification = {
-              id: `booking-${data.appointmentId}-${Date.now()}`,
-              type: 'new_booking',
-              title: `Nuova prenotazione: ${data.clientName}`,
+              id: `${cfg.idPrefix}-${data.appointmentId}-${Date.now()}`,
+              type: data.type,
+              title: `${cfg.prefix}: ${data.clientName}`,
               message: `${data.serviceName} - ${data.time}`,
-              time: 'Ora',
+              time: new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }),
               link: '/admin-panel/appuntamenti',
+              timestamp: Date.now(),
             }
 
-            setNotifications((prev) => [notif, ...prev])
+            setNotifications((prev) => {
+              const updated = [notif, ...prev]
+              persistNotifications(updated)
+              return updated
+            })
 
-            // Sound + Browser notification
             playNotificationSound()
             showBrowserNotification(
-              'Nuova prenotazione!',
+              cfg.browserTitle,
               `${data.clientName} - ${data.serviceName} alle ${data.time}`
             )
           }
@@ -178,6 +223,8 @@ export function AdminHeader({ user }: AdminHeaderProps) {
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case 'new_booking': return <Plus className="w-4 h-4 text-green-400" />
+      case 'cancellation': return <XCircle className="w-4 h-4 text-red-400" />
+      case 'modification': return <RefreshCw className="w-4 h-4 text-blue-400" />
       case 'imminent': return <Clock className="w-4 h-4 text-[#d4a855]" />
       case 'contact': return <MessageSquare className="w-4 h-4 text-blue-400" />
       default: return <Bell className="w-4 h-4" />
@@ -259,11 +306,11 @@ export function AdminHeader({ user }: AdminHeaderProps) {
                           href={notif.link}
                           onClick={() => setNotificationsOpen(false)}
                           className={`flex items-start gap-3 px-4 py-3 hover:bg-[rgba(255,255,255,0.05)] transition-colors border-b border-[rgba(255,255,255,0.05)] last:border-0 ${
-                            notif.type === 'new_booking' ? 'bg-green-500/5' : ''
+                            notif.type === 'new_booking' ? 'bg-green-500/5' : notif.type === 'cancellation' ? 'bg-red-500/5' : notif.type === 'modification' ? 'bg-blue-500/5' : ''
                           }`}
                         >
                           <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                            notif.type === 'new_booking' ? 'bg-green-500/20' : 'bg-[rgba(255,255,255,0.05)]'
+                            notif.type === 'new_booking' ? 'bg-green-500/20' : notif.type === 'cancellation' ? 'bg-red-500/20' : notif.type === 'modification' ? 'bg-blue-500/20' : 'bg-[rgba(255,255,255,0.05)]'
                           }`}>
                             {getNotificationIcon(notif.type)}
                           </div>

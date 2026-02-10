@@ -41,7 +41,6 @@ export async function POST(request: NextRequest) {
       const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://barber99.it'
       const cancelLink = `${baseUrl}/cancella?token=${apt.cancellationToken}`
 
-      // Build WhatsApp reminder message
       const formattedDate = new Date(tomorrowStr).toLocaleDateString('it-IT', {
         weekday: 'long', day: 'numeric', month: 'long',
       })

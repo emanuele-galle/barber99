@@ -458,81 +458,11 @@ export const Appointments: CollectionConfig = {
           }
         }
 
-        // N8N Webhook logic
-        // Skip for new appointments — route.ts handles the confirmation webhook
-        // Only send webhooks for status changes (completed, cancelled, noshow, etc.)
-        const webhookUrl = process.env.N8N_WEBHOOK_URL
-
-        if (!webhookUrl || operation === 'create') {
-          return doc
-        }
-
-        // Only send on actual status changes
-        const statusChanged = previousDoc?.status !== doc.status
-        if (!statusChanged) {
-          return doc
-        }
-
-        try {
-          const payload = req.payload
-          let serviceName = 'Servizio'
-          let serviceDuration = 45
-          let servicePrice = 0
-
-          if (doc.service && typeof doc.service !== 'string') {
-            serviceName = doc.service.name || serviceName
-            serviceDuration = doc.service.duration || serviceDuration
-            servicePrice = doc.service.price || servicePrice
-          } else if (doc.service) {
-            try {
-              const service = await payload.findByID({
-                collection: 'services',
-                id: doc.service as string,
-              })
-              serviceName = service.name || serviceName
-              serviceDuration = service.duration || serviceDuration
-              servicePrice = service.price || servicePrice
-            } catch (e) {
-              console.error('Error fetching service:', e)
-            }
-          }
-
-          const barberName = (doc.barber as string) || 'Barbiere'
-
-          // Flat payload matching N8N template format (snake_case)
-          const webhookPayload = {
-            event: `appointment_${doc.status}`,
-            appointment_id: String(doc.id),
-            client_name: doc.clientName,
-            client_email: doc.clientEmail || '',
-            client_phone: doc.clientPhone,
-            service_name: serviceName,
-            barber_name: barberName,
-            date: new Date(doc.date as string).toLocaleDateString('it-IT', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            }),
-            time: doc.time,
-            duration: serviceDuration,
-            price: servicePrice ? `€${servicePrice}` : 'Da confermare',
-            status: doc.status,
-            previous_status: previousDoc?.status,
-          }
-
-          const response = await fetch(webhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(webhookPayload),
-          })
-
-          if (!response.ok) {
-            console.error(`N8N webhook failed: ${response.status} ${response.statusText}`)
-          }
-        } catch (error) {
-          console.error('Error sending N8N webhook:', error)
-        }
+        // N8N Webhooks are sent directly from the API routes:
+        // - POST /api/appointments (confirmation)
+        // - POST /api/appointments/cancel (cancellation)
+        // - PATCH /api/appointments/[id] (modification, cancellation from admin)
+        // No generic webhook here to avoid duplicate emails.
 
         return doc
       },

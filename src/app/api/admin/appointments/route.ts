@@ -3,6 +3,8 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { requireAdmin } from '@/lib/admin-auth'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   try {
     const user = await requireAdmin(request)
@@ -51,10 +53,12 @@ export async function GET(request: NextRequest) {
       barber: (apt.barber as string) || 'Cosimo Pisani',
     }))
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       appointments: serialized,
       total: appointments.totalDocs,
     })
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+    return response
   } catch (error) {
     console.error('Error fetching admin appointments:', error)
     return NextResponse.json({ error: 'Failed to fetch appointments' }, { status: 500 })

@@ -3,6 +3,8 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { requireAdmin, unauthorizedResponse } from '@/lib/admin-auth'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(req: NextRequest) {
   try {
     const payload = await getPayload({ config })

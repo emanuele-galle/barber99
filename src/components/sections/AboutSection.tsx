@@ -191,7 +191,7 @@ export default function AboutSection() {
 
                 <div className="space-y-4 text-white/70 md:text-lg mb-8">
                   <p>
-                    Sono Cosimo Pisani, titolare di Barber 99. Dal 2023 accolgo i miei
+                    Sono Cosimo Pisani, titolare di Barber 99. Dal 2024 accolgo i miei
                     clienti in Via San Biagio 3, nel cuore di Serra San Bruno. Qui ho creato
                     uno spazio dove tradizione e cura del dettaglio si incontrano.
                   </p>

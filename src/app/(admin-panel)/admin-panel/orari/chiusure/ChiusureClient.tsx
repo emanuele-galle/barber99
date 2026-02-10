@@ -5,6 +5,14 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Plus, Calendar, Trash2, Loader2, CalendarX, CalendarRange, List, CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react'
 
+// Timezone-safe date formatting (local date, not UTC)
+function localDateStr(d: Date): string {
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 const closureTypes = [
   { value: 'holiday', label: 'Festivo' },
   { value: 'vacation', label: 'Ferie' },
@@ -64,7 +72,7 @@ export default function ChiusurePage() {
     const end = new Date(endDate)
 
     while (current <= end) {
-      dates.push(current.toISOString().split('T')[0])
+      dates.push(localDateStr(current))
       current.setDate(current.getDate() + 1)
     }
 
@@ -235,9 +243,9 @@ export default function ChiusurePage() {
 
   const getClosuresForDate = (date: Date | null) => {
     if (!date) return []
-    const dateStr = date.toISOString().split('T')[0]
+    const dateStr = localDateStr(date)
     return closedDays.filter((d) => {
-      const closedDateStr = new Date(d.date).toISOString().split('T')[0]
+      const closedDateStr = d.date.split('T')[0]
       return closedDateStr === dateStr
     })
   }
@@ -347,7 +355,7 @@ export default function ChiusurePage() {
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  min={new Date().toISOString().split('T')[0]}
+                  min={localDateStr(new Date())}
                   className="admin-input w-full"
                   required
                 />
@@ -363,7 +371,7 @@ export default function ChiusurePage() {
                     type="date"
                     value={dateEnd}
                     onChange={(e) => setDateEnd(e.target.value)}
-                    min={date || new Date().toISOString().split('T')[0]}
+                    min={date || localDateStr(new Date())}
                     className="admin-input w-full"
                     required={isRange}
                   />

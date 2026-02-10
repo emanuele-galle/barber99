@@ -178,7 +178,7 @@ export default function BookingForm() {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [bookingConfirmed, setBookingConfirmed] = useState(false)
-  const [bookingLinks, setBookingLinks] = useState<{ whatsapp?: string; cancel?: string }>({})
+  const [bookingLinks, setBookingLinks] = useState<{ cancel?: string }>({})
 
   // Fetch services, closed days, and opening hours
   useEffect(() => {
@@ -186,9 +186,9 @@ export default function BookingForm() {
       setIsLoadingData(true)
       try {
         const [servicesRes, closedDaysRes, hoursRes] = await Promise.all([
-          fetch('/api/services'),
-          fetch('/api/closed-days?limit=100'),
-          fetch('/api/opening-hours'),
+          fetch('/api/services', { cache: 'no-store' }),
+          fetch('/api/closed-days?limit=100', { cache: 'no-store' }),
+          fetch('/api/opening-hours', { cache: 'no-store' }),
         ])
         if (servicesRes.ok) {
           const data = await servicesRes.json()
@@ -293,7 +293,7 @@ export default function BookingForm() {
   // Fetch booked slots from API
   const fetchBookedSlots = useCallback(async (date: string, barberId: string): Promise<Appointment[]> => {
     try {
-      const response = await fetch(`/api/appointments?date=${date}&barberId=${barberId}`)
+      const response = await fetch(`/api/appointments?date=${date}&barberId=${barberId}`, { cache: 'no-store' })
       if (response.ok) {
         const data = await response.json()
         return data.bookedSlots || []
@@ -377,7 +377,7 @@ export default function BookingForm() {
       })
       if (response.ok) {
         const result = await response.json()
-        setBookingLinks({ whatsapp: result.whatsappLink, cancel: result.cancellationLink })
+        setBookingLinks({ cancel: result.cancellationLink })
         setBookingConfirmed(true)
         setStep('confirm')
       } else {

@@ -41,30 +41,39 @@ export async function GET(request: NextRequest) {
         }
       }, 30000)
 
-      // Listen for new bookings
-      const onNewBooking = (data: {
+      // Generic event handler
+      type BookingEventData = {
         appointmentId: string
         clientName: string
         serviceName: string
         date: string
         time: string
-      }) => {
+      }
+
+      const sendEvent = (type: string) => (data: BookingEventData) => {
         try {
           controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify({ type: 'new_booking', ...data })}\n\n`)
+            encoder.encode(`data: ${JSON.stringify({ type, ...data })}\n\n`)
           )
         } catch {
-          // Client disconnected
           cleanup()
         }
       }
 
+      const onNewBooking = sendEvent('new_booking')
+      const onCancellation = sendEvent('cancellation')
+      const onModification = sendEvent('modification')
+
       bookingEvents.on('new_booking', onNewBooking)
+      bookingEvents.on('cancellation', onCancellation)
+      bookingEvents.on('modification', onModification)
 
       // Cleanup on disconnect
       const cleanup = () => {
         clearInterval(heartbeat)
         bookingEvents.off('new_booking', onNewBooking)
+        bookingEvents.off('cancellation', onCancellation)
+        bookingEvents.off('modification', onModification)
       }
 
       // Handle client disconnect via AbortSignal

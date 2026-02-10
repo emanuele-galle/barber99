@@ -65,7 +65,7 @@ export default function ModificaAppuntamentoPage({ params }: { params: Promise<{
           setClientPhone(apt.clientPhone || '')
           setClientEmail(apt.clientEmail || '')
           setSelectedService(typeof apt.service === 'object' ? apt.service.id : apt.service || '')
-          const dateStr = apt.date ? new Date(apt.date).toISOString().split('T')[0] : ''
+          const dateStr = apt.date ? String(apt.date).split('T')[0] : ''
           setSelectedDate(dateStr)
           setOriginalDate(dateStr)
           setSelectedTime(apt.time || '')

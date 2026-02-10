@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { bookingEvents } from '@/lib/booking-events'
 import { rateLimit, getClientIP, RATE_LIMITS } from '@/lib/rate-limit'
+
+const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || 'http://vps-panel-n8n:5678/webhook/barber99-booking'
 
 export async function POST(request: NextRequest) {
   try {
@@ -49,6 +52,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Non puoi cancellare un appuntamento passato' }, { status: 400 })
     }
 
+    // Fetch service name for notification
+    const fullApt = await payload.findByID({ collection: 'appointments', id: appointment.id, depth: 1 })
+    const serviceName = typeof fullApt.service === 'object' && fullApt.service ? (fullApt.service as { name?: string }).name || 'Servizio' : 'Servizio'
+
     // Cancel the appointment
     await payload.update({
       collection: 'appointments',
@@ -59,6 +66,38 @@ export async function POST(request: NextRequest) {
         cancellationReason: reason || 'Cancellato dal cliente',
       },
     })
+
+    // Emit SSE event for real-time admin notification
+    const dateFormatted = new Date(String(appointment.date).split('T')[0] + 'T00:00:00').toLocaleDateString('it-IT', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+    })
+    bookingEvents.emit('cancellation', {
+      appointmentId: appointment.id,
+      clientName: appointment.clientName,
+      serviceName,
+      date: dateFormatted,
+      time: appointment.time,
+    })
+
+    // Send cancellation notification email
+    try {
+      await fetch(N8N_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event: 'cancellation',
+          client_name: appointment.clientName,
+          client_email: appointment.clientEmail || '',
+          client_phone: appointment.clientPhone,
+          service_name: serviceName,
+          date: dateFormatted,
+          time: appointment.time,
+          reason: reason || 'Cancellato dal cliente',
+        }),
+      })
+    } catch (e) {
+      console.error('Failed to send cancellation notification:', e)
+    }
 
     return NextResponse.json({
       success: true,
