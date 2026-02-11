@@ -151,8 +151,11 @@ export default function ModificaAppuntamentoPage({ params }: { params: Promise<{
           clientPhone,
           clientEmail,
           service: selectedService,
-          date: selectedDate,
-          time: selectedTime,
+          // Only send date/time if they actually changed to avoid unnecessary slot validation
+          ...((selectedDate !== originalDate || selectedTime !== originalTime) && {
+            date: selectedDate,
+            time: selectedTime,
+          }),
           status,
           notes,
         }),

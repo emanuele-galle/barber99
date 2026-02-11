@@ -35,7 +35,9 @@ export async function PATCH(
     }
 
     // --- FASE 5: Validazione conflitti se cambiano date/time ---
-    if (body.date || body.time) {
+    // Skip validation for terminal statuses (cancel, complete, noshow) - no slot check needed
+    const isTerminalStatus = ['cancelled', 'completed', 'noshow'].includes(body.status)
+    if ((body.date || body.time) && !isTerminalStatus) {
       // Get current appointment data
       const current = await payload.findByID({ collection: 'appointments', id, depth: 1 })
       const newDate = body.date || current.date
