@@ -142,13 +142,13 @@ export function getAvailableSlots(
   // Generate all possible slots
   const allSlots = generateTimeSlots(dayHours.openTime, dayHours.closeTime, 30)
 
-  // For today, calculate minimum bookable time (current time + 30min buffer)
+  // For today, only exclude slots already in the past
   const now = new Date()
   const isToday =
     date.getFullYear() === now.getFullYear() &&
     date.getMonth() === now.getMonth() &&
     date.getDate() === now.getDate()
-  const minMinutes = isToday ? now.getHours() * 60 + now.getMinutes() + 30 : 0
+  const minMinutes = isToday ? now.getHours() * 60 + now.getMinutes() : 0
 
   // Check availability for each slot (including break time exclusion)
   return allSlots.map((time) => ({
