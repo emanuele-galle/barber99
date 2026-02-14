@@ -4,7 +4,6 @@ import config from '@payload-config'
 
 const BASE_URL = 'https://barber99.it'
 
-// Force dynamic rendering so Payload can query the DB at runtime
 export const dynamic = 'force-dynamic'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

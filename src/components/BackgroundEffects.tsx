@@ -195,6 +195,7 @@ export function AnimatedLine({ direction = 'horizontal', position = 'bottom' }: 
         className={`${isHorizontal ? 'h-px w-full' : 'w-px h-full'} bg-gradient-to-r from-transparent via-[#d4a855]/50 to-transparent`}
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
         transition={{ duration: 1 }}
       />
     </div>
@@ -243,6 +244,7 @@ export function SectionDivider({ variant = 'gradient' }: SectionDividerProps) {
         className="absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#d4a855]/40 to-transparent"
         initial={{ scaleX: 0 }}
         whileInView={{ scaleX: 1 }}
+        viewport={{ once: true }}
         transition={{ duration: 1.5, ease: 'easeOut' }}
       />
     </div>

@@ -94,6 +94,7 @@ export async function POST(request: NextRequest) {
           time: appointment.time,
           reason: reason || 'Cancellato dal cliente',
         }),
+        signal: AbortSignal.timeout(10000),
       })
     } catch (e) {
       console.error('Failed to send cancellation notification:', e)

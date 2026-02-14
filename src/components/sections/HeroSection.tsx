@@ -31,7 +31,7 @@ export default function HeroSection() {
         {/* Background Image statico */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="/images/hero-bg.jpg"
+            src="/images/hero-bg.webp"
             alt="Barber 99 Serra San Bruno"
             fill
             className="object-cover"
@@ -60,7 +60,7 @@ export default function HeroSection() {
                 textShadow: '0 2px 4px rgba(0, 0, 0, 0.8), 0 4px 12px rgba(0, 0, 0, 0.5)'
               }}
             >
-              L&apos;Arte del{' '}
+              Barber 99{' '}
               <span
                 className="text-[#e8c882]"
                 style={{
@@ -69,6 +69,7 @@ export default function HeroSection() {
               >
                 Barbiere
               </span>
+              <span className="block text-xl md:text-3xl lg:text-4xl mt-2 text-white/90 font-normal">a Serra San Bruno</span>
             </h1>
 
             <p
@@ -127,7 +128,7 @@ export default function HeroSection() {
       {/* Background Image with Parallax */}
       <motion.div className="absolute inset-0 z-0" style={{ y: backgroundY }}>
         <Image
-          src="/images/hero-bg.jpg"
+          src="/images/hero-bg.webp"
           alt="Barber 99 Serra San Bruno"
           fill
           className="object-cover scale-110"
@@ -171,7 +172,7 @@ export default function HeroSection() {
               textShadow: '0 2px 4px rgba(0, 0, 0, 0.8), 0 4px 12px rgba(0, 0, 0, 0.5)'
             }}
           >
-            L&apos;Arte del{' '}
+            Barber 99{' '}
             <span
               className="text-[#e8c882]"
               style={{
@@ -180,6 +181,7 @@ export default function HeroSection() {
             >
               Barbiere
             </span>
+            <span className="block text-xl md:text-3xl lg:text-4xl mt-2 text-white/90 font-normal">a Serra San Bruno</span>
           </motion.h1>
 
           <motion.p

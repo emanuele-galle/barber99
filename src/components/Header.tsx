@@ -148,7 +148,7 @@ export default function Header() {
               transition={{ duration: 0.3 }}
             >
               <Image
-                src="/images/logo/barber99-logo.png"
+                src="/images/logo/barber99-logo.webp"
                 alt="Barber 99 Logo"
                 width={50}
                 height={60}

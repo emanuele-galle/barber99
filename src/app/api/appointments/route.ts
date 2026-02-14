@@ -60,6 +60,7 @@ async function sendBookingNotification(data: {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
+      signal: AbortSignal.timeout(10000),
     })
     return response.ok
   } catch (error) {

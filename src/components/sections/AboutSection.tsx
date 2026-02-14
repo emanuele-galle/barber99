@@ -60,6 +60,7 @@ export default function AboutSection() {
             <motion.p
               initial={{ opacity: 0, letterSpacing: '0.2em' }}
               whileInView={{ opacity: 1, letterSpacing: '0.3em' }}
+              viewport={{ once: true }}
               transition={{ duration: 0.8 }}
               className="text-[#d4a855] text-sm md:text-lg uppercase mb-4"
               style={{ fontFamily: 'var(--font-cormorant), serif' }}
@@ -75,6 +76,7 @@ export default function AboutSection() {
             <motion.div
               initial={{ scaleX: 0 }}
               whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.3 }}
               className="gold-divider origin-center"
             />
@@ -101,7 +103,7 @@ export default function AboutSection() {
                 >
                   <Image
                     src="/images/gallery-2.webp"
-                    alt="Barber 99 Serra San Bruno"
+                    alt="Taglio capelli uomo da Barber 99 a Serra San Bruno"
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
                   />
@@ -113,8 +115,8 @@ export default function AboutSection() {
                   className="relative h-48 rounded-lg overflow-hidden group"
                 >
                   <Image
-                    src="/images/pennello-barbiere.jpg"
-                    alt="Strumenti del barbiere"
+                    src="/images/pennello-barbiere.webp"
+                    alt="Pennello e strumenti barbiere tradizionale Serra San Bruno"
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
                   />
@@ -135,7 +137,7 @@ export default function AboutSection() {
                 >
                   <Image
                     src="/images/rasatura-barba.webp"
-                    alt="Rasatura tradizionale"
+                    alt="Rasatura barba professionale da Cosimo Pisani Barber 99"
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
                   />
@@ -148,7 +150,7 @@ export default function AboutSection() {
                 >
                   <Image
                     src="/images/gallery-4.webp"
-                    alt="Barber Shop interno"
+                    alt="Interno Barber 99 barbershop Via San Biagio Serra San Bruno"
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
                   />
@@ -169,6 +171,7 @@ export default function AboutSection() {
                   <motion.div
                     initial={{ scale: 0, rotate: -180 }}
                     whileInView={{ scale: 1, rotate: 0 }}
+                    viewport={{ once: true }}
                     transition={{ duration: 0.6, type: 'spring' }}
                     className="w-16 h-16 rounded-full bg-gradient-to-br from-[#d4a855]/20 to-[#d4a855]/5 flex items-center justify-center border border-[#d4a855]/20"
                   >

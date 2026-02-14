@@ -111,6 +111,7 @@ export const Appointments: CollectionConfig = {
             en: 'Date',
           },
           required: true,
+          index: true,
           admin: {
             date: {
               pickerAppearance: 'dayOnly',
@@ -151,6 +152,7 @@ export const Appointments: CollectionConfig = {
       ],
       defaultValue: 'confirmed',
       required: true,
+      index: true,
       admin: {
         position: 'sidebar',
       },
@@ -450,6 +452,7 @@ export const Appointments: CollectionConfig = {
                         barber_name: (doc.barber as string) || 'Barbiere',
                         date: doc.date,
                       }),
+                      signal: AbortSignal.timeout(10000),
                     }).catch((err) => console.error('Review request webhook failed:', err))
 
                     await payload.update({

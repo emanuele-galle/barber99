@@ -208,12 +208,11 @@ export default function ChiusurePage() {
     }
   }
 
-  // Separate past and future days
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  // Separate past and future days (timezone-safe string comparison)
+  const todayStr = localDateStr(new Date())
 
-  const futureDays = closedDays.filter((d) => new Date(d.date) >= today)
-  const pastDays = closedDays.filter((d) => new Date(d.date) < today)
+  const futureDays = closedDays.filter((d) => d.date.split('T')[0] >= todayStr)
+  const pastDays = closedDays.filter((d) => d.date.split('T')[0] < todayStr)
 
   // Calendar helpers
   const getMonthDays = (date: Date) => {
@@ -600,7 +599,7 @@ export default function ChiusurePage() {
                   const closures = getClosuresForDate(day)
                   const isToday =
                     day && day.toDateString() === new Date().toDateString()
-                  const isPast = day && day < today
+                  const isPast = day && localDateStr(day) < todayStr
 
                   return (
                     <div

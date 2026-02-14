@@ -182,13 +182,14 @@ export default function BookingForm() {
 
   // Fetch services, closed days, and opening hours
   useEffect(() => {
+    const controller = new AbortController()
     async function fetchData() {
       setIsLoadingData(true)
       try {
         const [servicesRes, closedDaysRes, hoursRes] = await Promise.all([
-          fetch('/api/services', { cache: 'no-store' }),
-          fetch('/api/closed-days?limit=100', { cache: 'no-store' }),
-          fetch('/api/opening-hours', { cache: 'no-store' }),
+          fetch('/api/services', { cache: 'no-store', signal: controller.signal }),
+          fetch('/api/closed-days?limit=100', { cache: 'no-store', signal: controller.signal }),
+          fetch('/api/opening-hours', { cache: 'no-store', signal: controller.signal }),
         ])
         if (servicesRes.ok) {
           const data = await servicesRes.json()
@@ -205,12 +206,14 @@ export default function BookingForm() {
           }
         }
       } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') return
         console.error('Error fetching data:', error)
       } finally {
         setIsLoadingData(false)
       }
     }
     fetchData()
+    return () => controller.abort()
   }, [])
 
   // Calendar month navigation
@@ -304,12 +307,14 @@ export default function BookingForm() {
 
   // Load available slots when date changes
   useEffect(() => {
+    let cancelled = false
     async function loadSlots() {
       if (formData.date && formData.barberId && formData.serviceId) {
         const service = services.find((s) => s.id === formData.serviceId)
         if (service) {
           setIsLoadingSlots(true)
           const bookedSlots = await fetchBookedSlots(formData.date, formData.barberId)
+          if (cancelled) return
           const slots = getAvailableSlots(new Date(formData.date), formData.barberId, service.duration, bookedSlots, openingHours, closedDays)
           setAvailableSlots(slots)
           setIsLoadingSlots(false)
@@ -317,6 +322,7 @@ export default function BookingForm() {
       }
     }
     loadSlots()
+    return () => { cancelled = true }
   }, [formData.date, formData.barberId, formData.serviceId, services, fetchBookedSlots, openingHours, closedDays])
 
   const selectedService = services.find((s) => s.id === formData.serviceId)

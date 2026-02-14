@@ -88,6 +88,7 @@ export default function ServicesSection({ services }: ServicesSectionProps) {
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
               transition={{ duration: 0.6 }}
               className="text-[#d4a855] text-sm md:text-lg tracking-[0.3em] uppercase mb-4"
               style={{ fontFamily: 'var(--font-cormorant), serif' }}
@@ -97,6 +98,7 @@ export default function ServicesSection({ services }: ServicesSectionProps) {
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-3xl md:text-5xl font-bold text-white mb-4"
               style={{ fontFamily: 'var(--font-cinzel), serif' }}
@@ -106,12 +108,14 @@ export default function ServicesSection({ services }: ServicesSectionProps) {
             <motion.div
               initial={{ scaleX: 0 }}
               whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.3 }}
               className="gold-divider origin-center"
             />
             <motion.p
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.4 }}
               className="text-white/60 text-base md:text-lg max-w-2xl mx-auto mt-6"
             >

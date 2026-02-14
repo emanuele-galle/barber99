@@ -8,21 +8,21 @@ const cinzel = Cinzel({
   variable: '--font-cinzel',
   subsets: ['latin'],
   display: 'swap',
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '600', '700'],
 })
 
 const cormorant = Cormorant_Garamond({
   variable: '--font-cormorant',
   subsets: ['latin'],
   display: 'swap',
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '600'],
 })
 
 const montserrat = Montserrat({
   variable: '--font-montserrat',
   subsets: ['latin'],
   display: 'swap',
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['400', '500', '600', '700'],
 })
 
 export const viewport: Viewport = {
@@ -70,12 +70,21 @@ export const metadata: Metadata = {
     title: 'Barber 99 di Cosimo Pisani | Barbiere a Serra San Bruno',
     description:
       'Cosimo Pisani, il tuo barbiere di fiducia a Serra San Bruno dal 2024. Taglio capelli, barba e meches. Prenota online il tuo appuntamento.',
+    images: [
+      {
+        url: '/images/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Barber 99 - Barbiere a Serra San Bruno',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Barber 99 di Cosimo Pisani | Barbiere Serra San Bruno',
     description:
       'Cosimo Pisani, barbiere professionista. Taglio, barba e meches. Prenota online.',
+    images: ['/images/og-image.jpg'],
   },
   robots: {
     index: true,
@@ -99,6 +108,32 @@ export const metadata: Metadata = {
   },
 }
 
+// Schema.org BreadcrumbList
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: 'https://barber99.it',
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Servizi',
+      item: 'https://barber99.it/servizi',
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: 'Prenota',
+      item: 'https://barber99.it/prenota',
+    },
+  ],
+}
+
 // Schema.org JSON-LD for Local Business
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -111,7 +146,7 @@ const jsonLd = {
   url: 'https://barber99.it',
   logo: 'https://barber99.it/images/logo/barber99-logo.png',
   image: [
-    'https://barber99.it/images/hero-bg.jpg',
+    'https://barber99.it/images/hero-bg.webp',
   ],
   telephone: '+39 327 126 3091',
   email: 'info@barber99.it',
@@ -263,6 +298,10 @@ export default function FrontendLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
         />
       </head>
       <body

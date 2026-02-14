@@ -58,7 +58,7 @@ export default function AdminLoginPage() {
         <div className="text-center mb-8">
           <div className="inline-block mb-4">
             <Image
-              src="/images/logo/barber99-logo.png"
+              src="/images/logo/barber99-logo.webp"
               alt="Barber 99 Logo"
               width={80}
               height={96}
