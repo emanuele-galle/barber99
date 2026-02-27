@@ -22,12 +22,6 @@ services:
       - traefik.http.routers.barber99.tls=true
       - traefik.http.routers.barber99.middlewares=security-headers@file
       - traefik.http.routers.barber99.service=barber99
-      # Preview router (Let's Encrypt)
-      - traefik.http.routers.barber99-preview.rule=Host(`barber99.fodivps2.cloud`)
-      - traefik.http.routers.barber99-preview.entrypoints=websecure
-      - traefik.http.routers.barber99-preview.tls.certresolver=letsencrypt
-      - traefik.http.routers.barber99-preview.middlewares=security-headers@file
-      - traefik.http.routers.barber99-preview.service=barber99
       # Service
       - traefik.http.services.barber99.loadbalancer.server.port=3000
       - traefik.docker.network=traefik-public

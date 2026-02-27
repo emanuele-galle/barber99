@@ -4,6 +4,7 @@ import config from '@payload-config'
 import { isSlotAvailable } from '@/lib/booking'
 import { bookingEvents } from '@/lib/booking-events'
 import { requireAdmin, unauthorizedResponse } from '@/lib/admin-auth'
+import { reverseClientStats } from '@/lib/reverse-client-stats'
 
 const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || 'http://vps-panel-n8n:5678/webhook/barber99-booking'
 
@@ -279,6 +280,14 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Feature flag check
+    if (process.env.ENABLE_DELETE_PAST !== 'true') {
+      return NextResponse.json(
+        { error: 'Funzionalità non abilitata' },
+        { status: 403 }
+      )
+    }
+
     const payload = await getPayload({ config })
     const { id } = await params
 
@@ -291,6 +300,52 @@ export async function DELETE(
       )
     }
 
+    // Fetch appointment with depth 2 (service.price + client stats)
+    const appointment = await payload.findByID({
+      collection: 'appointments',
+      id,
+      depth: 2,
+    })
+
+    if (!appointment) {
+      return NextResponse.json(
+        { error: 'Appuntamento non trovato' },
+        { status: 404 }
+      )
+    }
+
+    // Validate past-only
+    const aptDate = new Date(appointment.date as string)
+    aptDate.setHours(0, 0, 0, 0)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    if (aptDate >= today) {
+      return NextResponse.json(
+        { error: 'Solo appuntamenti passati possono essere eliminati' },
+        { status: 400 }
+      )
+    }
+
+    // Audit log
+    console.log('[DELETE-APPOINTMENT]', JSON.stringify({
+      id: appointment.id,
+      clientName: appointment.clientName,
+      date: appointment.date,
+      time: appointment.time,
+      status: appointment.status,
+      service: typeof appointment.service === 'object' && appointment.service
+        ? { id: (appointment.service as { id: string }).id, name: (appointment.service as { name?: string }).name, price: (appointment.service as { price?: number }).price }
+        : appointment.service,
+    }))
+
+    // Reverse client statistics
+    try {
+      await reverseClientStats(payload, appointment as Parameters<typeof reverseClientStats>[1])
+    } catch (e) {
+      console.error('Error reversing client stats:', e)
+    }
+
+    // Delete
     await payload.delete({
       collection: 'appointments',
       id,
@@ -298,7 +353,7 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: 'Appointment deleted',
+      message: 'Appuntamento eliminato',
     })
   } catch (error) {
     console.error('Error deleting appointment:', error)

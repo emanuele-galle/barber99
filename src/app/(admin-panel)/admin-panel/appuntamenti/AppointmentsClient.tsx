@@ -22,6 +22,8 @@ import {
   Plus,
   Loader2,
   SlidersHorizontal,
+  Trash2,
+  CheckSquare,
 } from 'lucide-react'
 import { AppointmentActions } from '@/components/admin-panel/AppointmentActions'
 import { useToast } from '@/components/Toast'
@@ -97,6 +99,13 @@ export function AppointmentsClient() {
   const [statusFilter, setStatusFilter] = useState<string>('active')
   const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set())
 
+  // Bulk delete state
+  const canDeletePast = process.env.NEXT_PUBLIC_ENABLE_DELETE_PAST === 'true'
+  const [selectionMode, setSelectionMode] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [bulkDeleting, setBulkDeleting] = useState(false)
+  const [showBulkConfirm, setShowBulkConfirm] = useState(false)
+
   // Debounce search
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(searchQuery), 300)
@@ -141,6 +150,56 @@ export function AppointmentsClient() {
       showToast('error', 'Errore aggiornamento', 'Errore')
     } finally {
       setActionLoading(null)
+    }
+  }
+
+  // Bulk delete helpers
+  const isPast = (apt: Appointment): boolean => {
+    const d = new Date(apt.date)
+    d.setHours(0, 0, 0, 0)
+    const t = new Date()
+    t.setHours(0, 0, 0, 0)
+    return d < t
+  }
+
+  const toggleSelection = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const exitSelectionMode = () => {
+    setSelectionMode(false)
+    setSelectedIds(new Set())
+    setShowBulkConfirm(false)
+  }
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.size === 0) return
+    setBulkDeleting(true)
+    try {
+      const res = await fetch('/api/appointments/bulk-delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: Array.from(selectedIds) }),
+        credentials: 'include',
+      })
+      if (!res.ok) throw new Error('Errore')
+      const data = await res.json()
+      showToast('success', `${data.deleted} appuntamenti eliminati`, 'OK')
+      if (data.errors?.length > 0) {
+        console.warn('Bulk delete errors:', data.errors)
+      }
+      exitSelectionMode()
+      fetchAppointments()
+    } catch {
+      showToast('error', 'Errore eliminazione', 'Errore')
+    } finally {
+      setBulkDeleting(false)
+      setShowBulkConfirm(false)
     }
   }
 
@@ -368,6 +427,24 @@ export function AppointmentsClient() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          {canDeletePast && !selectionMode && (
+            <button
+              onClick={() => setSelectionMode(true)}
+              className="admin-btn admin-btn-secondary text-sm flex items-center gap-1.5"
+            >
+              <CheckSquare className="w-4 h-4" />
+              <span className="hidden sm:inline">Seleziona</span>
+            </button>
+          )}
+          {selectionMode && (
+            <button
+              onClick={exitSelectionMode}
+              className="admin-btn admin-btn-secondary text-sm flex items-center gap-1.5"
+            >
+              <X className="w-4 h-4" />
+              <span className="hidden sm:inline">Annulla</span>
+            </button>
+          )}
           <Link
             href="/admin-panel/appuntamenti/nuovo"
             className="admin-btn admin-btn-primary text-sm flex items-center gap-1.5"
@@ -645,14 +722,32 @@ export function AppointmentsClient() {
                     const imminent = isImminent(apt)
                     const isActive = apt.status === 'confirmed'
 
+                    const pastApt = isPast(apt)
+
                     return (
                       <div
                         key={apt.id}
                         className={`admin-card p-2.5 transition-all ${
                           imminent ? 'border-[#d4a855] ring-1 ring-[#d4a855]/30' : ''
-                        }`}
+                        } ${selectionMode && pastApt && selectedIds.has(apt.id) ? 'ring-1 ring-red-400/50 border-red-400/30' : ''}`}
                       >
                         <div className="flex items-center gap-2.5">
+                          {/* Selection checkbox */}
+                          {selectionMode && pastApt && (
+                            <button
+                              onClick={() => toggleSelection(apt.id)}
+                              className={`w-5 h-5 rounded border flex-shrink-0 flex items-center justify-center transition-colors ${
+                                selectedIds.has(apt.id)
+                                  ? 'bg-red-500 border-red-500 text-white'
+                                  : 'border-[rgba(255,255,255,0.3)] hover:border-red-400'
+                              }`}
+                            >
+                              {selectedIds.has(apt.id) && <CheckCircle className="w-3.5 h-3.5" />}
+                            </button>
+                          )}
+                          {selectionMode && !pastApt && (
+                            <div className="w-5 h-5 flex-shrink-0" />
+                          )}
                           {/* Time */}
                           <div className={`w-11 h-11 rounded-lg flex flex-col items-center justify-center flex-shrink-0 ${
                             imminent ? 'bg-[#d4a855]/20' : 'bg-[rgba(212,168,85,0.1)]'
@@ -903,6 +998,66 @@ export function AppointmentsClient() {
             <div className="flex items-center gap-1">
               <div className="w-2.5 h-2.5 rounded bg-red-500/50 border-l-2 border-red-400 opacity-60" />
               <span className="text-[rgba(255,255,255,0.5)]">Annullato/No Show</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk delete action bar */}
+      {selectionMode && selectedIds.size > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#1a1a1a] border-t border-[rgba(255,255,255,0.1)] p-3 flex items-center justify-between gap-3 shadow-2xl">
+          <span className="text-sm text-white">
+            <span className="font-bold">{selectedIds.size}</span> selezionati
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={exitSelectionMode}
+              className="admin-btn admin-btn-secondary text-sm"
+            >
+              Annulla
+            </button>
+            <button
+              onClick={() => setShowBulkConfirm(true)}
+              className="admin-btn text-sm flex items-center gap-1.5 bg-red-500 hover:bg-red-600 text-white border-red-500"
+            >
+              <Trash2 className="w-4 h-4" />
+              Elimina selezionati
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk delete confirmation modal */}
+      {showBulkConfirm && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="admin-card p-6 max-w-md w-full space-y-4">
+            <h3 className="text-lg font-bold text-white">Conferma eliminazione</h3>
+            <p className="text-sm text-[rgba(255,255,255,0.7)]">
+              Eliminare <span className="font-bold text-red-400">{selectedIds.size}</span> appuntamenti passati?
+            </p>
+            <p className="text-xs text-[rgba(255,255,255,0.5)]">
+              Le statistiche dei clienti verranno aggiornate automaticamente. Questa azione è irreversibile.
+            </p>
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <button
+                onClick={() => setShowBulkConfirm(false)}
+                disabled={bulkDeleting}
+                className="admin-btn admin-btn-secondary text-sm"
+              >
+                Annulla
+              </button>
+              <button
+                onClick={handleBulkDelete}
+                disabled={bulkDeleting}
+                className="admin-btn text-sm flex items-center gap-1.5 bg-red-500 hover:bg-red-600 text-white border-red-500 disabled:opacity-50"
+              >
+                {bulkDeleting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Trash2 className="w-4 h-4" />
+                )}
+                {bulkDeleting ? 'Eliminazione...' : 'Elimina'}
+              </button>
             </div>
           </div>
         </div>
