@@ -433,7 +433,7 @@ export function AppointmentsClient() {
               className="admin-btn admin-btn-secondary text-sm flex items-center gap-1.5"
             >
               <CheckSquare className="w-4 h-4" />
-              <span className="hidden sm:inline">Seleziona</span>
+              Seleziona
             </button>
           )}
           {selectionMode && (
@@ -442,7 +442,7 @@ export function AppointmentsClient() {
               className="admin-btn admin-btn-secondary text-sm flex items-center gap-1.5"
             >
               <X className="w-4 h-4" />
-              <span className="hidden sm:inline">Annulla</span>
+              Annulla
             </button>
           )}
           <Link
