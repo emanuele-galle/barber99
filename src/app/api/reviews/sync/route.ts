@@ -83,6 +83,7 @@ async function fetchGoogleReviews(): Promise<{ reviews: ApifyReview[]; placeInfo
   }
 }
 
+// eslint-disable-next-line sonarjs/cognitive-complexity -- Reviews sync with Google Places, deduplication, stats
 export async function POST(request: NextRequest) {
   try {
     const payload = await getPayload({ config })

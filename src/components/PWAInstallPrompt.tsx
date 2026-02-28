@@ -47,7 +47,7 @@ export default function PWAInstallPrompt() {
     }
 
     const ios = isIOS()
-    setIsIOSDevice(ios)
+    requestAnimationFrame(() => setIsIOSDevice(ios))
 
     if (ios) {
       // iOS: show instructions directly after delay

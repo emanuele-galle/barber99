@@ -13,10 +13,7 @@ export const Appointments: CollectionConfig = {
     listSearchableFields: ['clientName', 'clientEmail', 'clientPhone'],
   },
   access: {
-    read: ({ req: { user } }) => {
-      if (user) return true
-      return false
-    },
+    read: ({ req: { user } }) => Boolean(user),
     create: () => true, // Public can create appointments
     update: ({ req: { user } }) => Boolean(user),
     delete: ({ req: { user } }) => Boolean(user),
@@ -356,6 +353,7 @@ export const Appointments: CollectionConfig = {
       },
     ],
     afterChange: [
+      // eslint-disable-next-line sonarjs/cognitive-complexity -- Payload hook: client stats, notifications, cancellation flow
       async ({ doc, operation, previousDoc, req }) => {
         // Update client statistics when appointment status changes
         if (doc.client && operation === 'update' && previousDoc) {

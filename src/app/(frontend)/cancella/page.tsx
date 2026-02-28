@@ -13,6 +13,7 @@ interface AppointmentInfo {
   status: string
 }
 
+// eslint-disable-next-line sonarjs/cognitive-complexity -- Multi-step cancel flow with token verification
 function CancelContent() {
   const searchParams = useSearchParams()
   const token = searchParams.get('token')

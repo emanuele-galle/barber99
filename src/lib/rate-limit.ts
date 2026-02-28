@@ -27,7 +27,7 @@ if (!globalThis.__rateLimitCleanup) {
   }, 60_000)
 }
 
-export interface RateLimitConfig {
+interface RateLimitConfig {
   windowMs: number
   maxRequests: number
 }

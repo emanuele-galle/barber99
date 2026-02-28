@@ -1,14 +1,16 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
-export async function POST() {
+async function handleLogout() {
   const cookieStore = await cookies()
   cookieStore.delete('payload-token')
   redirect('/admin-panel/login')
 }
 
+export async function POST() {
+  return handleLogout()
+}
+
 export async function GET() {
-  const cookieStore = await cookies()
-  cookieStore.delete('payload-token')
-  redirect('/admin-panel/login')
+  return handleLogout()
 }

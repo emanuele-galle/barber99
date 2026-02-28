@@ -41,20 +41,20 @@ export const defaultOpeningHours: OpeningHour[] = [
 ]
 
 // Convert time string to minutes since midnight
-export function timeToMinutes(time: string): number {
+function timeToMinutes(time: string): number {
   const [hours, minutes] = time.split(':').map(Number)
   return hours * 60 + minutes
 }
 
 // Convert minutes since midnight to time string
-export function minutesToTime(minutes: number): string {
+function minutesToTime(minutes: number): string {
   const hours = Math.floor(minutes / 60)
   const mins = minutes % 60
   return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`
 }
 
 // Generate all possible time slots for a day
-export function generateTimeSlots(
+function generateTimeSlots(
   openTime: string,
   closeTime: string,
   slotDuration: number = 30
@@ -169,7 +169,7 @@ export function formatDate(date: Date): string {
 }
 
 // Parse date from YYYY-MM-DD string
-export function parseDate(dateStr: string): Date {
+function parseDate(dateStr: string): Date {
   return new Date(dateStr + 'T00:00:00')
 }
 
@@ -203,7 +203,7 @@ export function isDateClosed(date: Date, closedDays: ClosedDay[]): boolean {
 }
 
 // Get next available dates (excluding closed days AND special closures)
-export function getNextAvailableDates(
+function getNextAvailableDates(
   startDate: Date,
   count: number = 14,
   openingHours: OpeningHour[] = defaultOpeningHours,
@@ -252,7 +252,7 @@ export interface BookingData {
   notes?: string
 }
 
-export interface ValidationResult {
+interface ValidationResult {
   valid: boolean
   errors: Record<string, string>
 }

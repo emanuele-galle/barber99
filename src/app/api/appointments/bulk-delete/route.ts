@@ -4,6 +4,7 @@ import config from '@payload-config'
 import { requireAdmin } from '@/lib/admin-auth'
 import { reverseClientStats } from '@/lib/reverse-client-stats'
 
+// eslint-disable-next-line sonarjs/cognitive-complexity -- Bulk delete with auth, validation, stats reversal
 export async function POST(request: NextRequest) {
   try {
     // Feature flag check

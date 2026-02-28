@@ -29,6 +29,7 @@ export function OpeningHoursForm({ dayOfWeek, existingData }: OpeningHoursFormPr
   const [breakStart, setBreakStart] = useState(existingData?.breakStart || '')
   const [breakEnd, setBreakEnd] = useState(existingData?.breakEnd || '')
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity -- Form with break time validation and API sync
   const handleSave = async () => {
     // Validate break times if provided
     if (isOpen && breakStart && breakEnd) {

@@ -8,6 +8,7 @@ import { reverseClientStats } from '@/lib/reverse-client-stats'
 
 const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || 'http://vps-panel-n8n:5678/webhook/barber99-booking'
 
+// eslint-disable-next-line sonarjs/cognitive-complexity -- API route with status transitions, notifications, client stats
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

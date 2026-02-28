@@ -34,12 +34,12 @@ export function useIsMobile(breakpoint: number = 1024): boolean {
 }
 
 // Hook per rilevare se l'utente preferisce animazioni ridotte
-export function usePrefersReducedMotion(): boolean {
+function usePrefersReducedMotion(): boolean {
   const [prefersReduced, setPrefersReduced] = useState(true) // Default true
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setPrefersReduced(mediaQuery.matches)
+    requestAnimationFrame(() => setPrefersReduced(mediaQuery.matches))
 
     const handler = (e: MediaQueryListEvent) => setPrefersReduced(e.matches)
     mediaQuery.addEventListener('change', handler)

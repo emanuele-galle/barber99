@@ -77,6 +77,7 @@ async function isAdminRequest(request: NextRequest) {
   return !!user
 }
 
+// eslint-disable-next-line sonarjs/cognitive-complexity -- Booking creation with rate limiting, validation, notifications
 export async function POST(request: NextRequest) {
   try {
     const payload = await getPayload({ config })

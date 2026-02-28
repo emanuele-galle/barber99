@@ -97,8 +97,7 @@ export default function ModificaAppuntamentoPage({ params }: { params: Promise<{
         // Exclude current appointment from booked slots
         return (data.bookedSlots || []).filter((s: { time: string }) => {
           // If same date as original, exclude original time
-          if (date === originalDate && s.time === originalTime) return false
-          return true
+          return !(date === originalDate && s.time === originalTime)
         })
       }
     } catch {}

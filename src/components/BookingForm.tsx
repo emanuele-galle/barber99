@@ -141,6 +141,7 @@ function AnimatedCheckmark() {
   )
 }
 
+// eslint-disable-next-line sonarjs/cognitive-complexity -- Multi-step booking wizard with validation
 export default function BookingForm() {
   const { client, isAuthenticated } = useClientAuth()
   const [step, setStep] = useState<Step>('service')
@@ -356,6 +357,7 @@ export default function BookingForm() {
     }
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity -- Submit with validation, auth check, error handling
   const handleSubmit = async () => {
     const validation = validateBookingData(formData)
     if (!validation.valid) {

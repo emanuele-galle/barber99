@@ -34,7 +34,7 @@ export interface ReviewDoc {
   verified?: boolean
 }
 
-export interface GalleryDoc {
+interface GalleryDoc {
   id: string | number
   title: string
   image?: { url?: string } | null

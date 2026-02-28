@@ -102,7 +102,7 @@ export function EmptyState({
 }
 
 // Versione inline per card piccole
-export function EmptyStateInline({
+function EmptyStateInline({
   message,
   icon: Icon = FileText,
 }: {

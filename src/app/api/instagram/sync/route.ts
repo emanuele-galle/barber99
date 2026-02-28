@@ -110,6 +110,7 @@ async function fetchInstagramPosts(): Promise<ApifyPost[]> {
   return items as ApifyPost[]
 }
 
+// eslint-disable-next-line sonarjs/cognitive-complexity -- Instagram sync with Apify, image processing, deduplication
 export async function POST(request: NextRequest) {
   try {
     // Auth check

@@ -11,7 +11,7 @@ const CLIENT_AUTH_SECRET = new TextEncoder().encode(secret)
 const CLIENT_TOKEN_NAME = 'barber99-client-token'
 const TOKEN_EXPIRY = '7d' // 7 days
 
-export interface ClientTokenPayload extends JWTPayload {
+interface ClientTokenPayload extends JWTPayload {
   clientId: string
   email: string
   name: string
@@ -49,7 +49,7 @@ export async function createClientToken(payload: ClientTokenPayload): Promise<st
     .sign(CLIENT_AUTH_SECRET)
 }
 
-export async function verifyClientToken(token: string): Promise<ClientTokenPayload | null> {
+async function verifyClientToken(token: string): Promise<ClientTokenPayload | null> {
   try {
     const { payload } = await jwtVerify(token, CLIENT_AUTH_SECRET)
     const { clientId, email, name } = payload as ClientTokenPayload

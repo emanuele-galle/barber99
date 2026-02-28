@@ -47,7 +47,7 @@ export default async function GalleriaPage() {
         <Instagram className="w-5 h-5 text-[#d4a855] mt-0.5 shrink-0" />
         <p className="text-sm text-[rgba(255,255,255,0.6)]">
           Le foto vengono sincronizzate automaticamente da Instagram.
-          Puoi scegliere quali mostrare sul sito usando il pulsante visibilita'.
+          Puoi scegliere quali mostrare sul sito usando il pulsante visibilit&apos;.
         </p>
       </div>
 

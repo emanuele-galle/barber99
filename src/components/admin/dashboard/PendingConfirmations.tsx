@@ -131,5 +131,3 @@ export function UpcomingAppointments({ appointments }: UpcomingAppointmentsProps
   )
 }
 
-// Keep backward compatibility export
-export { UpcomingAppointments as PendingConfirmations }

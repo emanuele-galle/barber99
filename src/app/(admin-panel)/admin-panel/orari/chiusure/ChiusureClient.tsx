@@ -79,6 +79,7 @@ export default function ChiusurePage() {
     return dates
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity -- Form validation with multiple date scenarios
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
