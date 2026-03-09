@@ -666,6 +666,58 @@ export function AppointmentsClient() {
                 return dayApts.sort((a, b) => (a.time || '').localeCompare(b.time || '')).map((apt) => {
                   const s = statusConfig[apt.status] || statusConfig.confirmed
                   const SIcon = s.icon
+                  const pastApt = isPast(apt)
+                  const isSelected = selectedIds.has(apt.id)
+
+                  const cardContent = (
+                    <div className="flex items-center gap-2.5">
+                      {selectionMode && pastApt && (
+                        <button
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleSelection(apt.id) }}
+                          className={`w-6 h-6 rounded border flex-shrink-0 flex items-center justify-center transition-colors ${
+                            isSelected
+                              ? 'bg-red-500 border-red-500 text-white'
+                              : 'border-[rgba(255,255,255,0.3)] active:border-red-400'
+                          }`}
+                        >
+                          {isSelected && <CheckCircle className="w-4 h-4" />}
+                        </button>
+                      )}
+                      {selectionMode && !pastApt && (
+                        <div className="w-6 h-6 flex-shrink-0" />
+                      )}
+                      <div className="w-10 h-10 rounded-lg bg-[rgba(212,168,85,0.1)] flex items-center justify-center flex-shrink-0">
+                        <span className="text-xs font-bold text-[#d4a855]">{apt.time}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-sm font-medium text-white truncate">{apt.clientName}</span>
+                          <span className={`admin-badge ${s.class} text-[9px] flex items-center gap-0.5 py-0 px-1.5`}>
+                            <SIcon className="w-2.5 h-2.5" />
+                            {s.label}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-[rgba(255,255,255,0.5)]">
+                          {apt.service?.name} {apt.service?.duration && `- ${apt.service.duration}min`}
+                        </p>
+                      </div>
+                    </div>
+                  )
+
+                  if (selectionMode && pastApt) {
+                    return (
+                      <div
+                        key={apt.id}
+                        onClick={() => toggleSelection(apt.id)}
+                        className={`block p-2.5 rounded-lg border transition-colors cursor-pointer ${
+                          isSelected ? 'ring-1 ring-red-400/50 border-red-400/30 bg-red-500/5' : 'border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.02)] active:border-red-400/30'
+                        }`}
+                      >
+                        {cardContent}
+                      </div>
+                    )
+                  }
+
                   return (
                     <Link
                       key={apt.id}
@@ -674,23 +726,7 @@ export function AppointmentsClient() {
                         isImminent(apt) ? 'border-[#d4a855] bg-[#d4a855]/5' : 'border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.02)]'
                       }`}
                     >
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-10 h-10 rounded-lg bg-[rgba(212,168,85,0.1)] flex items-center justify-center flex-shrink-0">
-                          <span className="text-xs font-bold text-[#d4a855]">{apt.time}</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-sm font-medium text-white truncate">{apt.clientName}</span>
-                            <span className={`admin-badge ${s.class} text-[9px] flex items-center gap-0.5 py-0 px-1.5`}>
-                              <SIcon className="w-2.5 h-2.5" />
-                              {s.label}
-                            </span>
-                          </div>
-                          <p className="text-[11px] text-[rgba(255,255,255,0.5)]">
-                            {apt.service?.name} {apt.service?.duration && `- ${apt.service.duration}min`}
-                          </p>
-                        </div>
-                      </div>
+                      {cardContent}
                     </Link>
                   )
                 })
